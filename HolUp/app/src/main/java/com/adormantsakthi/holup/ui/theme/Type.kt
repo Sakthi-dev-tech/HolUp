@@ -20,17 +20,20 @@ val Typography = Typography(
 
     labelSmall = TextStyle(
         fontFamily = Fresca,
-        fontSize = 13.sp
+        fontSize = 13.sp,
+        color = Color.Black
     ),
 
     labelMedium = TextStyle(
         fontFamily = Fresca,
-        fontSize = 16.sp
+        fontSize = 16.sp,
+        color = Color.Black
     ),
 
     labelLarge = TextStyle(
         fontFamily = Fresca,
-        fontSize = 24.sp
+        fontSize = 33.sp,
+        color = Color.Black
     )
     /* Other default text styles to override
     titleLarge = TextStyle(
