@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
 import com.adormantsakthi.holup.ui.theme.Karma
 
 @Composable
@@ -90,13 +91,16 @@ fun Homescreen(onNavigate: () -> Unit) {
                         .height(2.dp)
                 )
 
+                // to space out between the line and the tasks
+                Spacer(Modifier.height(10.dp))
+
                 Column (
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
                         .fillMaxHeight()
                         .padding()
                 ) {
-
+                    TaskBox("Wash Dishes")
                 }
             }
         }
