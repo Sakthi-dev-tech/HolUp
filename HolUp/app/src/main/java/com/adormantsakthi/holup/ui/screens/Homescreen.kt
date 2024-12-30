@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.ui.theme.Karma
 
 @Composable
 fun Homescreen(onNavigate: () -> Unit) {
@@ -80,7 +81,6 @@ fun Homescreen(onNavigate: () -> Unit) {
                             .padding(10.dp)
                     )
                 }
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -97,7 +97,26 @@ fun Homescreen(onNavigate: () -> Unit) {
                 .background(MaterialTheme.colorScheme.primary)
                 .fillMaxWidth(0.8f)
                 .aspectRatio(1.48f)
-        )
+        ) {
+            Column {
+                Text(
+                    "Number of times you accessed limited apps",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .fillMaxWidth()
+                )
+
+                Text(
+                    "12",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontFamily = Karma,
+                    modifier = Modifier
+                        .align(alignment = Alignment.End)
+                        .padding(20.dp)
+                )
+            }
+        }
 
         // Spacer for slight scroll
         Spacer(Modifier.height(100.dp))

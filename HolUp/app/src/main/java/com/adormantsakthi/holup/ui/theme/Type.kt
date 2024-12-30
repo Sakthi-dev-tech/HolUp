@@ -20,13 +20,13 @@ val Typography = Typography(
 
     labelSmall = TextStyle(
         fontFamily = Fresca,
-        fontSize = 13.sp,
+        fontSize = 18.sp,
         color = Color.Black
     ),
 
     labelMedium = TextStyle(
         fontFamily = Fresca,
-        fontSize = 16.sp,
+        fontSize = 24.sp,
         color = Color.Black
     ),
 
