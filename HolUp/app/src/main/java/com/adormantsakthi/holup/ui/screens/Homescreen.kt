@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -69,7 +71,7 @@ fun Homescreen(onNavigate: () -> Unit) {
                         "Tasks for today",
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier
-                            .padding(10.dp)
+                            .padding(15.dp)
                     )
 
                     Icon(
@@ -87,6 +89,15 @@ fun Homescreen(onNavigate: () -> Unit) {
                         .background(Color.Black)
                         .height(2.dp)
                 )
+
+                Column (
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .fillMaxHeight()
+                        .padding()
+                ) {
+
+                }
             }
         }
 
@@ -119,6 +130,6 @@ fun Homescreen(onNavigate: () -> Unit) {
         }
 
         // Spacer for slight scroll
-        Spacer(Modifier.height(100.dp))
+        Spacer(Modifier.height(150.dp))
     }
 }

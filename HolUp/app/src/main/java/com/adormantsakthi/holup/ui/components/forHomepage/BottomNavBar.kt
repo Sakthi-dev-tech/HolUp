@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,7 +49,8 @@ fun BottomNavBar(navController: NavController) {
     BottomAppBar (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 30.dp, end = 30.dp)
+            .navigationBarsPadding()
+            .padding(start = 30.dp, end = 30.dp, bottom = 10.dp)
             .height(80.dp)
             .clip(RoundedCornerShape(20.dp)),
         containerColor = MaterialTheme.colorScheme.onSurface,
