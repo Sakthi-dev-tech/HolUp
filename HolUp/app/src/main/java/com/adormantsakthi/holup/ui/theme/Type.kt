@@ -18,6 +18,20 @@ val Typography = Typography(
         color = Color.White,
     ),
 
+    titleMedium = TextStyle(
+        fontFamily = Italiana,
+        fontWeight = FontWeight.Normal,
+        fontSize = 25.sp,
+        color = Color.Black,
+    ),
+
+    titleSmall = TextStyle(
+        fontFamily = Karma,
+        fontWeight = FontWeight.Normal,
+        fontSize = 24.sp,
+        color = Color.White
+    ),
+
     labelSmall = TextStyle(
         fontFamily = Fresca,
         fontSize = 18.sp,
@@ -34,7 +48,7 @@ val Typography = Typography(
         fontFamily = Fresca,
         fontSize = 33.sp,
         color = Color.Black
-    )
+    ),
     /* Other default text styles to override
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,

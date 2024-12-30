@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircle
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -84,12 +85,7 @@ fun Homescreen(onNavigate: () -> Unit) {
                             .padding(10.dp)
                     )
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Black)
-                        .height(2.dp)
-                )
+                HorizontalDivider(color = Color.Black)
 
                 // to space out between the line and the tasks
                 Spacer(Modifier.height(10.dp))
@@ -101,12 +97,6 @@ fun Homescreen(onNavigate: () -> Unit) {
                         .padding()
                         .verticalScroll(ScrollState(0))
                 ) {
-                    TaskBox("Wash Dishes")
-                    TaskBox("Wash Dishes")
-                    TaskBox("Wash Dishes")
-                    TaskBox("Wash Dishes")
-                    TaskBox("Wash Dishes")
-                    TaskBox("Wash Dishes")
                     TaskBox("Wash Dishes")
                 }
             }
