@@ -35,13 +35,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.adormantsakthi.holup.R
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
-fun BottomNavBar() {
+fun BottomNavBar(navController: NavController) {
     // For state of selected index
-    var selectedItemIndex by remember { mutableIntStateOf(0) }
+    var selectedItemIndex by remember { mutableIntStateOf(1) }
 
     // Bottom Nav Bar
     BottomAppBar (
@@ -61,6 +62,7 @@ fun BottomNavBar() {
             NavigationBarItem(
                 selected = selectedItemIndex == 0,
                 onClick = {
+                    navController.navigate("stats")
                     selectedItemIndex = 0
                 },
                 colors = NavigationBarItemColors(
@@ -85,6 +87,7 @@ fun BottomNavBar() {
             NavigationBarItem(
                 selected = selectedItemIndex == 1,
                 onClick = {
+                    navController.navigate("home")
                     selectedItemIndex = 1
                 },
                 colors = NavigationBarItemColors(
@@ -97,13 +100,14 @@ fun BottomNavBar() {
                     selectedIndicatorColor = Color.Transparent
                 ),
                 icon = {
-                    Icon(modifier = Modifier.size(30.dp), imageVector = Icons.Rounded.Home, contentDescription = "Home", tint = (if (selectedItemIndex == 1) MaterialTheme.colorScheme.primary else Color.Black))
+                    Icon(modifier = Modifier.size(35.dp), imageVector = Icons.Rounded.Home, contentDescription = "Home", tint = (if (selectedItemIndex == 1) MaterialTheme.colorScheme.primary else Color.Black))
                 }
             )
 
             NavigationBarItem(
                 selected = selectedItemIndex == 2,
                 onClick = {
+                    navController.navigate("settings")
                     selectedItemIndex = 2
                 },
                 colors = NavigationBarItemColors(

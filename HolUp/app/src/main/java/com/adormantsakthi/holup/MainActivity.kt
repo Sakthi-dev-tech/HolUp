@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -36,7 +39,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.adormantsakthi.holup.ui.components.forHomepage.BottomNavBar
+import com.adormantsakthi.holup.ui.screens.Homescreen
+import com.adormantsakthi.holup.ui.screens.Settings
+import com.adormantsakthi.holup.ui.screens.Statistics
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,95 +55,31 @@ class MainActivity : ComponentActivity() {
             HolUpTheme {
                 // Get the System UI Controller
                 val systemUiController = rememberSystemUiController()
+                val navController = rememberNavController()
 
                 // Set the status bar and nav bar colours
                 systemUiController.setSystemBarsColor(MaterialTheme.colorScheme.background)
                 systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
 
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    bottomBar = { BottomNavBar() },
-                    content = {
-                        paddingValues -> Box(
-                            modifier = Modifier.padding(paddingValues)
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.background),
-                            content = {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .verticalScroll(state = ScrollState(0)),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        "Welcome Home,",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        modifier = Modifier
-                                            .padding(vertical = 20.dp, horizontal = 15.dp)
-                                            .fillMaxWidth()
-                                    )
-
-                                    // Pending Tasks for Today Box
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(bottom = 40.dp)
-                                            .clip(RoundedCornerShape(40.dp))
-                                            .background(MaterialTheme.colorScheme.primary)
-                                            .fillMaxWidth(0.8f)
-                                            .aspectRatio(0.67f)
-                                    ) {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxSize(),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ){
-                                            // Row for Tasks header and add button
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Text(
-                                                    "Tasks for today",
-                                                    style = MaterialTheme.typography.labelLarge,
-                                                    modifier = Modifier
-                                                        .padding(10.dp)
-                                                )
-
-                                                Icon(
-                                                    imageVector = Icons.Outlined.AddCircle,
-                                                    contentDescription = "Add Task Icon",
-                                                    tint = Color.Black, // Icon color
-                                                    modifier = Modifier
-                                                        .size(60.dp) // Icon size
-                                                        .padding(10.dp)
-                                                )
-                                            }
-
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .background(Color.Black)
-                                                    .height(2.dp)
-                                            )
-                                        }
-                                    }
-
-                                    // Number of times limited apps accessed Box
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(40.dp))
-                                            .background(MaterialTheme.colorScheme.primary)
-                                            .fillMaxWidth(0.8f)
-                                            .aspectRatio(1.48f)
-                                    )
-
-                                    // Spacer for slight scroll
-                                    Spacer(Modifier.height(20.dp))
-                                }
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), bottom = WindowInsets.statusBars.asPaddingValues().calculateBottomPadding()),
+                    bottomBar = { BottomNavBar(navController = navController) },
+                    content = { paddingValues ->
+                        NavHost(navController, startDestination = "home") {
+                            composable("home") {
+                                Homescreen (onNavigate = {navController.navigate("home")})
                             }
-                        )
+
+                            composable("stats") {
+                                Statistics (onNavigate = {navController.navigate("stats")})
+                            }
+
+                            composable("settings") {
+                                Settings (onNavigate = {navController.navigate("settings")})
+                            }
+                        }
                     }
                 )
             }
