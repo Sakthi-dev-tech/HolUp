@@ -99,7 +99,14 @@ fun Homescreen(onNavigate: () -> Unit) {
                         .fillMaxWidth(0.9f)
                         .fillMaxHeight()
                         .padding()
+                        .verticalScroll(ScrollState(0))
                 ) {
+                    TaskBox("Wash Dishes")
+                    TaskBox("Wash Dishes")
+                    TaskBox("Wash Dishes")
+                    TaskBox("Wash Dishes")
+                    TaskBox("Wash Dishes")
+                    TaskBox("Wash Dishes")
                     TaskBox("Wash Dishes")
                 }
             }
