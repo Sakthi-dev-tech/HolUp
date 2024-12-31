@@ -70,7 +70,9 @@ fun Settings(onNavigate: () -> Unit) {
                     Icon(
                         imageVector = Icons.Outlined.Star,
                         contentDescription = "Star",
-                        modifier = Modifier.size(60.dp),
+                        modifier = Modifier
+                            .size(60.dp)
+                            .padding(start = 20.dp),
                         tint = Color.Black
                     )
 
