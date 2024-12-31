@@ -16,6 +16,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 @Composable
 fun Graph () {
     val modelProducer = remember { CartesianChartModelProducer() }
+
     val dateLabels = listOf("28-Dec-24", "29-Dec-24", "30-Dec-24", "31-Dec-24")
 
     LaunchedEffect(Unit) {
