@@ -13,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.adormantsakthi.holup.ui.theme.HolUpTheme
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,6 +20,7 @@ import com.adormantsakthi.holup.ui.components.BottomNavBar
 import com.adormantsakthi.holup.ui.screens.Homescreen
 import com.adormantsakthi.holup.ui.screens.Settings
 import com.adormantsakthi.holup.ui.screens.Statistics
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable("stats") {
-                                Statistics (onNavigate = {navController.navigate("stats")})
+                                Statistics()
                             }
 
                             composable("settings") {
