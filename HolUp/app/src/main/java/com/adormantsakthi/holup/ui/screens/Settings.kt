@@ -109,5 +109,61 @@ fun Settings(onNavigate: () -> Unit) {
                 SettingsSection("Pop-up Duration", "Medium", {})
                 SettingsSection("Delay Between App Switch", "1 minute", {})
             }
+
+            Spacer(Modifier.height(30.dp))
+
+            Text(
+                text = "Anti-Doomscroll",
+                style = MaterialTheme.typography.titleSmall,
+                color = Color.White,
+                modifier = Modifier
+                    .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                    .align(Alignment.Start)
+            )
+
+            Card (
+                modifier = Modifier
+                    .fillMaxWidth(0.85f),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
+                colors = CardColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = Color.Red,
+                    disabledContentColor = Color.Red,
+                    disabledContainerColor = Color.Red
+                )
+            ) {
+                SettingsSection("Re-Popup", null, {})
+            }
+
+            Spacer(Modifier.height(30.dp))
+
+            Text(
+                text = "Setup",
+                style = MaterialTheme.typography.titleSmall,
+                color = Color.White,
+                modifier = Modifier
+                    .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                    .align(Alignment.Start)
+            )
+
+            Card (
+                modifier = Modifier
+                    .fillMaxWidth(0.85f),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
+                colors = CardColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = Color.Red,
+                    disabledContentColor = Color.Red,
+                    disabledContainerColor = Color.Red
+                )
+            ) {
+                SettingsSection("Add Apps", "Select Apps that you want to limit", {})
+                SettingsSection("Accessibility Service", "On", {})
+                SettingsSection("App Usage Permission", "On", {})
+            }
+
+            Spacer(Modifier.height(150.dp))
         }
     }

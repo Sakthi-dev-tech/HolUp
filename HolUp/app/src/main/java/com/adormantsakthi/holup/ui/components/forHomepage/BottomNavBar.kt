@@ -3,6 +3,7 @@ package com.adormantsakthi.holup.ui.components.forHomepage
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -50,9 +51,9 @@ fun BottomNavBar(navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .padding(start = 30.dp, end = 30.dp, bottom = 10.dp)
+            .padding(start = 50.dp, end = 50.dp, bottom = 10.dp)
             .height(80.dp)
-            .clip(RoundedCornerShape(20.dp)),
+            .clip(RoundedCornerShape(40.dp)),
         containerColor = MaterialTheme.colorScheme.onSurface,
         contentPadding = PaddingValues()
     ){
@@ -102,7 +103,19 @@ fun BottomNavBar(navController: NavController) {
                     selectedIndicatorColor = Color.Transparent
                 ),
                 icon = {
-                    Icon(modifier = Modifier.size(35.dp), imageVector = Icons.Rounded.Home, contentDescription = "Home", tint = (if (selectedItemIndex == 1) MaterialTheme.colorScheme.primary else Color.Black))
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(modifier = Modifier
+                            .size(35.dp),
+                            imageVector = Icons.Rounded.Home,
+                            contentDescription = "Home",
+                            tint = (if (selectedItemIndex == 1) MaterialTheme.colorScheme.primary else Color.Black))
+                    }
                 }
             )
 

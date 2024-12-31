@@ -34,7 +34,7 @@ fun SettingsSection (
                 indication = rememberRipple(color = MaterialTheme.colorScheme.primary)
 
             ) // Make the section clickable
-            .padding(10.dp), // Add spacing for better touch targets
+            .padding(if (content != null) 10.dp else 20.dp), // Add more spacing when there is no subtext
     ) {
         Text(
             text = title,
