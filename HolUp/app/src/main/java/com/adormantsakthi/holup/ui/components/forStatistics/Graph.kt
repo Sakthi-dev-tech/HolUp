@@ -1,32 +1,52 @@
 package com.adormantsakthi.holup.ui.components.forStatistics
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.rememberDefaultCartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.core.cartesian.axis.BaseAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
 
 @Composable
 fun Graph () {
     val modelProducer = remember { CartesianChartModelProducer() }
 
-    val dateLabels = listOf("28-Dec-24", "29-Dec-24", "30-Dec-24", "31-Dec-24")
+    var dates = remember { mutableListOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun") }
+    var timeUsed = remember { mutableListOf(1.5f, 2.0f, 1.25f, 3.0f, 2.5f, 0.75f, 1.0f) }
+
+    val verticalAxis = VerticalAxis.rememberStart(
+        valueFormatter = {context, value, _ ->
+            val hours = value.toInt()
+            val minutes = ((value - hours) * 60).toInt()
+            "$hours h $minutes m"
+        }
+    )
+
+    val horizontalAxis = HorizontalAxis.rememberBottom(
+        valueFormatter = { context, index, _ ->
+            dates.getOrNull(index.toInt()) ?: ""
+        }
+    )
 
     LaunchedEffect(Unit) {
-        modelProducer.runTransaction { lineSeries { series(4, 12, 8, 16) } }
+        modelProducer.runTransaction { lineSeries { series(timeUsed) } }
     }
     CartesianChartHost(
-        rememberCartesianChart(
+        chart = rememberCartesianChart(
             rememberLineCartesianLayer(),
-            startAxis = VerticalAxis.rememberStart(),
-            bottomAxis = HorizontalAxis.rememberBottom(),
+            startAxis = verticalAxis,
+            bottomAxis = horizontalAxis,
         ),
         modelProducer,
     )
