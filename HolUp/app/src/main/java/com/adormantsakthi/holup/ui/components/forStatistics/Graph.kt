@@ -16,7 +16,24 @@ import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 @Composable
 fun Graph () {
     val modelProducer = remember { CartesianChartModelProducer() }
-    val dateLabels = listOf("28-Dec-24", "29-Dec-24", "30-Dec-24", "31-Dec-24")
+
+    var dates = remember { mutableListOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") }
+    var timeUsed = remember { mutableListOf(1.5f, 2.0f, 1.25f, 3.0f, 2.5f, 0.75f, 1.0f) }
+
+    val verticalAxis = VerticalAxis.rememberStart(
+        valueFormatter = {context, value, _ ->
+            val hours = value.toInt()
+            val minutes = ((value - hours) * 60).toInt()
+            "$hours h $minutes m"
+        }
+    )
+
+    val horizontalAxis = HorizontalAxis.rememberBottom(
+        valueFormatter = { context, index, _ ->
+            dates.getOrNull(index.toInt()) ?: ""
+        }
+    )
+
 
     LaunchedEffect(Unit) {
         modelProducer.runTransaction { lineSeries { series(4, 12, 8, 16) } }
