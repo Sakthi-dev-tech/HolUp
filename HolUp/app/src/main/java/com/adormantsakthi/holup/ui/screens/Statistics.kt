@@ -40,7 +40,7 @@ import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import kotlin.math.exp
 
 @Composable
-fun Statistics() {
+fun Statistics(onNavigate: () -> Unit) {
 
     var expanded = remember { mutableStateOf(false) }
     var items = remember { mutableListOf("This week", "Last Week", "This Month") }

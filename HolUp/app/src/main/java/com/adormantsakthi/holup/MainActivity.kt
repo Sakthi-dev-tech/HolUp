@@ -42,17 +42,17 @@ class MainActivity : ComponentActivity() {
                         .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), bottom = WindowInsets.statusBars.asPaddingValues().calculateBottomPadding()),
                     bottomBar = { BottomNavBar(navController = navController) },
                     content = { paddingValues ->
-                        NavHost(navController, startDestination = "home") {
+                        NavHost(navController, modifier = Modifier.fillMaxSize(), startDestination = "home") {
                             composable("home") {
-                                Homescreen (onNavigate = {navController.navigate("home")})
+                                Homescreen(onNavigate = {navController.navigate("home")})
                             }
 
                             composable("stats") {
-                                Statistics()
+                                Statistics(onNavigate = {navController.navigate("stats")})
                             }
 
                             composable("settings") {
-                                Settings (onNavigate = {navController.navigate("settings")})
+                                Settings(onNavigate = {navController.navigate("settings")})
                             }
                         }
                     }
