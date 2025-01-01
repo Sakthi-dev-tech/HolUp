@@ -49,7 +49,7 @@ fun Settings(onNavigate: () -> Unit) {
                 "Settings",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
-                    .padding(vertical = 0.dp, horizontal = 15.dp)
+                    .padding(vertical = 20.dp, horizontal = 15.dp)
                     .fillMaxWidth()
             )
 
@@ -97,7 +97,7 @@ fun Settings(onNavigate: () -> Unit) {
 
             Card (
                 modifier = Modifier
-                    .fillMaxWidth(0.85f),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
                 colors = CardColors(
