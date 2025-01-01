@@ -1,6 +1,7 @@
 package com.adormantsakthi.holup.ui.screens
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +31,13 @@ fun Statistics() {
                 .fillMaxWidth()
         )
 
-        Graph()
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp)
+        ){
+            Graph()
+        }
+
     }
 }

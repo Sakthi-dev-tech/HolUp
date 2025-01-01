@@ -36,13 +36,13 @@ fun Graph () {
 
 
     LaunchedEffect(Unit) {
-        modelProducer.runTransaction { lineSeries { series(4, 12, 8, 16) } }
+        modelProducer.runTransaction { lineSeries { series(timeUsed) } }
     }
     CartesianChartHost(
         rememberCartesianChart(
             rememberLineCartesianLayer(),
-            startAxis = VerticalAxis.rememberStart(),
-            bottomAxis = HorizontalAxis.rememberBottom(),
+            startAxis = verticalAxis,
+            bottomAxis = horizontalAxis,
         ),
         modelProducer,
     )
