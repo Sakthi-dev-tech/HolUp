@@ -46,7 +46,7 @@ fun BottomNavBar(navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .padding(start = 30.dp, end = 30.dp, bottom = 10.dp)
+            .padding(start = 50.dp, end = 50.dp, bottom = 10.dp)
             .height(80.dp)
             .clip(RoundedCornerShape(40.dp)),
         containerColor = MaterialTheme.colorScheme.onSurface,

@@ -97,7 +97,7 @@ fun Settings(onNavigate: () -> Unit) {
 
             Card (
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth(0.85f),
                 shape = RoundedCornerShape(20.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
                 colors = CardColors(
