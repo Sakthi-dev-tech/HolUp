@@ -22,7 +22,7 @@ import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
 fun Graph () {
     val modelProducer = remember { CartesianChartModelProducer() }
 
-    var dates = remember { mutableListOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun") }
+    var dates = remember { mutableListOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") }
     var timeUsed = remember { mutableListOf(1.5f, 2.0f, 1.25f, 3.0f, 2.5f, 0.75f, 1.0f) }
 
     val verticalAxis = VerticalAxis.rememberStart(
