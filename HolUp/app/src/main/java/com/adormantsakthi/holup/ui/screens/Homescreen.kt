@@ -85,7 +85,7 @@ fun Homescreen(onNavigate: () -> Unit) {
                             .padding(10.dp)
                     )
                 }
-                HorizontalDivider(color = Color.Black)
+                HorizontalDivider(color = Color.Black, thickness = 2.dp)
 
                 // to space out between the line and the tasks
                 Spacer(Modifier.height(10.dp))
