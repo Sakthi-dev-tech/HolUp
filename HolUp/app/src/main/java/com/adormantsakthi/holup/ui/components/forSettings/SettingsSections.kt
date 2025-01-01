@@ -32,7 +32,7 @@ fun SettingsSection (
                 enabled = true,
                 onClickLabel = null,
                 role = null,
-                onClick = onClick
+                onClick = {}
             ) // Make the section clickable
             .padding(if (content != null) 10.dp else 20.dp), // Add more spacing when there is no subtext
     ) {

@@ -1,22 +1,17 @@
 package com.adormantsakthi.holup.ui.components.forStatistics
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.marker.rememberDefaultCartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.core.cartesian.axis.BaseAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
 
 @Composable
 fun Graph () {
@@ -39,14 +34,15 @@ fun Graph () {
         }
     )
 
+
     LaunchedEffect(Unit) {
-        modelProducer.runTransaction { lineSeries { series(timeUsed) } }
+        modelProducer.runTransaction { lineSeries { series(4, 12, 8, 16) } }
     }
     CartesianChartHost(
-        chart = rememberCartesianChart(
+        rememberCartesianChart(
             rememberLineCartesianLayer(),
-            startAxis = verticalAxis,
-            bottomAxis = horizontalAxis,
+            startAxis = VerticalAxis.rememberStart(),
+            bottomAxis = HorizontalAxis.rememberBottom(),
         ),
         modelProducer,
     )
