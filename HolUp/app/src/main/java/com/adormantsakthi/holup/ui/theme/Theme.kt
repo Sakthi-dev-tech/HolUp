@@ -21,11 +21,11 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
 
     background = lightBackground,
-    /*surface = Color(0xFFFFFBFE),*/
+    surface = onSurface,
     primary = lightPrimary,
     secondary =lightSecondary,
     tertiary = lightTertiary,
-    /*onBackground = Color(0xFF1C1B1F),*/
+    onBackground = onBackground,
     onSurface = lightNavBar,
 )
 
