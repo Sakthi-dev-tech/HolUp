@@ -2,6 +2,7 @@ package com.adormantsakthi.holup.ui.screens
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -83,6 +84,11 @@ fun Homescreen(onNavigate: () -> Unit) {
                         modifier = Modifier
                             .size(60.dp) // Icon size
                             .padding(10.dp)
+                            .clickable(
+                                onClick = {}
+                            )
+
+
                     )
                 }
                 HorizontalDivider(color = Color.Black)
