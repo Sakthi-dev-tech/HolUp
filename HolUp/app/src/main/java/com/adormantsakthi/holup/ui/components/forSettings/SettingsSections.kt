@@ -32,7 +32,7 @@ fun SettingsSection (
                 enabled = true,
                 onClickLabel = null,
                 role = null,
-                onClick = {}
+                onClick = onClick
             ) // Make the section clickable
             .padding(if (content != null) 10.dp else 20.dp), // Add more spacing when there is no subtext
     ) {
@@ -50,7 +50,9 @@ fun SettingsSection (
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Black,
                 fontSize = 14.sp,
-                modifier = Modifier.padding(start = 10.dp)
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .fillMaxWidth()
             )
         }
     }

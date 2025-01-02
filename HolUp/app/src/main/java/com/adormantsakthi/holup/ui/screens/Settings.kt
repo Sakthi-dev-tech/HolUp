@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,14 +34,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.EditPopUpTextDialog
 import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.UpgradeToProDialog
 import com.adormantsakthi.holup.ui.components.forSettings.SettingsSection
 
 @Composable
 fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>) {
 
+    // For Pop Up Duration
+    val PopUpDuration = listOf("Short", "Medium", "Long")
+    val PopUpDurationIndex = remember { mutableIntStateOf(1) }
+
+    // For Delay Between App Switch
+    val DelayBetweenAppSwitch = listOf("1 minute", "2 minutes", "5 minutes", "10 minutes")
+    val DelayBetweenAppSwitchIndex = remember { mutableIntStateOf(0) }
+
+    // variables that can change
+    var popUpText = remember { mutableStateOf("HolUp! You have these remaining tasks!") }
+
     // show dialog variables
-    var showUpgradeToProDialog = remember { mutableStateOf(false) }
+    val showUpgradeToProDialog = remember { mutableStateOf(false) }
+    val showEditPopUpTextDialog = remember { mutableStateOf(false) }
 
         Column(
             modifier = Modifier
@@ -113,9 +127,16 @@ fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.M
                     disabledContainerColor = Color.Red
                 )
             ) {
-                SettingsSection("Pop-Up Text", "HolUp! You have these remaining tasks!", {})
-                SettingsSection("Pop-up Duration", "Medium", {})
-                SettingsSection("Delay Between App Switch", "1 minute", {})
+                SettingsSection("Interruption Text", popUpText.value, {
+                    showEditPopUpTextDialog.value = true
+                    isAppBarVisible.value = false
+                })
+                SettingsSection("Interruption Duration", PopUpDuration[PopUpDurationIndex.intValue], {
+                    PopUpDurationIndex.intValue = (PopUpDurationIndex.intValue + 1) % 3
+                })
+                SettingsSection("Delay Between App Switch", DelayBetweenAppSwitch[DelayBetweenAppSwitchIndex.intValue], {
+                    DelayBetweenAppSwitchIndex.intValue = (DelayBetweenAppSwitchIndex.intValue + 1) % 4
+                })
             }
 
             Spacer(Modifier.height(30.dp))
@@ -176,4 +197,5 @@ fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.M
         }
 
     UpgradeToProDialog(showUpgradeToProDialog, isAppBarVisible)
+    EditPopUpTextDialog(showEditPopUpTextDialog, isAppBarVisible, popUpText)
     }
