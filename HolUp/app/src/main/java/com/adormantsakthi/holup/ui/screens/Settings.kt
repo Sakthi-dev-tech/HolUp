@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,10 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -37,11 +33,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
+import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.UpgradeToProDialog
 import com.adormantsakthi.holup.ui.components.forSettings.SettingsSection
 
 @Composable
-fun Settings(onNavigate: () -> Unit) {
+fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>) {
+
+    // show dialog variables
+    var showUpgradeToProDialog = remember { mutableStateOf(false) }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -63,7 +63,8 @@ fun Settings(onNavigate: () -> Unit) {
                     .aspectRatio(3/1f)
                     .background(MaterialTheme.colorScheme.tertiary)
                     .clickable {
-
+                        showUpgradeToProDialog.value = true
+                        isAppBarVisible.value = false
                     }
             ) {
                 Row (
@@ -82,7 +83,7 @@ fun Settings(onNavigate: () -> Unit) {
                     )
 
                     Text(
-                        "Upgrade to HolUp! Pro",
+                        "Upgrade to HolUp! Plus",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(end = 10.dp),
                     )
@@ -173,4 +174,6 @@ fun Settings(onNavigate: () -> Unit) {
 
             Spacer(Modifier.height(150.dp))
         }
+
+    UpgradeToProDialog(showUpgradeToProDialog, isAppBarVisible)
     }
