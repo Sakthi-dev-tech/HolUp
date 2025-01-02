@@ -35,7 +35,8 @@ import androidx.compose.ui.unit.dp
 fun EditPopUpTextDialog(
     showDialog: MutableState<Boolean>,
     isAppBarVisible: MutableState<Boolean>,
-    text: MutableState<String>
+    text: MutableState<String>,
+    selectedItemIndex: MutableState<Int>
 ) {
     if (showDialog.value) {
         Box(
@@ -48,6 +49,7 @@ fun EditPopUpTextDialog(
                 ) {
                     showDialog.value = false
                     isAppBarVisible.value = true
+                    selectedItemIndex.value = 2
                 },
             contentAlignment = Alignment.Center
         ) {

@@ -55,7 +55,7 @@ fun MonthlyPlan() {
             }
 
             Text(
-                "A cup of coffee/mth for Upgraded Focus",
+                "Price of a cup of coffee/mth for Upgraded Focus",
                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 25.sp),
                 modifier = Modifier
                     .fillMaxWidth()

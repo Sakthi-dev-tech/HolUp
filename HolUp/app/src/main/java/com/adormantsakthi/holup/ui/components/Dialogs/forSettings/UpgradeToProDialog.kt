@@ -50,6 +50,7 @@ import kotlinx.coroutines.launch
 fun UpgradeToProDialog(
     showDialog: MutableState<Boolean>,
     isAppBarVisible: MutableState<Boolean>,
+    selectedItemIndex: MutableState<Int>
 ) {
 
     // pager state
@@ -73,6 +74,7 @@ fun UpgradeToProDialog(
                 ) {
                     showDialog.value = false
                     isAppBarVisible.value = true
+                    selectedItemIndex.value = 2
                     scope.launch {
                         pagerState.scrollToPage(0)
                     }

@@ -34,12 +34,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.AntiDoomscrollDialogScreen
 import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.EditPopUpTextDialog
 import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.UpgradeToProDialog
 import com.adormantsakthi.holup.ui.components.forSettings.SettingsSection
 
 @Composable
-fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>) {
+fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>, selectedItemIndex: androidx.compose.runtime.MutableState<Int>) {
 
     // For Pop Up Duration
     val PopUpDuration = listOf("Short", "Medium", "Long")
@@ -52,9 +53,10 @@ fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.M
     // variables that can change
     var popUpText = remember { mutableStateOf("HolUp! You have these remaining tasks!") }
 
-    // show dialog variables
+    // show Dialog Screens
     val showUpgradeToProDialog = remember { mutableStateOf(false) }
     val showEditPopUpTextDialog = remember { mutableStateOf(false) }
+    val showAntiDoomscrollDialog = remember { mutableStateOf(false) }
 
         Column(
             modifier = Modifier
@@ -162,7 +164,10 @@ fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.M
                     disabledContainerColor = Color.Red
                 )
             ) {
-                SettingsSection("Re-Popup", null, {})
+                SettingsSection("Re-Popup", null, {
+                    showAntiDoomscrollDialog.value = true
+                    isAppBarVisible.value = false
+                })
             }
 
             Spacer(Modifier.height(30.dp))
@@ -196,6 +201,7 @@ fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.M
             Spacer(Modifier.height(150.dp))
         }
 
-    UpgradeToProDialog(showUpgradeToProDialog, isAppBarVisible)
-    EditPopUpTextDialog(showEditPopUpTextDialog, isAppBarVisible, popUpText)
+    UpgradeToProDialog(showUpgradeToProDialog, isAppBarVisible, selectedItemIndex)
+    EditPopUpTextDialog(showEditPopUpTextDialog, isAppBarVisible, popUpText, selectedItemIndex)
+    AntiDoomscrollDialogScreen(showAntiDoomscrollDialog, isAppBarVisible, selectedItemIndex)
     }

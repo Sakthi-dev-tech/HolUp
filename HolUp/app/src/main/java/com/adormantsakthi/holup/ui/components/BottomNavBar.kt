@@ -22,10 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,9 +34,7 @@ import androidx.navigation.NavController
 import com.adormantsakthi.holup.R
 
 @Composable
-fun BottomNavBar(navController: NavController) {
-    // For state of selected index
-    var selectedItemIndex by remember { mutableIntStateOf(1) }
+fun BottomNavBar(navController: NavController, selectedItemIndex: MutableState<Int>) {
 
     // Bottom Nav Bar
     BottomAppBar (
@@ -58,10 +53,10 @@ fun BottomNavBar(navController: NavController) {
             horizontalArrangement = Arrangement.Absolute.Center
         ) {
             NavigationBarItem(
-                selected = selectedItemIndex == 0,
+                selected = selectedItemIndex.value == 0,
                 onClick = {
                     navController.navigate("stats")
-                    selectedItemIndex = 0
+                    selectedItemIndex.value = 0
                 },
                 colors = NavigationBarItemColors(
                     selectedIconColor = Color.Transparent,
@@ -77,16 +72,16 @@ fun BottomNavBar(navController: NavController) {
                         modifier = Modifier.size(30.dp),
                         painter = painterResource(R.drawable.chart_line_solid),
                         contentDescription = "Chart Line",
-                        colorFilter = ColorFilter.tint(if (selectedItemIndex == 0) MaterialTheme.colorScheme.primary else Color.Black)
+                        colorFilter = ColorFilter.tint(if (selectedItemIndex.value == 0) MaterialTheme.colorScheme.primary else Color.Black)
                     )
                 }
             )
 
             NavigationBarItem(
-                selected = selectedItemIndex == 1,
+                selected = selectedItemIndex.value == 1,
                 onClick = {
                     navController.navigate("home")
-                    selectedItemIndex = 1
+                    selectedItemIndex.value = 1
                 },
                 colors = NavigationBarItemColors(
                     selectedIconColor = Color.Transparent,
@@ -109,16 +104,16 @@ fun BottomNavBar(navController: NavController) {
                             .size(35.dp),
                             imageVector = Icons.Rounded.Home,
                             contentDescription = "Home",
-                            tint = (if (selectedItemIndex == 1) MaterialTheme.colorScheme.primary else Color.Black))
+                            tint = (if (selectedItemIndex.value == 1) MaterialTheme.colorScheme.primary else Color.Black))
                     }
                 }
             )
 
             NavigationBarItem(
-                selected = selectedItemIndex == 2,
+                selected = selectedItemIndex.value == 2,
                 onClick = {
                     navController.navigate("settings")
-                    selectedItemIndex = 2
+                    selectedItemIndex.value = 2
                 },
                 colors = NavigationBarItemColors(
                     selectedIconColor = Color.Transparent,
@@ -130,7 +125,7 @@ fun BottomNavBar(navController: NavController) {
                     selectedIndicatorColor = Color.Transparent
                 ),
                 icon = {
-                    Icon(modifier = Modifier.size(30.dp), imageVector = Icons.Rounded.Settings, contentDescription = "Settings", tint = (if (selectedItemIndex == 2) MaterialTheme.colorScheme.primary else Color.Black))
+                    Icon(modifier = Modifier.size(30.dp), imageVector = Icons.Rounded.Settings, contentDescription = "Settings", tint = (if (selectedItemIndex.value == 2) MaterialTheme.colorScheme.primary else Color.Black))
                 }
             )
         }

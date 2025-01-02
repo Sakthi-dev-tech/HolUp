@@ -55,7 +55,7 @@ fun YearlyPlan() {
             }
 
             Text(
-                "A meal/yr for \nUpgraded Focus",
+                "Price of a meal/yr for \nUpgraded Focus",
                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 25.sp),
                 modifier = Modifier
                     .fillMaxWidth()

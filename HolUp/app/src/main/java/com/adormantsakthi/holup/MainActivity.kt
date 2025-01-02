@@ -14,8 +14,11 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.Dialog
@@ -38,6 +41,7 @@ class MainActivity : ComponentActivity() {
                 // Get the System UI Controller
                 val systemUiController = rememberSystemUiController()
                 val navController = rememberNavController()
+                val selectedItemIndex = remember { mutableIntStateOf(1) }
 
                 // Set the status bar and nav bar colours
                 systemUiController.setSystemBarsColor(MaterialTheme.colorScheme.background)
@@ -52,7 +56,7 @@ class MainActivity : ComponentActivity() {
                         .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), bottom = WindowInsets.statusBars.asPaddingValues().calculateBottomPadding()),
                     bottomBar = {
                         if (isAppBarVisible.value) {
-                            BottomNavBar(navController = navController)
+                            BottomNavBar(navController = navController, selectedItemIndex = selectedItemIndex)
                         }
                                 },
                     content = { paddingValues ->
@@ -66,7 +70,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable("settings") {
-                                Settings(onNavigate = {navController.navigate("settings")}, isAppBarVisible)
+                                Settings(onNavigate = {navController.navigate("settings")}, isAppBarVisible, selectedItemIndex)
                             }
                         }
                     }
