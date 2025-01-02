@@ -57,7 +57,7 @@ fun ComparisonChart() {
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val features = listOf("Limited apps", "Anti-Doomscroll", "Edit Pop-Up", "Re-Interruption", "Statistics")
+                val features = listOf("Limit apps", "Anti-Doomscroll", "Edit Pop-Up", "Re-Interruption", "Statistics")
                 Text(
                     "Features",
                     style = MaterialTheme.typography.labelMedium.copy(
@@ -93,7 +93,7 @@ fun ComparisonChart() {
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    val free = listOf("2", false, false, false, false)
+                    val free = listOf("2 Apps", false, false, false, false)
                     Text(
                         "Free",
                         style = MaterialTheme.typography.labelMedium.copy(
