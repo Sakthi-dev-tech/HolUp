@@ -57,7 +57,7 @@ fun ComparisonChart() {
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val features = listOf("Limited apps", "Re-Popups", "Edit Pop-Up", "Re-Interruption", "Statistics")
+                val features = listOf("Limited apps", "Anti-Doomscroll", "Edit Pop-Up", "Re-Interruption", "Statistics")
                 Text(
                     "Features",
                     style = MaterialTheme.typography.labelMedium.copy(

@@ -48,14 +48,14 @@ fun MonthlyPlan() {
         ) {
             Box(
                 modifier = Modifier
-                    .size(300.dp),
+                    .size(200.dp),
                 contentAlignment = Alignment.Center
             ) {
                 CoffeeLottieAnimation()
             }
 
             Text(
-                "A cup of Coffee/month for Upgraded Focus",
+                "A cup of coffee/mth for Upgraded Focus",
                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 25.sp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -66,7 +66,7 @@ fun MonthlyPlan() {
             ElevatedButton(
                 modifier = Modifier
                     .width(150.dp)
-                    .height(65.dp),
+                    .height(55.dp),
                 onClick = {},
                 colors = ButtonColors(
                     containerColor = Color.Red,

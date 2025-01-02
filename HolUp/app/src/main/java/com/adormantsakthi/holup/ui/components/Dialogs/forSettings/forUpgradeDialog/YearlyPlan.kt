@@ -48,14 +48,14 @@ fun YearlyPlan() {
         ) {
             Box(
                 modifier = Modifier
-                    .size(300.dp),
+                    .size(200.dp),
                 contentAlignment = Alignment.Center
             ) {
                 LottieAnimation()
             }
 
             Text(
-                "Price of a meal/year for Upgraded Focus",
+                "A meal/yr for \nUpgraded Focus",
                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 25.sp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -66,7 +66,7 @@ fun YearlyPlan() {
             ElevatedButton(
                 modifier = Modifier
                     .width(150.dp)
-                    .height(65.dp),
+                    .height(55.dp),
                 onClick = {},
                 colors = ButtonColors(
                     containerColor = Color.Red,
