@@ -62,7 +62,7 @@ fun SelectAppsForAntiDoomscroll () {
 
             Column (
                 modifier = Modifier
-                    .padding(20.dp),
+                    .padding(end = 20.dp),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Center
             ) {

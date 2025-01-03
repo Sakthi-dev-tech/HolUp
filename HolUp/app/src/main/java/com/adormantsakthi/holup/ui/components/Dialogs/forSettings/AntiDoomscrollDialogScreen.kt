@@ -71,7 +71,7 @@ fun AntiDoomscrollDialogScreen (
                 )
 
                 Text(
-                    "Fight The Doomscroll",
+                    "Fight The Doom Scroll",
                     style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary)
                 )
 
@@ -99,7 +99,7 @@ fun AntiDoomscrollDialogScreen (
                             AntiDoomscrollAnimation()
                         }
                         Text(
-                            "Interrupts your doomscrolling session and reminds you about your tasks you are supposed to do for the day",
+                            "Interrupts your doom scrolling session and reminds you about tasks you are supposed to do for the day",
                             style = MaterialTheme.typography.labelSmall.copy(color = Color.White, textAlign = TextAlign.Center),
                             modifier = Modifier
                                 .padding(15.dp)
