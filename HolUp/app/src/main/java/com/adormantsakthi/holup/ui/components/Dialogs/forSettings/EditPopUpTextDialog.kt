@@ -55,7 +55,7 @@ fun EditPopUpTextDialog(
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.85f)
+                    .fillMaxWidth(0.80f)
                     .aspectRatio(1/0.8f)
                     .clip(RoundedCornerShape(20.dp))
                     .background(MaterialTheme.colorScheme.primary)
@@ -85,7 +85,7 @@ fun EditPopUpTextDialog(
                         placeholder = { "Your interruption message" },
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
-                            .padding(bottom = 20.dp)
+                            .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
                             .clip(RoundedCornerShape(10.dp)),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.White,
