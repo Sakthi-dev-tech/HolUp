@@ -1,23 +1,36 @@
 package com.adormantsakthi.holup.ui.components.forHomepage
 
+import android.annotation.SuppressLint
+import android.graphics.Paint.Align
+import androidx.compose.animation.Animatable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,11 +43,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
+@SuppressLint("UseOfNonLambdaOffsetOverload")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskBox(
@@ -43,28 +61,116 @@ fun TaskBox(
     val checkedState = remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
 
+    // for swipe animation
+    val swipeOffset = remember { androidx.compose.animation.core.Animatable(0f) }
+    val scope = rememberCoroutineScope()
+
     // Task outer box
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
             .fillMaxWidth()
             .aspectRatio(3/0.8f)
-            .background(Color.White)
-            .combinedClickable(
-                onClick = { },
-                onLongClick = {
-                    // to edit/delete the current task
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    println("Long Press Detected!")
-                }
-            )
+            .clickable {  }
     ) {
+        val maxButtonWidth = 80.dp
+        val minButtonWidth = 50.dp
+        val dynamicWidth = with(LocalDensity.current) {
+            (swipeOffset.value.coerceIn(-200f, 0f).absoluteValue / 200f).let {
+                progress -> (minButtonWidth + progress * (maxButtonWidth - minButtonWidth)).value.dp
+            }
+        }
+        // Background options: Edit and Delete
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(3/0.8f),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(dynamicWidth)
+                    .background(Color(30, 99, 11))
+                    .clickable {  },
+                contentAlignment = Alignment.Center
+            ) {
+                Column (
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    Arrangement.Center,
+                    Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        tint = Color.White,
+                        contentDescription = "Edit"
+                    )
+                    Spacer(Modifier.height(5.dp))
+                    Text(
+                        "Edit",
+                        style = MaterialTheme.typography.labelSmall.copy(Color.White)
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(dynamicWidth)
+                    .background(Color(207, 6, 27))
+                    .clickable {  },
+                contentAlignment = Alignment.Center
+            ) {
+                Column (
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        tint = Color.White,
+                        contentDescription = "Delete"
+                    )
+                    Spacer(Modifier.height(5.dp))
+                    Text(
+                        "Delete",
+                        style = MaterialTheme.typography.labelSmall.copy(Color.White)
+                    )
+                }
+            }
+        }
+
+        // Main content
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
+                .offset(x = swipeOffset.value.dp)
+                .background(Color.White)
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures(
+                        onDragEnd = {
+                            scope.launch {
+                                // Snap content to fully reveal options or close
+                                if (swipeOffset.value < -100) {
+                                    swipeOffset.animateTo(-140f)
+                                } else {
+                                    swipeOffset.animateTo(0f)
+                                }
+                            }
+                        },
 
+                        onHorizontalDrag = {_, dragAmount ->
+                            scope.launch {
+                                val newOffset = (swipeOffset.value + dragAmount).coerceIn(-140f, 0f)
+                                swipeOffset.snapTo(newOffset)
+                            }
+                        }
+                    )
+                }
         ) {
             Checkbox(
                 checked = checkedState.value,

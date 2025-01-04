@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                     content = { paddingValues ->
                         NavHost(navController, modifier = Modifier.fillMaxSize(), startDestination = "home") {
                             composable("home") {
-                                Homescreen(onNavigate = {navController.navigate("home")})
+                                Homescreen(onNavigate = {navController.navigate("home")}, isAppBarVisible)
                             }
 
                             composable("stats") {
