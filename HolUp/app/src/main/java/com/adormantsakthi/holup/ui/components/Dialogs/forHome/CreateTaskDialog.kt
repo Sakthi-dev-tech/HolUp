@@ -80,7 +80,7 @@ fun CreateTaskDialog (
                     TextField(
                         value = taskName.value,
                         onValueChange = { newText: String -> taskName.value = newText},
-                        placeholder = { "Your task" },
+                        placeholder = { "Your Task" },
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)

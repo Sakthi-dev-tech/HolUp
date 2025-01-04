@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
@@ -89,29 +92,35 @@ fun Statistics(onNavigate: () -> Unit) {
                     horizontalArrangement = Arrangement.End
                 ){
                     Button(
-                        onClick = {expanded.value = true},
+                        onClick = { expanded.value = true },
                     ) {
                         Text(
                             selectedOption.value,
                             style = MaterialTheme.typography.labelMedium
                         )
                     }
+
+                    // Box for positioning the DropdownMenu
                     Box(
-                        contentAlignment = Alignment.BottomEnd,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(10.dp),
+                        contentAlignment = Alignment.BottomEnd
                     ) {
                         DropdownMenu(
                             expanded = expanded.value,
                             onDismissRequest = { expanded.value = false },
                             modifier = Modifier
-
-                                .background(Color.LightGray)
+                                .background(Color.DarkGray)
                         ) {
-                            items.forEach{ item ->
+                            items.forEach { item ->
                                 DropdownMenuItem(
-                                    text = { Text(
-                                        item,
-                                        style = MaterialTheme.typography.labelSmall
-                                    ) },
+                                    text = {
+                                        Text(
+                                            item,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                    },
                                     onClick = {
                                         selectedOption.value = item
                                         expanded.value = false

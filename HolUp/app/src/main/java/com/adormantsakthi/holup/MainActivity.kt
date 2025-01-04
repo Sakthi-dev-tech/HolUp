@@ -1,9 +1,18 @@
 package com.adormantsakthi.holup
 
+import android.accessibilityservice.AccessibilityService
+import android.app.Activity
+import android.app.AppOpsManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.Context.*
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -21,7 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat.getSystemService
 import com.adormantsakthi.holup.ui.theme.HolUpTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
