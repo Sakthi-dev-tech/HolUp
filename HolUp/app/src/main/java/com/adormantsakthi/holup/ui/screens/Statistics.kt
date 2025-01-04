@@ -16,10 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -33,11 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.adormantsakthi.holup.ui.components.forStatistics.Graph
 import com.adormantsakthi.holup.ui.components.forStatistics.TimeUsageForApp
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
-import kotlin.math.exp
 
 @Composable
 fun Statistics(onNavigate: () -> Unit) {
@@ -45,6 +48,16 @@ fun Statistics(onNavigate: () -> Unit) {
     var expanded = remember { mutableStateOf(false) }
     var items = remember { mutableListOf("This week", "Last Week", "This Month") }
     var selectedOption = remember { mutableStateOf(items.firstOrNull() ?: "None") }
+
+    // Example time spent (e.g., 8 hours 45 minutes out of 24 hours)
+    val dailyAverageTimeSpentMinutes = 525 // minutes (8 hours 45 minutes)
+    val totalMinutesInDay = 1440 // Total minutes in a day (24 hours)
+
+    // Convert time spent into a percentage for progress
+    val dailyAverageTimeSpentPercentage = dailyAverageTimeSpentMinutes / totalMinutesInDay.toFloat()
+
+    // Dummy value for Task Completion Rate
+    val taskCompletionRate = 0.85f // Represents 85% completion
 
     Column(
         modifier = Modifier
@@ -84,7 +97,7 @@ fun Statistics(onNavigate: () -> Unit) {
                         )
                     }
                     Box(
-                        contentAlignment = Alignment.BottomEnd
+                        contentAlignment = Alignment.BottomEnd,
                     ) {
                         DropdownMenu(
                             expanded = expanded.value,
@@ -107,76 +120,31 @@ fun Statistics(onNavigate: () -> Unit) {
                             }
                         }
                     }
-
-
                 }
             }
         }
 
-        // box for the Daily Average
-        Box(
+        Row(
             modifier = Modifier
-                .padding(top = 30.dp)
-                .fillMaxWidth(0.85f)
-                .aspectRatio(2/1f)
-                .clip(RoundedCornerShape(30.dp))
-                .background(MaterialTheme.colorScheme.primary)
+                .fillMaxWidth()
+                .padding(top = 30.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(
-                    "Daily Average",
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth()
-                )
+            // Daily Average Time Spent KPI
+            KPIStatWithTime(
+                label = "Avg Time Spent\nPer Day",
+                progress = dailyAverageTimeSpentPercentage,
+                timeSpentMinutes = dailyAverageTimeSpentMinutes,
+                color = Color.Red,
+            )
 
-                HorizontalDivider(thickness = 2.dp, color = Color.Black)
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "2hr 32mins",
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
-            }
-        }
-
-        // box for the task completion rate
-        Box(
-            modifier = Modifier
-                .padding(top = 30.dp)
-                .fillMaxWidth(0.85f)
-                .aspectRatio(2/1f)
-                .clip(RoundedCornerShape(30.dp))
-                .background(MaterialTheme.colorScheme.primary)
-        ) {
-            Column {
-                Text(
-                    "Task Completion Rate",
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth()
-                )
-
-                HorizontalDivider(thickness = 2.dp, color = Color.Black)
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "69%",
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
-            }
+            // Task Completion Rate KPI
+            KPIStat(
+                label = "Avg Task\nCompletion Rate",
+                progress = taskCompletionRate,
+                color = Color.Green
+            )
         }
 
         // box for the time usage for the day
@@ -216,5 +184,75 @@ fun Statistics(onNavigate: () -> Unit) {
         }
 
         Spacer(Modifier.height(125.dp))
+    }
+}
+
+@Composable
+fun KPIStatWithTime(
+    label: String,
+    progress: Float,
+    timeSpentMinutes: Int,
+    color: Color
+) {
+    val hours = timeSpentMinutes / 60
+    val minutes = timeSpentMinutes % 60
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Circular Progress Indicator with Text in the center
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.size(100.dp)
+        ) {
+            CircularProgressIndicator(
+                progress = progress,
+                modifier = Modifier
+                    .fillMaxSize(),
+                strokeWidth = 10.dp,
+                color = color,
+                trackColor = Color.LightGray
+            )
+            // Text in the center of the progress indicator
+            Text(
+                text = String.format("%02d h:%02d m", hours, minutes),
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(text = label, textAlign = TextAlign.Center)
+    }
+}
+
+@Composable
+fun KPIStat(
+    label: String,
+    progress: Float,
+    color: Color
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Circular Progress Indicator with Text in the center
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.size(100.dp)
+        ) {
+            CircularProgressIndicator(
+                progress = progress,
+                modifier = Modifier
+                    .fillMaxSize(),
+                strokeWidth = 10.dp,
+                color = color,
+                trackColor = Color.LightGray
+            )
+            // Text in the center of the progress indicator
+            Text(
+                text = String.format("%.0f%%", progress * 100),
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = label, textAlign = TextAlign.Center)
     }
 }

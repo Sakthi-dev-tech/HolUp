@@ -35,7 +35,7 @@ val Typography = Typography(
     labelSmall = TextStyle(
         fontFamily = Fresca,
         fontSize = 18.sp,
-        color = Color.Black
+        color = Color.White
     ),
 
     labelMedium = TextStyle(

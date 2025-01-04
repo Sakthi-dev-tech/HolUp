@@ -17,7 +17,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 fun Graph () {
     val modelProducer = remember { CartesianChartModelProducer() }
 
-    var dates = remember { mutableListOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") }
+    var dates = remember { mutableListOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun") }
     var timeUsed = remember { mutableListOf(1.5f, 2.0f, 1.25f, 3.0f, 2.5f, 0.75f, 1.0f) }
 
     val verticalAxis = VerticalAxis.rememberStart(
