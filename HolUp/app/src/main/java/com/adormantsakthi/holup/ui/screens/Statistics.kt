@@ -215,6 +215,6 @@ fun Statistics(onNavigate: () -> Unit) {
             }
         }
 
-        Spacer(Modifier.height(150.dp))
+        Spacer(Modifier.height(125.dp))
     }
 }

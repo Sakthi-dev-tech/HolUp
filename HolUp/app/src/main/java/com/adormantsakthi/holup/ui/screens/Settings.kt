@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.AntiDoomscrollDialogScreen
 import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.EditPopUpTextDialog
+import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.SetupAppsToLimitDialog
 import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.UpgradeToProDialog
 import com.adormantsakthi.holup.ui.components.forSettings.SettingsSection
 
@@ -57,6 +58,7 @@ fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.M
     val showUpgradeToProDialog = remember { mutableStateOf(false) }
     val showEditPopUpTextDialog = remember { mutableStateOf(false) }
     val showAntiDoomscrollDialog = remember { mutableStateOf(false) }
+    val showSetUpAppsToLimitDialog = remember { mutableStateOf(false) }
 
         Column(
             modifier = Modifier
@@ -193,7 +195,10 @@ fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.M
                     disabledContainerColor = Color.Red
                 )
             ) {
-                SettingsSection("Add Apps", "Select Apps that you want to limit", {})
+                SettingsSection("Add Apps", "Select Apps that you want to limit", {
+                    showSetUpAppsToLimitDialog.value = true
+                    isAppBarVisible.value = false
+                })
                 SettingsSection("Accessibility Service", "On", {})
                 SettingsSection("App Usage Permission", "On", {})
             }
@@ -204,4 +209,5 @@ fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.M
     UpgradeToProDialog(showUpgradeToProDialog, isAppBarVisible, selectedItemIndex)
     EditPopUpTextDialog(showEditPopUpTextDialog, isAppBarVisible, popUpText, selectedItemIndex)
     AntiDoomscrollDialogScreen(showAntiDoomscrollDialog, isAppBarVisible, selectedItemIndex)
+    SetupAppsToLimitDialog(showSetUpAppsToLimitDialog, isAppBarVisible, selectedItemIndex)
     }

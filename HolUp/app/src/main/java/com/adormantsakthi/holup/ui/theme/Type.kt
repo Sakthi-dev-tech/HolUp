@@ -13,14 +13,14 @@ import androidx.compose.ui.unit.sp
 val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = Italiana,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Bold,
         fontSize = 40.sp,
         color = Color.White,
     ),
 
     titleMedium = TextStyle(
         fontFamily = Italiana,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 25.sp,
         color = Color.Black,
     ),

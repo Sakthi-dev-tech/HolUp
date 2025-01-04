@@ -1,4 +1,4 @@
-package com.adormantsakthi.holup.ui.components.Dialogs.forSettings.forAntiDoomscrollDialog
+package com.adormantsakthi.holup.ui.components.Dialogs.forSettings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SelectAppsForAntiDoomscroll () {
+fun SelectAppsComponentForDialogs () {
 
     var checked = remember { mutableStateOf(false) }
     Box(

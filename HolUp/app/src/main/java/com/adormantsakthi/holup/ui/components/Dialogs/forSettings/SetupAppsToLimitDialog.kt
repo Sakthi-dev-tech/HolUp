@@ -16,27 +16,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
-fun AntiDoomscrollDialogScreen (
+fun SetupAppsToLimitDialog (
     showDialog: MutableState<Boolean>,
     isAppBarVisible: MutableState<Boolean>,
     selectedItemIndex: MutableState<Int>
@@ -69,41 +62,9 @@ fun AntiDoomscrollDialogScreen (
                 )
 
                 Text(
-                    "Fight The Doom Scroll",
+                    "Apps To Limit",
                     style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary)
                 )
-
-                Box(
-                    modifier = Modifier
-                        .padding(top = 30.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .fillMaxWidth(0.95f)
-                        .aspectRatio(1/0.85f)
-                        .background(Color.DarkGray),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize(0.7f)
-                                .padding(10.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            AntiDoomscrollAnimation()
-                        }
-                        Text(
-                            "Interrupts your doom scrolling session and reminds you about tasks you are supposed to do for the day",
-                            style = MaterialTheme.typography.labelSmall.copy(color = Color.White, textAlign = TextAlign.Center),
-                            modifier = Modifier
-                                .padding(15.dp)
-                        )
-                    }
-                }
 
                 Box(
                     modifier = Modifier
@@ -143,21 +104,5 @@ fun AntiDoomscrollDialogScreen (
                 }
             }
         }
-    }
-}
-
-@Composable
-fun AntiDoomscrollAnimation() {
-    val composition by rememberLottieComposition(spec = LottieCompositionSpec.Url("https://cdn.lottielab.com/l/AHzMq4yCgiEdpj.json"))
-
-    if (composition != null) {
-        LottieAnimation(composition = composition, iterations = LottieConstants.IterateForever)
-    } else {
-        CircularProgressIndicator(
-            color = Color.Gray, // Custom color
-            modifier = Modifier
-                .size(80.dp), // Custom size
-            strokeWidth = 6.dp // Custom stroke width
-        )
     }
 }
