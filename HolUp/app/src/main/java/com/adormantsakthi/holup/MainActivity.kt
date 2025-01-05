@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
                 val isAppBarVisible = remember { mutableStateOf(true) }
 
                 // App Permissions
-                
+
                 // App Usage Stats Permission
                 fun hasUsageStatsPermission(): Boolean {
                     val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
@@ -104,7 +104,8 @@ class MainActivity : ComponentActivity() {
                     content = { paddingValues ->
                         NavHost(navController, modifier = Modifier.fillMaxSize(), startDestination = "home") {
                             composable("home") {
-                                Homescreen(onNavigate = {navController.navigate("home")}, isAppBarVisible)
+                                Homescreen(
+                                    onNavigate = {navController.navigate("home")}, isAppBarVisible)
                             }
 
                             composable("stats") {

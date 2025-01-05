@@ -22,7 +22,7 @@ val Typography = Typography(
         fontFamily = Italiana,
         fontWeight = FontWeight.SemiBold,
         fontSize = 25.sp,
-        color = Color.Black,
+        color = Color.White,
     ),
 
     titleSmall = TextStyle(

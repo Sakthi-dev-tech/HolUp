@@ -15,13 +15,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircle
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.adormantsakthi.holup.ui.components.Dialogs.forHome.CreateTaskDialog
 import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
 import com.adormantsakthi.holup.ui.theme.Karma
@@ -44,6 +41,9 @@ import com.adormantsakthi.holup.ui.theme.Karma
 fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>) {
 
     val showCreateTaskDialog = remember { mutableStateOf(false) }
+    val showOnboardingScreens = remember { mutableStateOf(true) }
+
+    isAppBarVisible.value = false
 
     Column(
         modifier = Modifier
@@ -155,4 +155,5 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
     }
 
     CreateTaskDialog(showCreateTaskDialog, isAppBarVisible)
+    OnboardingScreens(showOnboardingScreens, isAppBarVisible, remember { mutableStateOf(false) })
 }

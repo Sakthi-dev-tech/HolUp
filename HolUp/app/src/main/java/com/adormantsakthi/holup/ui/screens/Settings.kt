@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -113,7 +114,7 @@ fun Settings(onNavigate: () -> Unit,
 
                     Text(
                         "Upgrade to HolUp! Plus",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleMedium.copy(Color.Black),
                         modifier = Modifier.padding(end = 10.dp),
                     )
                 }
@@ -121,14 +122,28 @@ fun Settings(onNavigate: () -> Unit,
 
             Spacer(Modifier.height(30.dp))
 
-            Text(
-                text = "Edit HolUp! Popup",
-                style = MaterialTheme.typography.titleSmall,
-                color = Color.White,
+            Row (
                 modifier = Modifier
                     .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
-                    .align(Alignment.Start)
-            )
+                    .align(Alignment.Start),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Star,
+                    tint = Color.White,
+                    contentDescription = "Premium Features",
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .size(30.dp)
+
+                )
+
+                Text(
+                    text = "Edit HolUp! Popup",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = Color.White,
+                )
+            }
 
             Card (
                 modifier = Modifier
@@ -156,14 +171,28 @@ fun Settings(onNavigate: () -> Unit,
 
             Spacer(Modifier.height(30.dp))
 
-            Text(
-                text = "Anti-Doomscroll",
-                style = MaterialTheme.typography.titleSmall,
-                color = Color.White,
+            Row (
                 modifier = Modifier
                     .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
-                    .align(Alignment.Start)
-            )
+                    .align(Alignment.Start),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Star,
+                    tint = Color.White,
+                    contentDescription = "Premium Features",
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .size(30.dp)
+
+                )
+
+                Text(
+                    text = "Anti-Doomscroll",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = Color.White,
+                )
+            }
 
             Card (
                 modifier = Modifier
