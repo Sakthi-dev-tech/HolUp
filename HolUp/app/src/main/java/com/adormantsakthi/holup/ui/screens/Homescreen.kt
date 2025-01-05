@@ -1,5 +1,6 @@
 package com.adormantsakthi.holup.ui.screens
 
+import OnboardingPrefs
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.ui.components.Dialogs.forHome.CreateTaskDialog
 import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
@@ -41,9 +43,15 @@ import com.adormantsakthi.holup.ui.theme.Karma
 fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>) {
 
     val showCreateTaskDialog = remember { mutableStateOf(false) }
-    val showOnboardingScreens = remember { mutableStateOf(true) }
 
-    isAppBarVisible.value = false
+    val showOnboardingScreensAgain = !OnboardingPrefs.isOnboardingCompleted(context = LocalContext.current)
+    val showOnboardingScreens = remember { mutableStateOf(true) } // this is so that we can immediately close the onboarding screens once skip pressed
+
+    if (showOnboardingScreens.value && showOnboardingScreensAgain) {
+        isAppBarVisible.value = false
+    } else {
+        isAppBarVisible.value = true
+    }
 
     Column(
         modifier = Modifier
@@ -155,5 +163,5 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
     }
 
     CreateTaskDialog(showCreateTaskDialog, isAppBarVisible)
-    OnboardingScreens(showOnboardingScreens, isAppBarVisible, remember { mutableStateOf(false) })
+    OnboardingScreens(showOnboardingScreens, showOnboardingScreensAgain, isAppBarVisible, remember { mutableStateOf(false) })
 }

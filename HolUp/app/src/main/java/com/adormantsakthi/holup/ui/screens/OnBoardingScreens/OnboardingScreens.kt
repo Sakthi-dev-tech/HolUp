@@ -1,5 +1,6 @@
 package com.adormantsakthi.holup.ui.screens
 
+import OnboardingPrefs
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.ui.screens.OnBoardingScreens.OnboardingScreen1
 import com.adormantsakthi.holup.ui.screens.OnBoardingScreens.OnboardingScreen2
@@ -28,13 +30,15 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 @Composable
 fun OnboardingScreens(
     showOnboardingScreens: MutableState<Boolean>,
+    showOnboardingScreensAgain: Boolean,
     isAppBarVisible: MutableState<Boolean>,
     showSkipButton: MutableState<Boolean>,
 ) {
     val pagerState = rememberPagerState(0, pageCount = { 2 }, initialPageOffsetFraction = 0f)
     val scrollScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    if (showOnboardingScreens.value) {
+    if (showOnboardingScreens.value && showOnboardingScreensAgain) {
         Column (
             modifier = Modifier
                 .fillMaxSize()
@@ -57,6 +61,7 @@ fun OnboardingScreens(
                 Button(
                     onClick = {
                         isAppBarVisible.value = true
+                        OnboardingPrefs.setOnboardingCompleted(context = context)
                         showOnboardingScreens.value = false
                     },
                     modifier = Modifier
