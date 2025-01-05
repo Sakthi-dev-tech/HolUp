@@ -23,6 +23,7 @@ class MyAccessibilityService : AccessibilityService() {
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val packageName = event.packageName.toString()
             Log.d("MyAccessibilityService", "Current app in foreground: $packageName")
+
         }
     }
 

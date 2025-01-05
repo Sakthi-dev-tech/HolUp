@@ -7,8 +7,10 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Context.*
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -61,6 +63,35 @@ class MainActivity : ComponentActivity() {
                 // control visibility of bottom app bar
                 val isAppBarVisible = remember { mutableStateOf(true) }
 
+                // App Permissions
+                
+                // App Usage Stats Permission
+                fun hasUsageStatsPermission(): Boolean {
+                    val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+                    val mode = appOps.checkOpNoThrow(
+                        AppOpsManager.OPSTR_GET_USAGE_STATS,
+                        android.os.Process.myUid(),
+                        packageName
+                    )
+                    return mode == AppOpsManager.MODE_ALLOWED
+                }
+
+                // Accessibility Services
+                fun isAccessibilityServiceEnabled(context: Context, service: Class<out AccessibilityService>): Boolean {
+                    val componentName = ComponentName(context, service)
+                    val enabledServices =
+                        Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+                    val accessibilityEnabled =
+                        Settings.Secure.getInt(context.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0)
+
+                    return accessibilityEnabled == 1 && enabledServices?.contains(componentName.flattenToString()) == true
+                }
+                val isAccessibilityServiceOn = isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)
+
+                // Appear over other apps
+                val canDrawOverlays = Settings.canDrawOverlays(this)
+
+
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
@@ -81,7 +112,14 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable("settings") {
-                                Settings(onNavigate = {navController.navigate("settings")}, isAppBarVisible, selectedItemIndex)
+                                Settings(onNavigate = {navController.navigate("settings")},
+                                    isAppBarVisible,
+                                    selectedItemIndex,
+                                    isAccessibilityServiceOn,
+                                    hasUsageStatsPermission(),
+                                    LocalContext.current,
+                                    canDrawOverlays
+                                )
                             }
                         }
                     }

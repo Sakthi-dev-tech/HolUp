@@ -1,5 +1,7 @@
 package com.adormantsakthi.holup.ui.screens
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,7 +35,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.AntiDoomscrollDialogScreen
 import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.EditPopUpTextDialog
 import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.SetupAppsToLimitDialog
@@ -41,7 +45,14 @@ import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.UpgradeToProDi
 import com.adormantsakthi.holup.ui.components.forSettings.SettingsSection
 
 @Composable
-fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>, selectedItemIndex: androidx.compose.runtime.MutableState<Int>) {
+fun Settings(onNavigate: () -> Unit,
+             isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>,
+             selectedItemIndex: androidx.compose.runtime.MutableState<Int>,
+             isAccessibilityServiceEnabled: Boolean,
+             hasUsageStatsPermission: Boolean,
+             context: Context,
+             canDrawOverlays: Boolean
+) {
 
     // For Pop Up Duration
     val PopUpDuration = listOf("Short", "Medium", "Long")
@@ -199,8 +210,31 @@ fun Settings(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.M
                     showSetUpAppsToLimitDialog.value = true
                     isAppBarVisible.value = false
                 })
-                SettingsSection("Accessibility Service", "On", {})
-                SettingsSection("App Usage Permission", "On", {})
+                SettingsSection("Accessibility Service",
+                    if (isAccessibilityServiceEnabled) "On" else "Off",
+                    {
+                        val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                        context.startActivity(intent)
+                    }
+                )
+                SettingsSection(
+                    "App Usage Permission",
+                    if (hasUsageStatsPermission) "On" else "Off",
+                    {
+                        val intent = Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                        context.startActivity(intent)
+                    }
+                )
+
+                SettingsSection(
+                    "Overlay Over Other Apps",
+                    if (canDrawOverlays) "On" else "Off",
+                    {
+                        val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                        context.startActivity(intent)
+                    }
+                )
+
             }
 
             Spacer(Modifier.height(150.dp))
