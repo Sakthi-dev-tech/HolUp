@@ -1,5 +1,7 @@
-package com.adormantsakthi.holup.ui.components.Dialogs.forSettings
+package com.adormantsakthi.holup.ui.components.forSettings
 
+import android.graphics.drawable.Drawable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
@@ -28,10 +31,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
 @Composable
-fun SelectAppsComponentForDialogs () {
+fun SelectAppsComponentForDialogs (
+    name: String,
+    icon: Drawable
+) {
 
     var checked = remember { mutableStateOf(false) }
     Box(
@@ -62,22 +70,25 @@ fun SelectAppsComponentForDialogs () {
 
             Column (
                 modifier = Modifier
+                    .width(100.dp)
                     .padding(end = 20.dp),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Build,
-                    contentDescription = "Back",
-                    tint = Color.Black,
+                Image(
+                    painter = rememberDrawablePainter(drawable = icon),
+                    contentDescription = "App Icon",
                     modifier = Modifier
                         .padding(10.dp)
                         .size(35.dp)
+                        .align(Alignment.CenterHorizontally)
                 )
 
                 Text(
-                    "App Name",
-                    style = MaterialTheme.typography.labelSmall
+                    name,
+                    style = MaterialTheme.typography.labelSmall.copy(textAlign = TextAlign.Center),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
                 )
             }
         }

@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.ui.components.forSettings.SelectAppsComponentForDialogs
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -137,7 +138,7 @@ fun AntiDoomscrollDialogScreen (
                                 .padding(top = 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            SelectAppsComponentForDialogs()
+
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package com.adormantsakthi.holup.ui.components.Dialogs.forSettings
 
+import GetDownloadedApps
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,7 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.ui.components.forSettings.SelectAppsComponentForDialogs
 
 @Composable
 fun SetupAppsToLimitDialog (
@@ -98,7 +101,10 @@ fun SetupAppsToLimitDialog (
                                 .padding(top = 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            SelectAppsComponentForDialogs()
+                            val listOfApps = GetDownloadedApps(LocalContext.current)
+                            for ( (name, icon) in listOfApps ){
+                                SelectAppsComponentForDialogs(name, icon)
+                            }
                         }
                     }
                 }

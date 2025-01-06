@@ -1,4 +1,5 @@
 [versions]
+accompanistDrawablepainter = "0.37.0"
 accompanistPager = "0.31.4-beta"
 accompanistSystemuicontroller = "0.24.13-rc"
 agp = "8.7.3"
@@ -18,6 +19,7 @@ vico = "2.0.0-beta.5"
 runtimeLivedata = "1.7.6"
 
 [libraries]
+accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanistDrawablepainter" }
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPager" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
