@@ -76,7 +76,7 @@ fun YearlyPlan() {
                 )
             ) {
                 Text(
-                    "$13.99/year",
+                    "$16.98/year",
                     style = MaterialTheme.typography.labelSmall.copy(Color.White)
                 )
             }

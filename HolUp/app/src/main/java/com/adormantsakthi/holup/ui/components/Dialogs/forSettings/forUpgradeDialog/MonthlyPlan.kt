@@ -76,7 +76,7 @@ fun MonthlyPlan() {
                 )
             ) {
                 Text(
-                    "$2.99/month",
+                    "$2.98/month",
                     style = MaterialTheme.typography.labelSmall.copy(Color.White)
                 )
             }

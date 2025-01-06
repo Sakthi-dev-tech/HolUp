@@ -27,6 +27,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,7 +37,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.TodoViewModel
 import com.adormantsakthi.holup.ui.components.Dialogs.forHome.CreateTaskDialog
+import com.adormantsakthi.holup.ui.components.Dialogs.forHome.EditTaskDialog
 import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
 import com.adormantsakthi.holup.ui.theme.Karma
 
@@ -43,6 +47,8 @@ import com.adormantsakthi.holup.ui.theme.Karma
 fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>) {
 
     val showCreateTaskDialog = remember { mutableStateOf(false) }
+    val showEditTaskDialog = remember { mutableStateOf(false) }
+    val selectedTaskID = remember { mutableStateOf(-1)  }
 
     val showOnboardingScreensAgain = !OnboardingPrefs.isOnboardingCompleted(context = LocalContext.current)
     val showOnboardingScreens = remember { mutableStateOf(true) } // this is so that we can immediately close the onboarding screens once skip pressed
@@ -125,7 +131,12 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
                         .padding()
                         .verticalScroll(ScrollState(0))
                 ) {
-                    TaskBox("Wash Dishes")
+                    // Convert LiveData into State for Compose
+                    val todoList by TodoViewModel().todoList.observeAsState(emptyList())
+
+                    todoList.forEach { value ->
+                        TaskBox(value.id ,value.title, showEditTaskDialog, selectedTaskID)
+                    }
                 }
             }
         }
@@ -163,5 +174,6 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
     }
 
     CreateTaskDialog(showCreateTaskDialog, isAppBarVisible)
+    EditTaskDialog(selectedTaskID.value, showEditTaskDialog, isAppBarVisible)
     OnboardingScreens(showOnboardingScreens, showOnboardingScreensAgain, isAppBarVisible, remember { mutableStateOf(false) })
 }

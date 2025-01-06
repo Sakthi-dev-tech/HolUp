@@ -1,15 +1,10 @@
 package com.adormantsakthi.holup.ui.components.forHomepage
 
 import android.annotation.SuppressLint
-import android.graphics.Paint.Align
-import androidx.compose.animation.Animatable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,13 +22,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -41,14 +36,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import com.adormantsakthi.holup.TodoViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -56,10 +48,12 @@ import kotlin.math.absoluteValue
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskBox(
-    task: String
+    id: Int,
+    task: String,
+    showEditTaskDialog: MutableState<Boolean>,
+    selectedTaskID: MutableState<Int>
 ) {
     val checkedState = remember { mutableStateOf(false) }
-    val haptics = LocalHapticFeedback.current
 
     // for swipe animation
     val swipeOffset = remember { androidx.compose.animation.core.Animatable(0f) }
@@ -93,7 +87,10 @@ fun TaskBox(
                     .fillMaxHeight()
                     .width(dynamicWidth)
                     .background(Color(30, 99, 11))
-                    .clickable {  },
+                    .clickable {
+                        showEditTaskDialog.value = true
+                        selectedTaskID.value = id
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Column (
@@ -119,7 +116,9 @@ fun TaskBox(
                     .fillMaxHeight()
                     .width(dynamicWidth)
                     .background(Color(207, 6, 27))
-                    .clickable {  },
+                    .clickable {
+                        TodoViewModel().deleteTodo(id)
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Column (
@@ -202,10 +201,4 @@ fun TaskBox(
 
     Spacer(Modifier.height(20.dp
     ))
-}
-
-@Preview (showBackground = false)
-@Composable
-fun PreviewTaskBox() {
-    TaskBox("Wash Clothes")
 }

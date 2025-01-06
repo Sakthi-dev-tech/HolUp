@@ -32,9 +32,11 @@ import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.TodoViewModel
 import com.adormantsakthi.holup.functions.database.ToDoDao
 import com.adormantsakthi.holup.functions.database.TodoDatabase
+import java.io.Console
 
 @Composable
-fun CreateTaskDialog (
+fun EditTaskDialog (
+    taskId: Int,
     showDialog: MutableState<Boolean>,
     isAppBarVisible: MutableState<Boolean>,
 ) {
@@ -72,7 +74,7 @@ fun CreateTaskDialog (
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Enter Your Task",
+                        "Enter Your Updated Task",
                         style = MaterialTheme.typography.labelMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -102,7 +104,7 @@ fun CreateTaskDialog (
                         onClick = {
                             showDialog.value = false
                             isAppBarVisible.value = true
-                            TodoViewModel().addTodo(taskName.value)
+                            TodoViewModel().editTodo(taskId, new_title = taskName.value)
                         },
                         colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.onSurface,
