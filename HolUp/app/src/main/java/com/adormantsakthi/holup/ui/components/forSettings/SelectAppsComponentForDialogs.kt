@@ -1,5 +1,6 @@
 package com.adormantsakthi.holup.ui.components.forSettings
 
+import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,7 +39,8 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 @Composable
 fun SelectAppsComponentForDialogs (
     name: String,
-    icon: Drawable
+    icon: Drawable,
+    appInfo: ApplicationInfo
 ) {
 
     var checked = remember { mutableStateOf(false) }

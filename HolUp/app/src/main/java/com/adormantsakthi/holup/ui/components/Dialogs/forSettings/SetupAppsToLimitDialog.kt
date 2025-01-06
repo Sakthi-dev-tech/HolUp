@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -37,6 +39,8 @@ fun SetupAppsToLimitDialog (
     isAppBarVisible: MutableState<Boolean>,
     selectedItemIndex: MutableState<Int>
 ) {
+    val listOfApps = GetDownloadedApps(LocalContext.current)
+
     if (showDialog.value) {
         Box(
             modifier = Modifier
@@ -93,17 +97,16 @@ fun SetupAppsToLimitDialog (
 
                         HorizontalDivider(thickness = 2.dp, color = Color.Black)
 
-                        Column (
+                        LazyColumn (
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .fillMaxWidth(0.95f)
-                                .verticalScroll(state = ScrollState(0))
                                 .padding(top = 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            val listOfApps = GetDownloadedApps(LocalContext.current)
-                            for ( (name, icon) in listOfApps ){
-                                SelectAppsComponentForDialogs(name, icon)
+
+                            items(listOfApps){
+                                item -> SelectAppsComponentForDialogs(item.first, item.second, item.third)
                             }
                         }
                     }

@@ -1,5 +1,6 @@
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
@@ -8,14 +9,14 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 
 
-fun GetDownloadedApps(context: Context): List<Pair<String, Drawable>> {
+fun GetDownloadedApps(context: Context): List<Triple<String, Drawable, ApplicationInfo>> {
     val mainIntent = Intent(Intent.ACTION_MAIN, null)
     mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
     val packageManager: PackageManager = context.packageManager
     val installedApplications: MutableList<ResolveInfo> = packageManager.queryIntentActivities(mainIntent, 0)
 
-    val nonSystemApps = mutableListOf<Pair<String, Drawable>>()
+    val nonSystemApps = mutableListOf<Triple<String, Drawable, ApplicationInfo>>()
 
     for (app in installedApplications) {
         if (app.activityInfo != null) {
@@ -27,8 +28,9 @@ fun GetDownloadedApps(context: Context): List<Pair<String, Drawable>> {
 
             val name = app.activityInfo.applicationInfo.loadLabel(packageManager).toString()
             val icon = app.activityInfo.applicationInfo.loadIcon(packageManager)
+            val appInfo = app.activityInfo.applicationInfo
 
-            nonSystemApps.add(Pair(name, icon))
+            nonSystemApps.add(Triple(name, icon, appInfo))
         }
 
     }
