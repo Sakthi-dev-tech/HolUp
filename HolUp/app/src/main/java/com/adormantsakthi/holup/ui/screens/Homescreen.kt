@@ -136,7 +136,7 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
                     val todoList by TodoViewModel().todoList.observeAsState(emptyList())
 
                     todoList.forEach { value ->
-                        TaskBox(value, showEditTaskDialog, selectedTask)
+                        TaskBox(value, showEditTaskDialog, selectedTask, isAppBarVisible)
                     }
                 }
             }

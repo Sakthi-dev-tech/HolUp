@@ -40,6 +40,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adormantsakthi.holup.TodoViewModel
 import com.adormantsakthi.holup.functions.Todo
 import kotlinx.coroutines.launch
@@ -51,7 +52,8 @@ import kotlin.math.absoluteValue
 fun TaskBox(
     task: Todo,
     showEditTaskDialog: MutableState<Boolean>,
-    selectedTask: MutableState<Todo?>
+    selectedTask: MutableState<Todo?>,
+    isAppBarVisible: MutableState<Boolean>
 ) {
     val checkedState = remember { mutableStateOf(task.isCompleted) }
 
@@ -88,8 +90,12 @@ fun TaskBox(
                     .width(dynamicWidth)
                     .background(Color(30, 99, 11))
                     .clickable {
+                        isAppBarVisible.value = false
                         showEditTaskDialog.value = true
                         selectedTask.value = task
+                        scope.launch {
+                            swipeOffset.animateTo(0f)
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {

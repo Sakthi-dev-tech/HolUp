@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
@@ -50,7 +51,8 @@ fun EditPopUpTextDialog(
                     showDialog.value = false
                     isAppBarVisible.value = true
                     selectedItemIndex.value = 2
-                },
+                }
+                .imePadding(),
             contentAlignment = Alignment.Center
         ) {
             Box(

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
@@ -43,6 +44,7 @@ fun EditTaskDialog (
     isAppBarVisible: MutableState<Boolean>,
 ) {
     if (showDialog.value) {
+        isAppBarVisible.value = false
         val taskName = remember { mutableStateOf(task?.title ?: "") }
 
         Box(
@@ -55,7 +57,8 @@ fun EditTaskDialog (
                 ) {
                     showDialog.value = false
                     isAppBarVisible.value = true
-                },
+                }
+                .imePadding(),
             contentAlignment = Alignment.Center
         ) {
             Box(

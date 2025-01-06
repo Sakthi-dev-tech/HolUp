@@ -19,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HolUp"
         android:name=".MainApplication"
+        android:windowSoftInputMode="adjustResize"
         tools:targetApi="31">
 
         <service android:name=".MyAccessibilityService"
