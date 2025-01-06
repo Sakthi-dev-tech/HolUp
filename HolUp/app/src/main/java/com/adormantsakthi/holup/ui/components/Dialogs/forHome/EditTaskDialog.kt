@@ -1,5 +1,6 @@
 package com.adormantsakthi.holup.ui.components.Dialogs.forHome
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -30,18 +31,19 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.TodoViewModel
+import com.adormantsakthi.holup.functions.Todo
 import com.adormantsakthi.holup.functions.database.ToDoDao
 import com.adormantsakthi.holup.functions.database.TodoDatabase
 import java.io.Console
 
 @Composable
 fun EditTaskDialog (
-    taskId: Int,
+    task: Todo?,
     showDialog: MutableState<Boolean>,
     isAppBarVisible: MutableState<Boolean>,
 ) {
     if (showDialog.value) {
-        val taskName = remember { mutableStateOf("") }
+        val taskName = remember { mutableStateOf(task?.title ?: "") }
 
         Box(
             modifier = Modifier
@@ -104,7 +106,11 @@ fun EditTaskDialog (
                         onClick = {
                             showDialog.value = false
                             isAppBarVisible.value = true
-                            TodoViewModel().editTodo(taskId, new_title = taskName.value)
+                            if (task != null){
+                                TodoViewModel().editTodo(task.id, new_title = taskName.value, task.isCompleted)
+                            } else {
+                                Log.e("Edit Todo", "Something went wrong while updating Todo")
+                            }
                         },
                         colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.onSurface,

@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.TodoViewModel
+import com.adormantsakthi.holup.functions.Todo
 import com.adormantsakthi.holup.ui.components.Dialogs.forHome.CreateTaskDialog
 import com.adormantsakthi.holup.ui.components.Dialogs.forHome.EditTaskDialog
 import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
@@ -48,7 +49,7 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
 
     val showCreateTaskDialog = remember { mutableStateOf(false) }
     val showEditTaskDialog = remember { mutableStateOf(false) }
-    val selectedTaskID = remember { mutableStateOf(-1)  }
+    val selectedTask = remember { mutableStateOf<Todo?>(null) }
 
     val showOnboardingScreensAgain = !OnboardingPrefs.isOnboardingCompleted(context = LocalContext.current)
     val showOnboardingScreens = remember { mutableStateOf(true) } // this is so that we can immediately close the onboarding screens once skip pressed
@@ -135,7 +136,7 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
                     val todoList by TodoViewModel().todoList.observeAsState(emptyList())
 
                     todoList.forEach { value ->
-                        TaskBox(value.id ,value.title, showEditTaskDialog, selectedTaskID)
+                        TaskBox(value, showEditTaskDialog, selectedTask)
                     }
                 }
             }
@@ -174,6 +175,6 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
     }
 
     CreateTaskDialog(showCreateTaskDialog, isAppBarVisible)
-    EditTaskDialog(selectedTaskID.value, showEditTaskDialog, isAppBarVisible)
+    EditTaskDialog(selectedTask.value, showEditTaskDialog, isAppBarVisible)
     OnboardingScreens(showOnboardingScreens, showOnboardingScreensAgain, isAppBarVisible, remember { mutableStateOf(false) })
 }

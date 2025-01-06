@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import com.adormantsakthi.holup.TodoViewModel
+import com.adormantsakthi.holup.functions.Todo
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -48,12 +49,11 @@ import kotlin.math.absoluteValue
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskBox(
-    id: Int,
-    task: String,
+    task: Todo,
     showEditTaskDialog: MutableState<Boolean>,
-    selectedTaskID: MutableState<Int>
+    selectedTask: MutableState<Todo?>
 ) {
-    val checkedState = remember { mutableStateOf(false) }
+    val checkedState = remember { mutableStateOf(task.isCompleted) }
 
     // for swipe animation
     val swipeOffset = remember { androidx.compose.animation.core.Animatable(0f) }
@@ -89,7 +89,7 @@ fun TaskBox(
                     .background(Color(30, 99, 11))
                     .clickable {
                         showEditTaskDialog.value = true
-                        selectedTaskID.value = id
+                        selectedTask.value = task
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -117,7 +117,7 @@ fun TaskBox(
                     .width(dynamicWidth)
                     .background(Color(207, 6, 27))
                     .clickable {
-                        TodoViewModel().deleteTodo(id)
+                        TodoViewModel().deleteTodo(task.id)
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -173,7 +173,9 @@ fun TaskBox(
         ) {
             Checkbox(
                 checked = checkedState.value,
-                onCheckedChange = { checkedState.value = it },
+                onCheckedChange = {
+                    checkedState.value = it
+                    TodoViewModel().editTodo(task.id, task.title, checkedState.value) },
                 colors = CheckboxColors(
                     checkedCheckmarkColor = MaterialTheme.colorScheme.primary,
                     checkedBoxColor = Color.Transparent,
@@ -191,7 +193,7 @@ fun TaskBox(
             )
 
             Text(
-                task,
+                task.title,
                 modifier = Modifier
                     .padding(10.dp),
                 style = MaterialTheme.typography.labelMedium
@@ -199,6 +201,5 @@ fun TaskBox(
         }
     }
 
-    Spacer(Modifier.height(20.dp
-    ))
+    Spacer(Modifier.height(20.dp))
 }

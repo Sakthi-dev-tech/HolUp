@@ -27,9 +27,9 @@ class TodoViewModel: ViewModel() {
         }
     }
 
-    fun editTodo(id: Int, new_title: String){
+    fun editTodo(id: Int, new_title: String, isCompleted: Boolean){
         viewModelScope.launch(Dispatchers.IO) {
-            todoDao.editTodo(id, new_title)
+            todoDao.editTodo(id, new_title, isCompleted)
         }
     }
 }

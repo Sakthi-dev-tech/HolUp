@@ -17,8 +17,8 @@ interface ToDoDao {
     @Query("DELETE FROM Todo where id = :id")
     fun deleteTodo(id: Int)
 
-    @Query("UPDATE TODO SET title = :new_title WHERE id = :id")
-    fun editTodo(id: Int, new_title: String)
+    @Query("UPDATE TODO SET title = :new_title, isCompleted = :isCompleted WHERE id = :id")
+    fun editTodo(id: Int, new_title: String, isCompleted: Boolean)
 
     @Query("SELECT * FROM TODO WHERE id = :id")
     fun getTodo(id: Int): LiveData<Todo>
