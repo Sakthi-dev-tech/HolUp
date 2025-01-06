@@ -37,9 +37,10 @@ import com.adormantsakthi.holup.ui.components.forSettings.SelectAppsComponentFor
 fun SetupAppsToLimitDialog (
     showDialog: MutableState<Boolean>,
     isAppBarVisible: MutableState<Boolean>,
-    selectedItemIndex: MutableState<Int>
+    selectedItemIndex: MutableState<Int>,
+    listOfApps: List<Triple<String, android.graphics.drawable.Drawable, android.content.pm.ApplicationInfo>>
 ) {
-    val listOfApps = GetDownloadedApps(LocalContext.current)
+
 
     if (showDialog.value) {
         Box(

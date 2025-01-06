@@ -2,6 +2,8 @@ package com.adormantsakthi.holup.ui.screens
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,7 +54,8 @@ fun Settings(onNavigate: () -> Unit,
              isAccessibilityServiceEnabled: Boolean,
              hasUsageStatsPermission: Boolean,
              context: Context,
-             canDrawOverlays: Boolean
+             canDrawOverlays: Boolean,
+             listOfApps: List<Triple<String, Drawable, ApplicationInfo>>
 ) {
 
     // For Pop Up Duration
@@ -272,5 +275,5 @@ fun Settings(onNavigate: () -> Unit,
     UpgradeToProDialog(showUpgradeToProDialog, isAppBarVisible, selectedItemIndex)
     EditPopUpTextDialog(showEditPopUpTextDialog, isAppBarVisible, popUpText, selectedItemIndex)
     AntiDoomscrollDialogScreen(showAntiDoomscrollDialog, isAppBarVisible, selectedItemIndex)
-    SetupAppsToLimitDialog(showSetUpAppsToLimitDialog, isAppBarVisible, selectedItemIndex)
+    SetupAppsToLimitDialog(showSetUpAppsToLimitDialog, isAppBarVisible, selectedItemIndex, listOfApps)
     }

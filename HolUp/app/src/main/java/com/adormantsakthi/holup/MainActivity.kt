@@ -1,5 +1,6 @@
 package com.adormantsakthi.holup
 
+import GetDownloadedApps
 import android.accessibilityservice.AccessibilityService
 import android.app.Activity
 import android.app.AppOpsManager
@@ -7,6 +8,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Context.*
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -19,9 +22,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat.getSystemService
 import com.adormantsakthi.holup.ui.theme.HolUpTheme
@@ -44,6 +51,9 @@ import com.adormantsakthi.holup.ui.screens.Homescreen
 import com.adormantsakthi.holup.ui.screens.Settings
 import com.adormantsakthi.holup.ui.screens.Statistics
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +61,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             HolUpTheme {
+                val context = this
+                val listOfApps = remember { mutableStateOf<List<Triple<String, Drawable, ApplicationInfo>>>(
+                    emptyList()
+                ) }
+
                 // Get the System UI Controller
                 val systemUiController = rememberSystemUiController()
                 val navController = rememberNavController()
@@ -62,6 +77,13 @@ class MainActivity : ComponentActivity() {
 
                 // control visibility of bottom app bar
                 val isAppBarVisible = remember { mutableStateOf(true) }
+
+                LaunchedEffect (Unit) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        // Get the list of installed applications
+                        listOfApps.value = GetDownloadedApps(context)
+                    }
+                }
 
                 // App Permissions
 
@@ -113,14 +135,31 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable("settings") {
-                                Settings(onNavigate = {navController.navigate("settings")},
-                                    isAppBarVisible,
-                                    selectedItemIndex,
-                                    isAccessibilityServiceOn,
-                                    hasUsageStatsPermission(),
-                                    LocalContext.current,
-                                    canDrawOverlays
-                                )
+                                if (listOfApps.value.isNotEmpty()) {
+                                    Settings(onNavigate = {navController.navigate("settings")},
+                                        isAppBarVisible,
+                                        selectedItemIndex,
+                                        isAccessibilityServiceOn,
+                                        hasUsageStatsPermission(),
+                                        LocalContext.current,
+                                        canDrawOverlays,
+                                        listOfApps.value
+                                    )
+                                } else {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize(),
+                                        contentAlignment = androidx.compose.ui.Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier
+                                                .fillMaxWidth(0.3f)
+                                                .aspectRatio(1f),
+                                            color = MaterialTheme.colorScheme.primary,
+                                            strokeWidth = 6.dp
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
