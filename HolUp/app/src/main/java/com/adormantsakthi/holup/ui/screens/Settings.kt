@@ -75,6 +75,7 @@ fun Settings(onNavigate: () -> Unit,
     val showAntiDoomscrollDialog = remember { mutableStateOf(false) }
     val showSetUpAppsToLimitDialog = remember { mutableStateOf(false) }
 
+    if (listOfApps.size > 0) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -246,6 +247,7 @@ fun Settings(onNavigate: () -> Unit,
                     if (isAccessibilityServiceEnabled) "On" else "Off",
                     {
                         val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         context.startActivity(intent)
                     }
                 )
@@ -254,6 +256,7 @@ fun Settings(onNavigate: () -> Unit,
                     if (hasUsageStatsPermission) "On" else "Off",
                     {
                         val intent = Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         context.startActivity(intent)
                     }
                 )
@@ -263,6 +266,7 @@ fun Settings(onNavigate: () -> Unit,
                     if (canDrawOverlays) "On" else "Off",
                     {
                         val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         context.startActivity(intent)
                     }
                 )
@@ -271,6 +275,10 @@ fun Settings(onNavigate: () -> Unit,
 
             Spacer(Modifier.height(150.dp))
         }
+    } else {
+
+    }
+
 
     UpgradeToProDialog(showUpgradeToProDialog, isAppBarVisible, selectedItemIndex)
     EditPopUpTextDialog(showEditPopUpTextDialog, isAppBarVisible, popUpText, selectedItemIndex)
