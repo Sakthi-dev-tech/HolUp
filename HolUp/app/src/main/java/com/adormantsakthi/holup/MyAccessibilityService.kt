@@ -66,6 +66,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
     private var windowManager: WindowManager? = null
     private var overlayView: ComposeView? = null
 
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -94,6 +95,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
     private val overlayStateManager = OverlayStateManager()
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val packageName = event.packageName?.toString() ?: return
             overlayStateManager.onAppOpened(packageName)

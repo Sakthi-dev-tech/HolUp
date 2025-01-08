@@ -1,6 +1,8 @@
 package com.adormantsakthi.holup.ui.components.Dialogs.forSettings
 
 import GetDownloadedApps
+import android.content.pm.ApplicationInfo
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,12 +21,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,87 +38,121 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.ui.components.forSettings.SelectAppsComponentForDialogs
+import com.patrykandpatrick.vico.compose.common.getDefaultColors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun SetupAppsToLimitDialog (
     showDialog: MutableState<Boolean>,
     isAppBarVisible: MutableState<Boolean>,
     selectedItemIndex: MutableState<Int>,
-    listOfApps: List<Triple<String, android.graphics.drawable.Drawable, android.content.pm.ApplicationInfo>>
 ) {
 
+    val listOfApps = remember { mutableStateOf<List<Triple<String, Drawable, ApplicationInfo>>>(
+        emptyList()
+    ) }
+
+    val context = LocalContext.current
 
     if (showDialog.value) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-        ) {
-            Column (
+        LaunchedEffect (Unit) {
+            CoroutineScope(Dispatchers.IO).launch {
+                // Get the list of installed applications
+                listOfApps.value = GetDownloadedApps(context)
+            }
+        }
+
+        if (listOfApps.value.isNotEmpty()){
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(state = ScrollState(0)),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .background(Color.Black)
             ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.primary,
+                Column (
                     modifier = Modifier
-                        .padding(10.dp)
-                        .size(40.dp)
-                        .clickable {
-                            showDialog.value = false
-                            isAppBarVisible.value = true
-                            selectedItemIndex.value = 2
-                        }
-                        .align(Alignment.Start)
-                )
-
-                Text(
-                    "Apps To Limit",
-                    style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary)
-                )
-
-                Box(
-                    modifier = Modifier
-                        .padding(top = 30.dp, bottom = 30.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .fillMaxWidth(0.95f)
-                        .aspectRatio(1/1.2f)
-                        .background(Color.DarkGray)
+                        .fillMaxSize()
+                        .verticalScroll(state = ScrollState(0)),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column (
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                            .padding(10.dp)
+                            .size(40.dp)
+                            .clickable {
+                                showDialog.value = false
+                                isAppBarVisible.value = true
+                                selectedItemIndex.value = 2
+                            }
+                            .align(Alignment.Start)
+                    )
+
+                    Text(
+                        "Apps To Limit",
+                        style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary)
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 30.dp, bottom = 30.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .fillMaxWidth(0.95f)
+                            .aspectRatio(1/1.2f)
+                            .background(Color.DarkGray)
                     ) {
-                        Text(
-                            "Select Apps",
-                            style = MaterialTheme.typography.labelMedium.copy(Color.White),
+                        Column (
                             modifier = Modifier
-                                .padding(20.dp)
-                                .align(Alignment.Start)
-                        )
-
-                        HorizontalDivider(thickness = 2.dp, color = Color.Black)
-
-                        LazyColumn (
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .fillMaxWidth(0.95f)
-                                .padding(top = 10.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
+                            Text(
+                                "Select Apps",
+                                style = MaterialTheme.typography.labelMedium.copy(Color.White),
+                                modifier = Modifier
+                                    .padding(20.dp)
+                                    .align(Alignment.Start)
+                            )
 
-                            items(listOfApps){
-                                item -> SelectAppsComponentForDialogs(item.first, item.second, item.third)
+                            HorizontalDivider(thickness = 2.dp, color = Color.Black)
+
+                            LazyColumn (
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(0.95f)
+                                    .padding(top = 10.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+
+                                items(listOfApps.value){
+                                        item -> SelectAppsComponentForDialogs(item.first, item.second, item.third)
+                                }
                             }
                         }
                     }
                 }
             }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(100.dp),
+                    strokeWidth = 6.dp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
+
+
     }
 }

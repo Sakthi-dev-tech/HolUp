@@ -55,7 +55,6 @@ fun Settings(onNavigate: () -> Unit,
              hasUsageStatsPermission: Boolean,
              context: Context,
              canDrawOverlays: Boolean,
-             listOfApps: List<Triple<String, Drawable, ApplicationInfo>>
 ) {
 
     // For Pop Up Duration
@@ -75,213 +74,208 @@ fun Settings(onNavigate: () -> Unit,
     val showAntiDoomscrollDialog = remember { mutableStateOf(false) }
     val showSetUpAppsToLimitDialog = remember { mutableStateOf(false) }
 
-    if (listOfApps.size > 0) {
-        Column(
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(state = ScrollState(0)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            "Settings",
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(state = ScrollState(0)),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(vertical = 20.dp, horizontal = 15.dp)
+                .fillMaxWidth()
+        )
+
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .fillMaxWidth(0.85f)
+                .aspectRatio(3/1f)
+                .background(MaterialTheme.colorScheme.tertiary)
+                .clickable {
+                    showUpgradeToProDialog.value = true
+                    isAppBarVisible.value = false
+                }
         ) {
-            Text(
-                "Settings",
-                style = MaterialTheme.typography.titleLarge,
+            Row (
                 modifier = Modifier
-                    .padding(vertical = 20.dp, horizontal = 15.dp)
-                    .fillMaxWidth()
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Star,
+                    contentDescription = "Star",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(start = 20.dp),
+                    tint = Color.Black
+                )
+
+                Text(
+                    "Upgrade to HolUp! Plus",
+                    style = MaterialTheme.typography.titleMedium.copy(Color.Black),
+                    modifier = Modifier.padding(end = 10.dp),
+                )
+            }
+        }
+
+        Spacer(Modifier.height(30.dp))
+
+        Row (
+            modifier = Modifier
+                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .align(Alignment.Start),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Star,
+                tint = Color.White,
+                contentDescription = "Premium Features",
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(30.dp)
+
             )
 
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .fillMaxWidth(0.85f)
-                    .aspectRatio(3/1f)
-                    .background(MaterialTheme.colorScheme.tertiary)
-                    .clickable {
-                        showUpgradeToProDialog.value = true
-                        isAppBarVisible.value = false
-                    }
-            ) {
-                Row (
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Star,
-                        contentDescription = "Star",
-                        modifier = Modifier
-                            .size(60.dp)
-                            .padding(start = 20.dp),
-                        tint = Color.Black
-                    )
-
-                    Text(
-                        "Upgrade to HolUp! Plus",
-                        style = MaterialTheme.typography.titleMedium.copy(Color.Black),
-                        modifier = Modifier.padding(end = 10.dp),
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(30.dp))
-
-            Row (
-                modifier = Modifier
-                    .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
-                    .align(Alignment.Start),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Star,
-                    tint = Color.White,
-                    contentDescription = "Premium Features",
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                        .size(30.dp)
-
-                )
-
-                Text(
-                    text = "Edit HolUp! Popup",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = Color.White,
-                )
-            }
-
-            Card (
-                modifier = Modifier
-                    .fillMaxWidth(0.85f),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
-                colors = CardColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = Color.Red,
-                    disabledContentColor = Color.Red,
-                    disabledContainerColor = Color.Red
-                )
-            ) {
-                SettingsSection("Interruption Text", popUpText.value, {
-                    showEditPopUpTextDialog.value = true
-                    isAppBarVisible.value = false
-                })
-                SettingsSection("Interruption Duration", PopUpDuration[PopUpDurationIndex.intValue], {
-                    PopUpDurationIndex.intValue = (PopUpDurationIndex.intValue + 1) % 3
-                })
-                SettingsSection("Delay Between App Switch", DelayBetweenAppSwitch[DelayBetweenAppSwitchIndex.intValue], {
-                    DelayBetweenAppSwitchIndex.intValue = (DelayBetweenAppSwitchIndex.intValue + 1) % 4
-                })
-            }
-
-            Spacer(Modifier.height(30.dp))
-
-            Row (
-                modifier = Modifier
-                    .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
-                    .align(Alignment.Start),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Star,
-                    tint = Color.White,
-                    contentDescription = "Premium Features",
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                        .size(30.dp)
-
-                )
-
-                Text(
-                    text = "Anti-Doomscroll",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = Color.White,
-                )
-            }
-
-            Card (
-                modifier = Modifier
-                    .fillMaxWidth(0.85f),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
-                colors = CardColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = Color.Red,
-                    disabledContentColor = Color.Red,
-                    disabledContainerColor = Color.Red
-                )
-            ) {
-                SettingsSection("Re-Popup", null, {
-                    showAntiDoomscrollDialog.value = true
-                    isAppBarVisible.value = false
-                })
-            }
-
-            Spacer(Modifier.height(30.dp))
-
             Text(
-                text = "Setup",
+                text = "Edit HolUp! Popup",
                 style = MaterialTheme.typography.titleSmall,
                 color = Color.White,
+            )
+        }
+
+        Card (
+            modifier = Modifier
+                .fillMaxWidth(0.85f),
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
+            colors = CardColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = Color.Red,
+                disabledContentColor = Color.Red,
+                disabledContainerColor = Color.Red
+            )
+        ) {
+            SettingsSection("Interruption Text", popUpText.value, {
+                showEditPopUpTextDialog.value = true
+                isAppBarVisible.value = false
+            })
+            SettingsSection("Interruption Duration", PopUpDuration[PopUpDurationIndex.intValue], {
+                PopUpDurationIndex.intValue = (PopUpDurationIndex.intValue + 1) % 3
+            })
+            SettingsSection("Delay Between App Switch", DelayBetweenAppSwitch[DelayBetweenAppSwitchIndex.intValue], {
+                DelayBetweenAppSwitchIndex.intValue = (DelayBetweenAppSwitchIndex.intValue + 1) % 4
+            })
+        }
+
+        Spacer(Modifier.height(30.dp))
+
+        Row (
+            modifier = Modifier
+                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .align(Alignment.Start),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Star,
+                tint = Color.White,
+                contentDescription = "Premium Features",
                 modifier = Modifier
-                    .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
-                    .align(Alignment.Start)
+                    .padding(end = 10.dp)
+                    .size(30.dp)
+
             )
 
-            Card (
-                modifier = Modifier
-                    .fillMaxWidth(0.85f),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
-                colors = CardColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = Color.Red,
-                    disabledContentColor = Color.Red,
-                    disabledContainerColor = Color.Red
-                )
+            Text(
+                text = "Anti-Doomscroll",
+                style = MaterialTheme.typography.titleSmall,
+                color = Color.White,
+            )
+        }
+
+        Card (
+            modifier = Modifier
+                .fillMaxWidth(0.85f),
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
+            colors = CardColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = Color.Red,
+                disabledContentColor = Color.Red,
+                disabledContainerColor = Color.Red
+            )
+        ) {
+            SettingsSection("Re-Popup", null, {
+                showAntiDoomscrollDialog.value = true
+                isAppBarVisible.value = false
+            })
+        }
+
+        Spacer(Modifier.height(30.dp))
+
+        Text(
+            text = "Setup",
+            style = MaterialTheme.typography.titleSmall,
+            color = Color.White,
+            modifier = Modifier
+                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .align(Alignment.Start)
+        )
+
+        Card (
+            modifier = Modifier
+                .fillMaxWidth(0.85f),
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
+            colors = CardColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = Color.Red,
+                disabledContentColor = Color.Red,
+                disabledContainerColor = Color.Red
+            )
+        ) {
+            SettingsSection("Add Apps", "Select Apps that you want to limit", {
+                showSetUpAppsToLimitDialog.value = true
+                isAppBarVisible.value = false
+            })
+            SettingsSection("Accessibility Service",
+                if (isAccessibilityServiceEnabled) "On" else "Off"
             ) {
-                SettingsSection("Add Apps", "Select Apps that you want to limit", {
-                    showSetUpAppsToLimitDialog.value = true
-                    isAppBarVisible.value = false
-                })
-                SettingsSection("Accessibility Service",
-                    if (isAccessibilityServiceEnabled) "On" else "Off",
-                    {
-                        val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        context.startActivity(intent)
-                    }
-                )
-                SettingsSection(
-                    "App Usage Permission",
-                    if (hasUsageStatsPermission) "On" else "Off",
-                    {
-                        val intent = Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        context.startActivity(intent)
-                    }
-                )
-
-                SettingsSection(
-                    "Overlay Over Other Apps",
-                    if (canDrawOverlays) "On" else "Off",
-                    {
-                        val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        context.startActivity(intent)
-                    }
-                )
-
+                val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+            }
+            SettingsSection(
+                "App Usage Permission",
+                if (hasUsageStatsPermission) "On" else "Off"
+            ) {
+                val intent = Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
             }
 
-            Spacer(Modifier.height(150.dp))
-        }
-    } else {
+            SettingsSection(
+                "Overlay Over Other Apps",
+                if (canDrawOverlays) "On" else "Off"
+            ) {
+                val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+            }
 
+        }
+
+        Spacer(Modifier.height(150.dp))
     }
+
 
 
     UpgradeToProDialog(showUpgradeToProDialog, isAppBarVisible, selectedItemIndex)
     EditPopUpTextDialog(showEditPopUpTextDialog, isAppBarVisible, popUpText, selectedItemIndex)
     AntiDoomscrollDialogScreen(showAntiDoomscrollDialog, isAppBarVisible, selectedItemIndex)
-    SetupAppsToLimitDialog(showSetUpAppsToLimitDialog, isAppBarVisible, selectedItemIndex, listOfApps)
+    SetupAppsToLimitDialog(showSetUpAppsToLimitDialog, isAppBarVisible, selectedItemIndex)
     }
