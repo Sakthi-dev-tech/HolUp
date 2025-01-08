@@ -40,13 +40,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
+    private val hasUsageStatsPerm =  mutableStateOf(false)
+    private val accessibililityServiceOn = mutableStateOf(false)
+    private val drawOverlayPermission = mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             HolUpTheme {
                 val context = this
-
 
                 // Get the System UI Controller
                 val systemUiController = rememberSystemUiController()
@@ -59,34 +63,6 @@ class MainActivity : ComponentActivity() {
 
                 // control visibility of bottom app bar
                 val isAppBarVisible = remember { mutableStateOf(true) }
-
-                // App Permissions
-
-                // App Usage Stats Permission
-                fun hasUsageStatsPermission(): Boolean {
-                    val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-                    val mode = appOps.checkOpNoThrow(
-                        AppOpsManager.OPSTR_GET_USAGE_STATS,
-                        android.os.Process.myUid(),
-                        packageName
-                    )
-                    return mode == AppOpsManager.MODE_ALLOWED
-                }
-
-                // Accessibility Services
-                fun isAccessibilityServiceEnabled(context: Context, service: Class<out AccessibilityService>): Boolean {
-                    val componentName = ComponentName(context, service)
-                    val enabledServices =
-                        Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
-                    val accessibilityEnabled =
-                        Settings.Secure.getInt(context.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0)
-
-                    return accessibilityEnabled == 1 && enabledServices?.contains(componentName.flattenToString()) == true
-                }
-                val isAccessibilityServiceOn = isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)
-
-                // Appear over other apps
-                val canDrawOverlays = Settings.canDrawOverlays(this)
 
 
                 Scaffold(
@@ -113,10 +89,10 @@ class MainActivity : ComponentActivity() {
                                 Settings(onNavigate = {navController.navigate("settings")},
                                     isAppBarVisible,
                                     selectedItemIndex,
-                                    isAccessibilityServiceOn,
-                                    hasUsageStatsPermission(),
+                                    accessibililityServiceOn.value,
+                                    hasUsageStatsPerm.value,
                                     LocalContext.current,
-                                    canDrawOverlays,
+                                    drawOverlayPermission.value,
                                 )
                             }
                         }
@@ -124,5 +100,39 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    // When the app gains focus run this function
+    override fun onResume() {
+        super.onResume()
+
+        // Update permission states
+        hasUsageStatsPerm.value = hasUsageStatsPermission()
+        accessibililityServiceOn.value = isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)
+        drawOverlayPermission.value = Settings.canDrawOverlays(this)
+    }
+
+    // Helper functions to check if permissions are granted
+
+    // Usage Stats Permission
+    private fun hasUsageStatsPermission(): Boolean {
+        val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val mode = appOps.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            android.os.Process.myUid(),
+            packageName
+        )
+        return mode == AppOpsManager.MODE_ALLOWED
+    }
+
+    // Accessibility Service Permission
+    private fun isAccessibilityServiceEnabled(context: Context, service: Class<out AccessibilityService>): Boolean {
+        val componentName = ComponentName(context, service)
+        val enabledServices =
+            Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+        val accessibilityEnabled =
+            Settings.Secure.getInt(context.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0)
+
+        return accessibilityEnabled == 1 && enabledServices?.contains(componentName.flattenToString()) == true
     }
 }
