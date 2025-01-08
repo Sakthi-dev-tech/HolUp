@@ -97,6 +97,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val packageName = event.packageName?.toString() ?: return
             overlayStateManager.onAppOpened(packageName)
+            Log.d("App Currently Open", packageName)
         }
     }
 

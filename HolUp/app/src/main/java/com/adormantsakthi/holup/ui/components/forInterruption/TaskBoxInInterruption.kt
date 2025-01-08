@@ -38,11 +38,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adormantsakthi.holup.TodoViewModel
 import com.adormantsakthi.holup.functions.Todo
+import com.adormantsakthi.holup.ui.theme.Fresca
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -72,7 +75,11 @@ fun TaskBoxInInterruption(
                 task.title,
                 modifier = Modifier
                     .padding(10.dp),
-                style = MaterialTheme.typography.labelMedium
+                style = TextStyle(
+                    fontFamily = Fresca,
+                    fontSize = 24.sp,
+                    color = Color.Black
+                )
             )
         }
     }

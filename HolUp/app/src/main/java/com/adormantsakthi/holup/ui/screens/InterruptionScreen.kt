@@ -40,6 +40,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -48,6 +51,8 @@ import com.adormantsakthi.holup.R
 import com.adormantsakthi.holup.TodoViewModel
 import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
 import com.adormantsakthi.holup.ui.components.forInterruption.TaskBoxInInterruption
+import com.adormantsakthi.holup.ui.theme.Fresca
+import com.adormantsakthi.holup.ui.theme.Italiana
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -113,12 +118,23 @@ fun InterruptionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Text(
+                "HolUp! You have these remaining tasks!",
+                style = TextStyle(
+                    fontFamily = Fresca,
+                    fontSize = 33.sp,
+                    color = Color.White
+                ),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 20.dp)
+            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(500.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(Color(0xFF856404))
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -126,7 +142,12 @@ fun InterruptionScreen(
                 ) {
                     Text(
                         "Pending Tasks",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = TextStyle(
+                            fontFamily = Italiana,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 25.sp,
+                            color = Color.White,
+                        ),
                         modifier = Modifier
                             .align(Alignment.Start)
                             .padding(15.dp)
@@ -190,8 +211,12 @@ fun InterruptionScreen(
                     )
                 ) {
                     Text(
-                        "Continue",
-                        style = MaterialTheme.typography.labelSmall
+                        "Continue To App",
+                        style = TextStyle(
+                            fontFamily = Fresca,
+                            fontSize = 15.sp,
+                            color = Color.White
+                        )
                     )
                 }
 
@@ -205,8 +230,12 @@ fun InterruptionScreen(
                     )
                 ) {
                     Text(
-                        "Leave",
-                        style = MaterialTheme.typography.labelSmall
+                        "Leave The App",
+                        style = TextStyle(
+                            fontFamily = Fresca,
+                            fontSize = 18.sp,
+                            color = Color.White
+                        )
                     )
                 }
             }
