@@ -31,11 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.adormantsakthi.holup.TodoViewModel
+import com.adormantsakthi.holup.ui.Todo.TodoViewModel
 import com.adormantsakthi.holup.functions.Todo
-import com.adormantsakthi.holup.functions.database.ToDoDao
-import com.adormantsakthi.holup.functions.database.TodoDatabase
-import java.io.Console
 
 @Composable
 fun EditTaskDialog (

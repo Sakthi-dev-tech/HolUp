@@ -37,7 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.adormantsakthi.holup.TodoViewModel
+import com.adormantsakthi.holup.ui.Todo.TodoViewModel
 import com.adormantsakthi.holup.functions.Todo
 import com.adormantsakthi.holup.ui.components.Dialogs.forHome.CreateTaskDialog
 import com.adormantsakthi.holup.ui.components.Dialogs.forHome.EditTaskDialog

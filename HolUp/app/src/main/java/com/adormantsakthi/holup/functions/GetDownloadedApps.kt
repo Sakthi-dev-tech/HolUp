@@ -35,5 +35,5 @@ fun GetDownloadedApps(context: Context): List<Triple<String, Drawable, Applicati
 
     }
 
-    return nonSystemApps.distinct()
+    return nonSystemApps.distinct().sortedBy { it.first }
 }

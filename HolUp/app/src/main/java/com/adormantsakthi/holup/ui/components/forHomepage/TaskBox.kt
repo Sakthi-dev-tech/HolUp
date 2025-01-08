@@ -40,8 +40,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.adormantsakthi.holup.TodoViewModel
+import com.adormantsakthi.holup.ui.Todo.TodoViewModel
 import com.adormantsakthi.holup.functions.Todo
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue

@@ -6,6 +6,8 @@ import android.graphics.PixelFormat
 import android.util.Log
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -38,9 +40,26 @@ class OverlayStateManager {
         // Add other package names here
     )
 
+    private var lastExecutionTime: Long = 0 // Timestamp of the last function execution
+    private val lock = Any() // To ensure thread safety if needed
+    private val delayBtwAppSwitch =  mutableIntStateOf(60000)
+
     // Called when a new app is detected
     fun onAppOpened(packageName: String) {
         if (packageName in targetPackages && !isOverlayVisible.value) {
+
+            synchronized(lock) {
+                val currentTime = System.currentTimeMillis()
+
+                if (currentTime - lastExecutionTime <= delayBtwAppSwitch.value) {
+                    val remainingTime = (delayBtwAppSwitch.value - (currentTime - lastExecutionTime)) / 1000
+                    Log.d("Overlay Timer", "Overlay on cooldown for $remainingTime more seconds")
+                    return
+                }
+
+                lastExecutionTime = currentTime
+            }
+
             _isOverlayVisible.value = true
         }
     }
@@ -77,6 +96,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
 
+
         // Start observing overlay state
         CoroutineScope(Dispatchers.Main).launch {
             overlayStateManager.isOverlayVisible.collect { shouldShow ->
@@ -98,8 +118,15 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
 
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val packageName = event.packageName?.toString() ?: return
-            overlayStateManager.onAppOpened(packageName)
+            CoroutineScope(Dispatchers.Default).launch {
+                overlayStateManager.onAppOpened(packageName)
+            }
             Log.d("App Currently Open", packageName)
+        }
+
+        // To make sure event function do not trigger in succession
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(500)
         }
     }
 
