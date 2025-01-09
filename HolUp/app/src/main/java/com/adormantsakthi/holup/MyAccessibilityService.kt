@@ -6,7 +6,9 @@ import android.graphics.PixelFormat
 import android.util.Log
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
@@ -29,6 +31,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+var lastExecutionTime: MutableLongState = mutableLongStateOf(0) // Timestamp of the last function execution
+val delayBtwAppSwitch =  mutableIntStateOf(60000)
+
 class OverlayStateManager {
     // Tracks whether the overlay should be visible
     private val _isOverlayVisible = MutableStateFlow(false)
@@ -40,9 +45,8 @@ class OverlayStateManager {
         // Add other package names here
     )
 
-    private var lastExecutionTime: Long = 0 // Timestamp of the last function execution
+
     private val lock = Any() // To ensure thread safety if needed
-    private val delayBtwAppSwitch =  mutableIntStateOf(60000)
 
     // Called when a new app is detected
     fun onAppOpened(packageName: String) {
@@ -51,13 +55,11 @@ class OverlayStateManager {
             synchronized(lock) {
                 val currentTime = System.currentTimeMillis()
 
-                if (currentTime - lastExecutionTime <= delayBtwAppSwitch.intValue) {
-                    val remainingTime = (delayBtwAppSwitch.intValue - (currentTime - lastExecutionTime)) / 1000
+                if (currentTime - lastExecutionTime.longValue <= delayBtwAppSwitch.intValue) {
+                    val remainingTime = (delayBtwAppSwitch.intValue - (currentTime - lastExecutionTime.longValue)) / 1000
                     Log.d("Overlay Timer", "Overlay on cooldown for $remainingTime more seconds")
                     return
                 }
-
-                lastExecutionTime = currentTime
             }
 
             _isOverlayVisible.value = true
@@ -103,7 +105,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
         CoroutineScope(Dispatchers.Main).launch {
             overlayStateManager.isOverlayVisible.collect { shouldShow ->
                 if (shouldShow) {
-                    delay(500)
+                    delay(1000)
                     showOverlay()
                 } else {
                     overlayView?.let {
@@ -150,7 +152,9 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
         try {
             // Perform HOME action to minimize the current app
             performGlobalAction(GLOBAL_ACTION_HOME)
-
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(100)
+            }
             // Dismiss the overlay
             overlayStateManager.dismissOverlay()
         } catch (e: Exception) {
@@ -170,10 +174,14 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                 setContent {
                     InterruptionScreen(
                         onDismiss = {
+                            lastExecutionTime.longValue = System.currentTimeMillis()
                             overlayStateManager.dismissOverlay()
                         },
 
-                        onClose = { closeCurrentApp() }
+                        onClose = {
+                            lastExecutionTime.longValue = 0
+                            closeCurrentApp()
+                        }
                     )
                 }
             }
