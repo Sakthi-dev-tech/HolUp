@@ -1,5 +1,9 @@
 package com.adormantsakthi.holup.ui.screens.Dialogs.forSettings
 
+import GetDownloadedApps
+import android.content.pm.ApplicationInfo
+import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,18 +26,29 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.storage.LimitedAppsStorage
+import com.adormantsakthi.holup.storage.ReInterruptionStorage
+import com.adormantsakthi.holup.ui.components.forSettings.SelectAppsComponentForAntiDoomscroll
+import com.adormantsakthi.holup.ui.components.forSettings.SelectAppsComponentForDialogs
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun AntiDoomscrollDialogScreen (
@@ -41,7 +56,30 @@ fun AntiDoomscrollDialogScreen (
     isAppBarVisible: MutableState<Boolean>,
     selectedItemIndex: MutableState<Int>
 ) {
+
+    val context = LocalContext.current
+
     if (showDialog.value) {
+        val listOfAppsWithInterruption = LimitedAppsStorage(context).getTargetPackages()
+        val listOfApps = remember { mutableStateOf<List<Triple<String, Drawable, ApplicationInfo>>>(
+            emptyList()
+        ) }
+        val filteredListOfAppsForInterruption = remember { mutableStateOf<List<Triple<String, Drawable, ApplicationInfo>>>(
+            emptyList()
+        ) }
+        LaunchedEffect (Unit) {
+            CoroutineScope(Dispatchers.IO).launch {
+                // Get the list of installed applications
+                listOfApps.value = GetDownloadedApps(context)
+
+                // Assuming `listOfAppsWithInterruption` is a Set<String> or List<String>
+                filteredListOfAppsForInterruption.value = listOfApps.value.filter { triple ->
+                    val packageName = triple.third.packageName // Extract package name from ApplicationInfo
+                    packageName in listOfAppsWithInterruption
+                }
+            }
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -137,7 +175,10 @@ fun AntiDoomscrollDialogScreen (
                                 .padding(top = 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-
+                            // Display apps that are in the interruption apps list where if it is checked or not is checked by the Reinterruption Storage
+                            filteredListOfAppsForInterruption.value.forEach({
+                                app -> SelectAppsComponentForAntiDoomscroll(app.first, app.second, app.third)
+                            })
                         }
                     }
                 }

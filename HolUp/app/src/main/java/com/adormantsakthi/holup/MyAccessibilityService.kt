@@ -51,13 +51,10 @@ class OverlayStateManager (context: Context) {
 
     private val lock = Any() // To ensure thread safety if needed
 
-    private val interrupt = mutableStateOf(false)
-
     // Called when a new app is detected
     fun onAppOpened(packageName: String) {
-        interrupt.value = getPackageManager().containsPackage(packageName)
         if (appClosed.value){
-            if (interrupt.value && !isOverlayVisible.value) {
+            if (getPackageManager().containsPackage(packageName) && !isOverlayVisible.value) {
 
                 synchronized(lock) {
                     val currentTime = System.currentTimeMillis()

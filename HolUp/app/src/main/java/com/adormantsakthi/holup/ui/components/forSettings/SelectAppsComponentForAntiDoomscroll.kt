@@ -2,6 +2,7 @@ package com.adormantsakthi.holup.ui.components.forSettings
 
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,11 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,10 +34,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.OverlayStateManager
+import com.adormantsakthi.holup.storage.ReInterruptionStorage
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
 @Composable
-fun SelectAppsComponentForDialogs (
+fun SelectAppsComponentForAntiDoomscroll (
     name: String,
     icon: Drawable,
     appInfo: ApplicationInfo
@@ -47,7 +46,7 @@ fun SelectAppsComponentForDialogs (
 
     val context = LocalContext.current
     val packageName = appInfo.packageName
-    var checked = remember { mutableStateOf(OverlayStateManager(context).getPackageManager().containsPackage(packageName)) }
+    var checked = remember { mutableStateOf(ReInterruptionStorage(context).containsPackage(packageName)) }
 
     Box(
         modifier = Modifier
@@ -67,11 +66,11 @@ fun SelectAppsComponentForDialogs (
                 onCheckedChange = {
                     checked.value = it
                     if (checked.value){
-                        OverlayStateManager(context).getPackageManager().addPackage(packageName)
+                        ReInterruptionStorage(context).addPackage(packageName)
                     } else {
-                        OverlayStateManager(context).getPackageManager().removePackage(packageName)
+                        ReInterruptionStorage(context).removePackage(packageName)
                     }
-                                  },
+                },
                 Modifier
                     .scale(1.2f)
                     .padding(start = 10.dp),
