@@ -3,12 +3,14 @@ package com.adormantsakthi.holup
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.graphics.PixelFormat
+import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
@@ -33,6 +35,7 @@ import kotlinx.coroutines.launch
 
 var lastExecutionTime: MutableLongState = mutableLongStateOf(0) // Timestamp of the last function execution
 val delayBtwAppSwitch =  mutableIntStateOf(60000)
+val appClosed = mutableStateOf(true)
 
 class OverlayStateManager {
     // Tracks whether the overlay should be visible
@@ -50,19 +53,22 @@ class OverlayStateManager {
 
     // Called when a new app is detected
     fun onAppOpened(packageName: String) {
-        if (packageName in targetPackages && !isOverlayVisible.value) {
+        if (appClosed.value){
+            if (packageName in targetPackages && !isOverlayVisible.value) {
 
-            synchronized(lock) {
-                val currentTime = System.currentTimeMillis()
+                synchronized(lock) {
+                    val currentTime = System.currentTimeMillis()
 
-                if (currentTime - lastExecutionTime.longValue <= delayBtwAppSwitch.intValue) {
-                    val remainingTime = (delayBtwAppSwitch.intValue - (currentTime - lastExecutionTime.longValue)) / 1000
-                    Log.d("Overlay Timer", "Overlay on cooldown for $remainingTime more seconds")
-                    return
+                    if (currentTime - lastExecutionTime.longValue <= delayBtwAppSwitch.intValue) {
+                        val remainingTime = (delayBtwAppSwitch.intValue - (currentTime - lastExecutionTime.longValue)) / 1000
+                        Log.d("Overlay Timer", "Overlay on cooldown for $remainingTime more seconds")
+                        return
+                    }
                 }
-            }
 
-            _isOverlayVisible.value = true
+                _isOverlayVisible.value = true
+                appClosed.value = false
+            }
         }
     }
 
@@ -152,9 +158,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
         try {
             // Perform HOME action to minimize the current app
             performGlobalAction(GLOBAL_ACTION_HOME)
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(100)
-            }
             // Dismiss the overlay
             overlayStateManager.dismissOverlay()
         } catch (e: Exception) {
@@ -176,11 +179,19 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                         onDismiss = {
                             lastExecutionTime.longValue = System.currentTimeMillis()
                             overlayStateManager.dismissOverlay()
+                            val handler = android.os.Handler(Looper.getMainLooper())
+                            handler.postDelayed({
+                                appClosed.value = true
+                            }, 1000)
                         },
 
                         onClose = {
                             lastExecutionTime.longValue = 0
                             closeCurrentApp()
+                            val handler = android.os.Handler(Looper.getMainLooper())
+                            handler.postDelayed({
+                                appClosed.value = true
+                            }, 1000)
                         }
                     )
                 }
