@@ -42,7 +42,7 @@ class OverlayStateManager {
 
     private var lastExecutionTime: Long = 0 // Timestamp of the last function execution
     private val lock = Any() // To ensure thread safety if needed
-    private val delayBtwAppSwitch =  mutableIntStateOf(10000)
+    private val delayBtwAppSwitch =  mutableIntStateOf(60000)
 
     // Called when a new app is detected
     fun onAppOpened(packageName: String) {
@@ -51,8 +51,8 @@ class OverlayStateManager {
             synchronized(lock) {
                 val currentTime = System.currentTimeMillis()
 
-                if (currentTime - lastExecutionTime <= delayBtwAppSwitch.value) {
-                    val remainingTime = (delayBtwAppSwitch.value - (currentTime - lastExecutionTime)) / 1000
+                if (currentTime - lastExecutionTime <= delayBtwAppSwitch.intValue) {
+                    val remainingTime = (delayBtwAppSwitch.intValue - (currentTime - lastExecutionTime)) / 1000
                     Log.d("Overlay Timer", "Overlay on cooldown for $remainingTime more seconds")
                     return
                 }
@@ -145,6 +145,19 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
         }
     }
 
+    // Add function to close the current app
+    private fun closeCurrentApp() {
+        try {
+            // Perform HOME action to minimize the current app
+            performGlobalAction(GLOBAL_ACTION_HOME)
+
+            // Dismiss the overlay
+            overlayStateManager.dismissOverlay()
+        } catch (e: Exception) {
+            Log.e("MyAccessibilityService", "Error closing app", e)
+        }
+    }
+
     private fun showOverlay() {
         try {
             if (overlayView != null) return
@@ -158,7 +171,9 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                     InterruptionScreen(
                         onDismiss = {
                             overlayStateManager.dismissOverlay()
-                        }
+                        },
+
+                        onClose = { closeCurrentApp() }
                     )
                 }
             }

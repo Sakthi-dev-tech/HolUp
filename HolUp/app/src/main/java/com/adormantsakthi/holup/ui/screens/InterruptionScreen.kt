@@ -54,7 +54,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun InterruptionScreen(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onClose: () -> Unit
 ) {
     // State to track if the Lottie animation has completed
     val (offsetValue, setOffsetValue) = remember { mutableStateOf(IntOffset(0, 0)) }
@@ -213,7 +214,7 @@ fun InterruptionScreen(
                 }
 
                 Button(
-                    onClick = {},
+                    onClick = onClose,
                     modifier = Modifier
                         .width(150.dp)
                         .height(60.dp),
