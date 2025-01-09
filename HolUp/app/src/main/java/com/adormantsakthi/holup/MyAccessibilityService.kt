@@ -3,6 +3,7 @@ package com.adormantsakthi.holup
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.graphics.PixelFormat
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
@@ -25,6 +26,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.adormantsakthi.holup.storage.LimitedAppsStorage
+import com.adormantsakthi.holup.storage.ReInterruptionStorage
 import com.adormantsakthi.holup.ui.screens.InterruptionScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,16 +35,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.Timer
 
 var lastExecutionTime: MutableLongState = mutableLongStateOf(0) // Timestamp of the last function execution
 val delayBtwAppSwitch =  mutableIntStateOf(60000)
-val appClosed = mutableStateOf(true)
+val overlayClosed = mutableStateOf(true)
+
+// Tracks whether the overlay should be visible
+private val _isOverlayVisible = MutableStateFlow(false)
+val isOverlayVisible: StateFlow<Boolean> = _isOverlayVisible
 
 class OverlayStateManager (context: Context) {
-    // Tracks whether the overlay should be visible
-    private val _isOverlayVisible = MutableStateFlow(false)
-    val isOverlayVisible: StateFlow<Boolean> = _isOverlayVisible
-
     // Initialize the package manager
     private val packageManager = LimitedAppsStorage(context)
 
@@ -53,7 +56,9 @@ class OverlayStateManager (context: Context) {
 
     // Called when a new app is detected
     fun onAppOpened(packageName: String) {
-        if (appClosed.value){
+        cancelTimer()
+
+        if (overlayClosed.value){
             if (getPackageManager().containsPackage(packageName) && !isOverlayVisible.value) {
 
                 synchronized(lock) {
@@ -67,7 +72,7 @@ class OverlayStateManager (context: Context) {
                 }
 
                 _isOverlayVisible.value = true
-                appClosed.value = false
+                overlayClosed.value = false
             }
         }
     }
@@ -78,6 +83,36 @@ class OverlayStateManager (context: Context) {
             _isOverlayVisible.value = false
         }
     }
+
+
+    private val handler = Handler(Looper.getMainLooper())
+    private var timerRunnable: Runnable? = null
+
+    /**
+     * Starts or resets the timer.
+     */
+    fun startOrResetTimer() {
+        // Cancel any existing timer
+        timerRunnable?.let { handler.removeCallbacks(it) }
+
+        // Create a new runnable to execute after the timeout
+        timerRunnable = Runnable {
+            _isOverlayVisible.value = true
+            overlayClosed.value = false
+        }
+
+        // Post the runnable with the specified delay
+        handler.postDelayed(timerRunnable!!, 5000)
+    }
+
+    /**
+     * Cancels the timer.
+     */
+    fun cancelTimer() {
+        timerRunnable?.let { handler.removeCallbacks(it) }
+        timerRunnable = null
+    }
+
 }
 
 class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModelStoreOwner, SavedStateRegistryOwner {
@@ -109,7 +144,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
 
         // Start observing overlay state
         CoroutineScope(Dispatchers.Main).launch {
-            overlayStateManager.isOverlayVisible.collect { shouldShow ->
+            isOverlayVisible.collect { shouldShow ->
                 if (shouldShow) {
                     delay(1000)
                     showOverlay()
@@ -136,6 +171,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
     // Add these properties to track state
     private var overlayJob: Job? = null
     private val overlayStateManager = OverlayStateManager(this)
+    private var openedPackageName: String = ""
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
@@ -144,12 +180,10 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
             CoroutineScope(Dispatchers.Default).launch {
                 overlayStateManager.onAppOpened(packageName)
             }
+            if (packageName != "com.adormantsakthi.holup") {
+                openedPackageName = packageName
+            }
             Log.d("App Currently Open", packageName)
-        }
-
-        // To make sure event function do not trigger in succession
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(500)
         }
     }
 
@@ -181,8 +215,17 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                             overlayStateManager.dismissOverlay()
                             val handler = android.os.Handler(Looper.getMainLooper())
                             handler.postDelayed({
-                                appClosed.value = true
+                                overlayClosed.value = true
                             }, 1000)
+
+                            // starts AntiDoomscroll timer if app package name in Reinterruption Storage
+                            Log.d("Opened Package Name Before If Func", openedPackageName)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                if (ReInterruptionStorage(context).containsPackage(openedPackageName)) {
+                                    Log.d("Opened Package Name", openedPackageName)
+                                    OverlayStateManager(context).startOrResetTimer()
+                                }
+                            }
                         },
 
                         onClose = {
@@ -190,7 +233,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                             closeCurrentApp()
                             val handler = android.os.Handler(Looper.getMainLooper())
                             handler.postDelayed({
-                                appClosed.value = true
+                                overlayClosed.value = true
                             }, 1000)
                         }
                     )
