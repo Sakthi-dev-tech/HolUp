@@ -24,6 +24,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.adormantsakthi.holup.storage.LimitedAppsStorage
 import com.adormantsakthi.holup.ui.screens.InterruptionScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,24 +38,26 @@ var lastExecutionTime: MutableLongState = mutableLongStateOf(0) // Timestamp of 
 val delayBtwAppSwitch =  mutableIntStateOf(60000)
 val appClosed = mutableStateOf(true)
 
-class OverlayStateManager {
+class OverlayStateManager (context: Context) {
     // Tracks whether the overlay should be visible
     private val _isOverlayVisible = MutableStateFlow(false)
     val isOverlayVisible: StateFlow<Boolean> = _isOverlayVisible
 
-    // Tracks which apps should trigger the overlay
-    private val targetPackages = setOf(
-        "com.google.android.youtube"
-        // Add other package names here
-    )
+    // Initialize the package manager
+    private val packageManager = LimitedAppsStorage(context)
 
+    // Method to access the package manager for configuration
+    fun getPackageManager(): LimitedAppsStorage = packageManager
 
     private val lock = Any() // To ensure thread safety if needed
 
+    private val interrupt = mutableStateOf(false)
+
     // Called when a new app is detected
     fun onAppOpened(packageName: String) {
+        interrupt.value = getPackageManager().containsPackage(packageName)
         if (appClosed.value){
-            if (packageName in targetPackages && !isOverlayVisible.value) {
+            if (interrupt.value && !isOverlayVisible.value) {
 
                 synchronized(lock) {
                     val currentTime = System.currentTimeMillis()
@@ -135,7 +138,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
 
     // Add these properties to track state
     private var overlayJob: Job? = null
-    private val overlayStateManager = OverlayStateManager()
+    private val overlayStateManager = OverlayStateManager(this)
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 

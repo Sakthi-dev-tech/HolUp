@@ -39,8 +39,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.ui.Todo.TodoViewModel
 import com.adormantsakthi.holup.functions.Todo
-import com.adormantsakthi.holup.ui.components.Dialogs.forHome.CreateTaskDialog
-import com.adormantsakthi.holup.ui.components.Dialogs.forHome.EditTaskDialog
+import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.CreateTaskDialog
+import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.EditTaskDialog
 import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
 import com.adormantsakthi.holup.ui.theme.Karma
 

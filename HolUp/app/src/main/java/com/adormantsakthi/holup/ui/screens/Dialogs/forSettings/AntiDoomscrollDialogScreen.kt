@@ -1,4 +1,4 @@
-package com.adormantsakthi.holup.ui.components.Dialogs.forSettings
+package com.adormantsakthi.holup.ui.screens.Dialogs.forSettings
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -30,7 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.adormantsakthi.holup.ui.components.forSettings.SelectAppsComponentForDialogs
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants

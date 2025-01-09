@@ -32,8 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.OverlayStateManager
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
 @Composable
@@ -43,7 +45,10 @@ fun SelectAppsComponentForDialogs (
     appInfo: ApplicationInfo
 ) {
 
-    var checked = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val packageName = appInfo.packageName
+    var checked = remember { mutableStateOf(OverlayStateManager(context).getPackageManager().containsPackage(packageName)) }
+
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
@@ -59,7 +64,14 @@ fun SelectAppsComponentForDialogs (
         ) {
             Checkbox(
                 checked = checked.value,
-                onCheckedChange = {checked.value = it},
+                onCheckedChange = {
+                    checked.value = it
+                    if (checked.value){
+                        OverlayStateManager(context).getPackageManager().addPackage(packageName)
+                    } else {
+                        OverlayStateManager(context).getPackageManager().removePackage(packageName)
+                    }
+                                  },
                 Modifier
                     .scale(1.2f)
                     .padding(start = 10.dp),

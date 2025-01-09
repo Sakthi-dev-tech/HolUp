@@ -1,6 +1,5 @@
-package com.adormantsakthi.holup.ui.components.Dialogs.forHome
+package com.adormantsakthi.holup.ui.screens.Dialogs.forSettings
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -19,6 +18,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -31,19 +31,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.adormantsakthi.holup.ui.Todo.TodoViewModel
-import com.adormantsakthi.holup.functions.Todo
 
 @Composable
-fun EditTaskDialog (
-    task: Todo?,
+fun EditPopUpTextDialog(
     showDialog: MutableState<Boolean>,
     isAppBarVisible: MutableState<Boolean>,
+    text: MutableState<String>,
+    selectedItemIndex: MutableState<Int>
 ) {
     if (showDialog.value) {
-        isAppBarVisible.value = false
-        val taskName = remember { mutableStateOf(task?.title ?: "") }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -54,6 +50,7 @@ fun EditTaskDialog (
                 ) {
                     showDialog.value = false
                     isAppBarVisible.value = true
+                    selectedItemIndex.value = 2
                 }
                 .imePadding(),
             contentAlignment = Alignment.Center
@@ -76,7 +73,7 @@ fun EditTaskDialog (
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Enter Your Updated Task",
+                        "Edit Your Interruption Text",
                         style = MaterialTheme.typography.labelMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -85,9 +82,9 @@ fun EditTaskDialog (
                     )
 
                     TextField(
-                        value = taskName.value,
-                        onValueChange = { newText: String -> taskName.value = newText},
-                        placeholder = { "Your Task" },
+                        value = text.value,
+                        onValueChange = { newText: String -> text.value = newText},
+                        placeholder = { "Your interruption message" },
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
@@ -106,11 +103,6 @@ fun EditTaskDialog (
                         onClick = {
                             showDialog.value = false
                             isAppBarVisible.value = true
-                            if (task != null){
-                                TodoViewModel().editTodo(task.id, new_title = taskName.value, task.isCompleted)
-                            } else {
-                                Log.e("Edit Todo", "Something went wrong while updating Todo")
-                            }
                         },
                         colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.onSurface,

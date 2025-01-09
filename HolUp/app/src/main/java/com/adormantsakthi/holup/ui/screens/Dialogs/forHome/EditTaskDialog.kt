@@ -1,5 +1,6 @@
-package com.adormantsakthi.holup.ui.components.Dialogs.forHome
+package com.adormantsakthi.holup.ui.screens.Dialogs.forHome
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -31,14 +32,17 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.ui.Todo.TodoViewModel
+import com.adormantsakthi.holup.functions.Todo
 
 @Composable
-fun CreateTaskDialog (
+fun EditTaskDialog (
+    task: Todo?,
     showDialog: MutableState<Boolean>,
     isAppBarVisible: MutableState<Boolean>,
 ) {
     if (showDialog.value) {
-        val taskName = remember { mutableStateOf("") }
+        isAppBarVisible.value = false
+        val taskName = remember { mutableStateOf(task?.title ?: "") }
 
         Box(
             modifier = Modifier
@@ -72,7 +76,7 @@ fun CreateTaskDialog (
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Enter Your Task",
+                        "Enter Your Updated Task",
                         style = MaterialTheme.typography.labelMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -102,7 +106,11 @@ fun CreateTaskDialog (
                         onClick = {
                             showDialog.value = false
                             isAppBarVisible.value = true
-                            TodoViewModel().addTodo(taskName.value)
+                            if (task != null){
+                                TodoViewModel().editTodo(task.id, new_title = taskName.value, task.isCompleted)
+                            } else {
+                                Log.e("Edit Todo", "Something went wrong while updating Todo")
+                            }
                         },
                         colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.onSurface,

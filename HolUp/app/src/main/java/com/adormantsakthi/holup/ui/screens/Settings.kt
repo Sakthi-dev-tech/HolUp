@@ -41,10 +41,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
-import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.AntiDoomscrollDialogScreen
-import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.EditPopUpTextDialog
-import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.SetupAppsToLimitDialog
-import com.adormantsakthi.holup.ui.components.Dialogs.forSettings.UpgradeToProDialog
+import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.AntiDoomscrollDialogScreen
+import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.EditPopUpTextDialog
+import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.SetupAppsToLimitDialog
+import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.UpgradeToProDialog
 import com.adormantsakthi.holup.ui.components.forSettings.SettingsSection
 
 @Composable
@@ -73,7 +73,6 @@ fun Settings(onNavigate: () -> Unit,
     val showEditPopUpTextDialog = remember { mutableStateOf(false) }
     val showAntiDoomscrollDialog = remember { mutableStateOf(false) }
     val showSetUpAppsToLimitDialog = remember { mutableStateOf(false) }
-
 
     Column(
         modifier = Modifier

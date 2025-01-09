@@ -1,4 +1,4 @@
-package com.adormantsakthi.holup.ui.components.Dialogs.forSettings.forUpgradeDialog
+package com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.forUpgradeDialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

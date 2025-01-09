@@ -1,4 +1,4 @@
-package com.adormantsakthi.holup.ui.components.Dialogs.forSettings
+package com.adormantsakthi.holup.ui.screens.Dialogs.forSettings
 
 import GetDownloadedApps
 import android.content.pm.ApplicationInfo
@@ -29,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,10 +40,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.ui.components.forSettings.SelectAppsComponentForDialogs
-import com.patrykandpatrick.vico.compose.common.getDefaultColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -54,17 +54,10 @@ fun SetupAppsToLimitDialog (
     val listOfApps = remember { mutableStateOf<List<Triple<String, Drawable, ApplicationInfo>>>(
         emptyList()
     ) }
-
     val context = LocalContext.current
 
-    if (showDialog.value) {
-        LaunchedEffect (Unit) {
-            CoroutineScope(Dispatchers.IO).launch {
-                // Get the list of installed applications
-                listOfApps.value = GetDownloadedApps(context)
-            }
-        }
 
+    if (showDialog.value) {
         if (listOfApps.value.isNotEmpty()){
             Box(
                 modifier = Modifier
@@ -138,6 +131,13 @@ fun SetupAppsToLimitDialog (
                 }
             }
         } else {
+            LaunchedEffect (Unit) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    // Get the list of installed applications
+                    listOfApps.value = GetDownloadedApps(context)
+                }
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
