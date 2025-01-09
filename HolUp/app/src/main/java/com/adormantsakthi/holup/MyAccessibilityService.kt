@@ -42,7 +42,7 @@ class OverlayStateManager {
 
     private var lastExecutionTime: Long = 0 // Timestamp of the last function execution
     private val lock = Any() // To ensure thread safety if needed
-    private val delayBtwAppSwitch =  mutableIntStateOf(60000)
+    private val delayBtwAppSwitch =  mutableIntStateOf(10000)
 
     // Called when a new app is detected
     fun onAppOpened(packageName: String) {
@@ -66,7 +66,9 @@ class OverlayStateManager {
 
     // Called when user takes action to dismiss
     fun dismissOverlay() {
-        _isOverlayVisible.value = false
+        if (_isOverlayVisible.value) {
+            _isOverlayVisible.value = false
+        }
     }
 }
 
@@ -104,7 +106,20 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                     delay(500)
                     showOverlay()
                 } else {
-                    hideOverlay()
+                    overlayView?.let {
+                        view ->
+                        if (view.isAttachedToWindow){
+                            view.animate()
+                                .alpha(0f)
+                                .setDuration(300)
+                                .withEndAction{
+                                    hideOverlay()
+                                }.start()
+                        } else {
+                            hideOverlay()
+                        }
+                    }
+
                 }
             }
         }
@@ -131,40 +146,44 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
     }
 
     private fun showOverlay() {
-        if (overlayView != null) return
-
-        overlayView = ComposeView(this).apply {
-            setViewTreeLifecycleOwner(this@MyAccessibilityService)
-            setViewTreeViewModelStoreOwner(this@MyAccessibilityService)
-            setViewTreeSavedStateRegistryOwner(this@MyAccessibilityService)
-
-            setContent {
-                InterruptionScreen(
-                    onDismiss = {
-                        overlayStateManager.dismissOverlay()
-                    }
-                )
-            }
-        }
-
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            // Make sure overlay can receive touch events
-            flags = flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
-        }
-
         try {
-            windowManager?.addView(overlayView, params)
+            if (overlayView != null) return
+
+            overlayView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@MyAccessibilityService)
+                setViewTreeViewModelStoreOwner(this@MyAccessibilityService)
+                setViewTreeSavedStateRegistryOwner(this@MyAccessibilityService)
+
+                setContent {
+                    InterruptionScreen(
+                        onDismiss = {
+                            overlayStateManager.dismissOverlay()
+                        }
+                    )
+                }
+            }
+
+            val params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                // Make sure overlay can receive touch events
+                flags = flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+            }
+
+            try {
+                windowManager?.addView(overlayView, params)
+            } catch (e: Exception) {
+                Log.e("MyAccessibilityService", "Error showing overlay", e)
+            }
         } catch (e: Exception) {
-            Log.e("MyAccessibilityService", "Error showing overlay", e)
+            Log.e("Error while showOverlay in MyAccessibilityService", e.toString())
         }
     }
 
@@ -175,6 +194,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                 overlayView = null
             }
         } catch (e: Exception) {
+            Log.e("Error while hiding overlay in MyAccessibilityService", e.toString())
             e.printStackTrace()
         }
     }
@@ -185,9 +205,13 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
 
     override fun onDestroy() {
         super.onDestroy()
-        overlayJob?.cancel()
-        hideOverlay()
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-        viewModelStore.clear()
+        try {
+            overlayJob?.cancel()
+            hideOverlay()
+            lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+            viewModelStore.clear()
+        } catch (e: Exception) {
+            Log.e("Error while destroying in MyAccessibilityService", e.toString())
+        }
     }
 }
