@@ -169,15 +169,20 @@ fun InterruptionScreen(
                     }
                 }
             }
+            // Add a state to track animation completion
+            val animationsComplete = remember { mutableStateOf(false) }
+
             // Fade-in effect for buttons after delay
             val buttonsAlphaAnim by animateFloatAsState(
                 targetValue = buttonsAlpha,
-                animationSpec = tween(durationMillis = animationDuration[animationDurationIdx] + 1000) // Duration for fading in buttons
+                animationSpec = tween(durationMillis = animationDuration[animationDurationIdx] + 1000), // Duration for fading in buttons
+                finishedListener = { animationsComplete.value = true }
             )
 
             // Wait for animation to finish and fade in buttons
             LaunchedEffect(triggerFunction) {
                 if (triggerFunction) {
+                    animationsComplete.value = false
                     delay(1500)
                     // Slide the red box up and start fading out content
                     setOffsetValue(IntOffset(0, -3000)) // Slide red box up
@@ -207,7 +212,8 @@ fun InterruptionScreen(
                         .height(60.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(79, 79, 79, 255)
-                    )
+                    ),
+                    enabled = animationsComplete.value
                 ) {
                     Text(
                         "Continue To App",
@@ -226,7 +232,8 @@ fun InterruptionScreen(
                         .height(60.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Red
-                    )
+                    ),
+                    enabled = animationsComplete.value
                 ) {
                     Text(
                         "Leave The App",
