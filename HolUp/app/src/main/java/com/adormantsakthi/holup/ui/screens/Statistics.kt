@@ -175,13 +175,6 @@ fun Statistics(onNavigate: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Daily Average Time Spent KPI
-            KPIStatWithTime(
-                label = "Avg Time Spent\nPer Day",
-                progress = dailyAverageTimeSpentPercentage,
-                timeSpentMinutes = dailyAverageTimeSpentMinutes,
-                color = Color.Red,
-            )
 
             // Task Completion Rate KPI
             KPIStat(
@@ -223,43 +216,6 @@ fun Statistics(onNavigate: () -> Unit) {
         }
 
         Spacer(Modifier.height(125.dp))
-    }
-}
-
-@Composable
-fun KPIStatWithTime(
-    label: String,
-    progress: Float,
-    timeSpentMinutes: Int,
-    color: Color
-) {
-    val hours = timeSpentMinutes / 60
-    val minutes = timeSpentMinutes % 60
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Circular Progress Indicator with Text in the center
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.size(100.dp)
-        ) {
-            CircularProgressIndicator(
-                progress = progress,
-                modifier = Modifier
-                    .fillMaxSize(),
-                strokeWidth = 10.dp,
-                color = color,
-                trackColor = Color.LightGray
-            )
-            // Text in the center of the progress indicator
-            Text(
-                text = String.format("%02d h:%02d m", hours, minutes),
-                style = MaterialTheme.typography.labelSmall
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = label, textAlign = TextAlign.Center)
     }
 }
 

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -80,110 +81,127 @@ fun AntiDoomscrollDialogScreen (
             }
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-        ) {
-            Column (
+        if (filteredListOfAppsForInterruption.value.isNotEmpty()) {
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(state = ScrollState(0)),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .background(Color.Black)
             ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.primary,
+                Column (
                     modifier = Modifier
-                        .padding(10.dp)
-                        .size(40.dp)
-                        .clickable {
-                            showDialog.value = false
-                            isAppBarVisible.value = true
-                            selectedItemIndex.value = 2
-                        }
-                        .align(Alignment.Start)
-                )
-
-                Text(
-                    "Fight The Doom Scroll",
-                    style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary)
-                )
-
-                Box(
-                    modifier = Modifier
-                        .padding(top = 30.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .fillMaxWidth(0.95f)
-                        .aspectRatio(1/0.85f)
-                        .background(Color.DarkGray),
-                    contentAlignment = Alignment.Center
+                        .fillMaxSize()
+                        .verticalScroll(state = ScrollState(0)),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize(0.7f)
-                                .padding(10.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            AntiDoomscrollAnimation()
-                        }
-                        Text(
-                            "Interrupts your doom scrolling session and reminds you about tasks you are supposed to do for the day",
-                            style = MaterialTheme.typography.labelSmall.copy(color = Color.White, textAlign = TextAlign.Center),
-                            modifier = Modifier
-                                .padding(15.dp)
-                        )
-                    }
-                }
+                            .padding(10.dp)
+                            .size(40.dp)
+                            .clickable {
+                                showDialog.value = false
+                                isAppBarVisible.value = true
+                                selectedItemIndex.value = 2
+                            }
+                            .align(Alignment.Start)
+                    )
 
-                Box(
-                    modifier = Modifier
-                        .padding(top = 30.dp, bottom = 30.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .fillMaxWidth(0.95f)
-                        .aspectRatio(1/1.2f)
-                        .background(Color.DarkGray)
-                ) {
-                    Column (
+                    Text(
+                        "Fight The Doom Scroll",
+                        style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary)
+                    )
+
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                            .padding(top = 30.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .fillMaxWidth(0.95f)
+                            .aspectRatio(1/0.85f)
+                            .background(Color.DarkGray),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            "Select Apps",
-                            style = MaterialTheme.typography.labelMedium.copy(Color.White),
+                        Column(
                             modifier = Modifier
-                                .padding(20.dp)
-                                .align(Alignment.Start)
-                        )
-
-                        HorizontalDivider(thickness = 2.dp, color = Color.Black)
-
-                        Column (
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .fillMaxWidth(0.95f)
-                                .verticalScroll(state = ScrollState(0))
-                                .padding(top = 10.dp),
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // Display apps that are in the interruption apps list where if it is checked or not is checked by the Reinterruption Storage
-                            filteredListOfAppsForInterruption.value.forEach({
-                                app -> SelectAppsComponentForAntiDoomscroll(app.first, app.second, app.third)
-                            })
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize(0.7f)
+                                    .padding(10.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                AntiDoomscrollAnimation()
+                            }
+                            Text(
+                                "Interrupts your doom scrolling session and reminds you about tasks you are supposed to do for the day",
+                                style = MaterialTheme.typography.labelSmall.copy(color = Color.White, textAlign = TextAlign.Center),
+                                modifier = Modifier
+                                    .padding(15.dp)
+                            )
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 30.dp, bottom = 30.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .fillMaxWidth(0.95f)
+                            .aspectRatio(1/1.2f)
+                            .background(Color.DarkGray)
+                    ) {
+                        Column (
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                "Select Apps",
+                                style = MaterialTheme.typography.labelMedium.copy(Color.White),
+                                modifier = Modifier
+                                    .padding(20.dp)
+                                    .align(Alignment.Start)
+                            )
+
+                            HorizontalDivider(thickness = 2.dp, color = Color.Black)
+
+                            Column (
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(0.95f)
+                                    .verticalScroll(state = ScrollState(0))
+                                    .padding(top = 10.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                // Display apps that are in the interruption apps list where if it is checked or not is checked by the Reinterruption Storage
+                                filteredListOfAppsForInterruption.value.forEach({
+                                        app -> SelectAppsComponentForAntiDoomscroll(app.first, app.second, app.third)
+                                })
+                            }
                         }
                     }
                 }
             }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(100.dp),
+                    strokeWidth = 6.dp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
+
     }
 }
 

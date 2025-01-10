@@ -3,6 +3,7 @@ accompanistDrawablepainter = "0.37.0"
 accompanistPager = "0.31.4-beta"
 accompanistSystemuicontroller = "0.24.13-rc"
 agp = "8.7.3"
+billing = "7.1.1"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -29,6 +30,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-compiler-v250 = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler.v250)
     implementation(libs.accompanist.drawablepainter)
+    implementation(libs.billing)
     annotationProcessor(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
