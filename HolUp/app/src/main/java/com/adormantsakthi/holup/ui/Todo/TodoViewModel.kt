@@ -17,6 +17,9 @@ class TodoViewModel: ViewModel() {
     val todoList : LiveData<List<Todo>> = todoDao.getAllTodo()
     val remainingTodoList: LiveData<List<Todo>> = todoDao.getRemainingTodo()
 
+    val totalNumOfTodos: LiveData<Float> = todoDao.getTotalNumOfTodo()
+    val totalNumOfCompletedTodos: LiveData<Float> = todoDao.getCompletedNumOfTodo()
+
     fun addTodo(title: String){
         viewModelScope.launch(Dispatchers.IO) {
             todoDao.addTodo(Todo(title = title, isCompleted = false, importance = "low", createdAt = Date.from(Instant.now())))

@@ -27,6 +27,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.ui.Todo.TodoViewModel
 import com.adormantsakthi.holup.ui.components.forStatistics.Graph
 import com.adormantsakthi.holup.ui.components.forStatistics.TimeUsageForApp
 
@@ -53,7 +55,14 @@ fun Statistics(onNavigate: () -> Unit) {
     val dailyAverageTimeSpentPercentage = dailyAverageTimeSpentMinutes / totalMinutesInDay.toFloat()
 
     // Dummy value for Task Completion Rate
-    val taskCompletionRate = 0.85f // Represents 85% completion
+    val totalNumOfTodos = TodoViewModel().totalNumOfTodos.observeAsState(0).value
+    val totalNumOfCompletedTodos = TodoViewModel().totalNumOfCompletedTodos.observeAsState(0).value
+    // Ensure we don't divide by zero and calculate the completion rate
+    val taskCompletionRate = if (totalNumOfTodos != 0) {
+        (totalNumOfCompletedTodos.toFloat() / totalNumOfTodos.toFloat())
+    } else {
+        0f // Avoid division by zero, return 0% completion rate
+    }
 
 
     Column(

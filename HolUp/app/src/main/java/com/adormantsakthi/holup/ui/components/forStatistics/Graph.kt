@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.functions.statistics.AppUsageStatsHelper
+import com.adormantsakthi.holup.functions.statistics.AppUsageTracker
 import com.adormantsakthi.holup.functions.statistics.TimeRangeHelper
 import com.adormantsakthi.holup.storage.LimitedAppsStorage
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -61,37 +62,43 @@ fun Graph(selectedOption: String) {
         }
     )
 
+    // Clear previous data
+    dailyStatsThisWeek.clear()
+    dailyStatsLastWeek.clear()
+    dailyStatsThisMonth.clear()
+
+    // Get time ranges
+    val todayTimeUsed = AppUsageTracker(context).getTodayUsageStats(listOfAppPackageNames)
+    val thisWeekRanges = timeRangeHelper.getThisWeekDailyRanges()
+    val lastWeekRanges = timeRangeHelper.getLastWeekDailyRanges()
+    val thisMonthRanges = timeRangeHelper.getThisMonthDailyRanges()
+
+    // Calculate stats for this week
+    thisWeekRanges.forEach { (start, end) ->
+        val totalForegroundTime = usageHelper.getDailyUsageStats(start, end, listOfAppPackageNames)
+        dailyStatsThisWeek.add(totalForegroundTime)
+    }
+
+    dailyStatsThisWeek.removeAt(dailyStatsThisWeek.size - 1)
+    dailyStatsThisWeek.add(todayTimeUsed)
+
+    // Calculate stats for last week
+    lastWeekRanges.forEach { (start, end) ->
+        val totalForegroundTime = usageHelper.getDailyUsageStats(start, end, listOfAppPackageNames)
+        dailyStatsLastWeek.add(totalForegroundTime)
+    }
+
+    // Calculate stats for this month
+    thisMonthRanges.forEach { (start, end) ->
+        val totalForegroundTime = usageHelper.getDailyUsageStats(start, end, listOfAppPackageNames)
+        dailyStatsThisMonth.add(totalForegroundTime)
+    }
+
+    dailyStatsThisMonth.add(todayTimeUsed)
+
     // Effect to load data when selected option changes
     LaunchedEffect(selectedOption) {
         isLoading.value = true
-
-        // Clear previous data
-        dailyStatsThisWeek.clear()
-        dailyStatsLastWeek.clear()
-        dailyStatsThisMonth.clear()
-
-        // Get time ranges
-        val thisWeekRanges = timeRangeHelper.getThisWeekDailyRanges()
-        val lastWeekRanges = timeRangeHelper.getLastWeekDailyRanges()
-        val thisMonthRanges = timeRangeHelper.getThisMonthDailyRanges()
-
-        // Calculate stats for this week
-        thisWeekRanges.forEach { (start, end) ->
-            val totalForegroundTime = usageHelper.getDailyUsageStats(start, end, listOfAppPackageNames)
-            dailyStatsThisWeek.add(totalForegroundTime)
-        }
-
-        // Calculate stats for last week
-        lastWeekRanges.forEach { (start, end) ->
-            val totalForegroundTime = usageHelper.getDailyUsageStats(start, end, listOfAppPackageNames)
-            dailyStatsLastWeek.add(totalForegroundTime)
-        }
-
-        // Calculate stats for this month
-        thisMonthRanges.forEach { (start, end) ->
-            val totalForegroundTime = usageHelper.getDailyUsageStats(start, end, listOfAppPackageNames)
-            dailyStatsThisMonth.add(totalForegroundTime)
-        }
 
         // Update dates and data based on selected option
         when (selectedOption) {
