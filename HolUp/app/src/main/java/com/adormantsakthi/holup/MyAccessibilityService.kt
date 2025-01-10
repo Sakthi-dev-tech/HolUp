@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -27,6 +28,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.adormantsakthi.holup.functions.statistics.NumOfTimesLimitedAppsAccessedStorage
 import com.adormantsakthi.holup.storage.HolUpPopupPrefs
 import com.adormantsakthi.holup.storage.LimitedAppsStorage
 import com.adormantsakthi.holup.storage.ReInterruptionStorage
@@ -225,12 +227,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                             lastExecutionTime.longValue = System.currentTimeMillis()
                             overlayStateManager.dismissOverlay()
                             val handler = android.os.Handler(Looper.getMainLooper())
+                            NumOfTimesLimitedAppsAccessedStorage.appAccessed(context)
                             handler.postDelayed({
                                 overlayClosed.set(true)
                             }, 1000)
 
                             // starts AntiDoomscroll timer if app package name in Reinterruption Storage
-                            Log.d("Opened Package Name Before If Func", openedPackageName)
                             CoroutineScope(Dispatchers.IO).launch {
                                 if (ReInterruptionStorage(context).containsPackage(openedPackageName)) {
                                     Log.d("Opened Package Name", openedPackageName)

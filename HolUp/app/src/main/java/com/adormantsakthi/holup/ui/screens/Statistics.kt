@@ -1,5 +1,8 @@
 package com.adormantsakthi.holup.ui.screens
 
+import GetDownloadedApps
+import android.content.pm.ApplicationInfo
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +30,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,14 +38,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.storage.LimitedAppsStorage
 import com.adormantsakthi.holup.ui.Todo.TodoViewModel
 import com.adormantsakthi.holup.ui.components.forStatistics.Graph
 import com.adormantsakthi.holup.ui.components.forStatistics.TimeUsageForApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun Statistics(onNavigate: () -> Unit) {
+
+    val context = LocalContext.current
 
     var expanded = remember { mutableStateOf(false) }
     var items = remember { mutableListOf("This Week", "Last Week", "This Month") }
@@ -62,6 +73,27 @@ fun Statistics(onNavigate: () -> Unit) {
         (totalNumOfCompletedTodos.toFloat() / totalNumOfTodos.toFloat())
     } else {
         0f // Avoid division by zero, return 0% completion rate
+    }
+
+    // Get the applications with interruption set for it
+    val listOfAppsWithInterruption = LimitedAppsStorage(context).getTargetPackages()
+    val listOfApps = remember { mutableStateOf<List<Triple<String, Drawable, ApplicationInfo>>>(
+        emptyList()
+    ) }
+    val filteredListOfAppsForInterruption = remember { mutableStateOf<List<Triple<String, Drawable, ApplicationInfo>>>(
+        emptyList()
+    ) }
+    LaunchedEffect (Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            // Get the list of installed applications
+            listOfApps.value = GetDownloadedApps(context)
+
+            // Assuming `listOfAppsWithInterruption` is a Set<String> or List<String>
+            filteredListOfAppsForInterruption.value = listOfApps.value.filter { triple ->
+                val packageName = triple.third.packageName // Extract package name from ApplicationInfo
+                packageName in listOfAppsWithInterruption
+            }
+        }
     }
 
 
@@ -183,14 +215,9 @@ fun Statistics(onNavigate: () -> Unit) {
                     modifier = Modifier
                         .verticalScroll(state = ScrollState(0))
                 ) {
-                    TimeUsageForApp(Icons.Outlined.Star, "Spotify", "2hr 23mins")
-                    TimeUsageForApp(Icons.Outlined.Star, "Spotify", "2hr 23mins")
-                    TimeUsageForApp(Icons.Outlined.Star, "Spotify", "2hr 23mins")
-                    TimeUsageForApp(Icons.Outlined.Star, "Spotify", "2hr 23mins")
-                    TimeUsageForApp(Icons.Outlined.Star, "Spotify", "2hr 23mins")
-                    TimeUsageForApp(Icons.Outlined.Star, "Spotify", "2hr 23mins")
-                    TimeUsageForApp(Icons.Outlined.Star, "Spotify", "2hr 23mins")
-                    TimeUsageForApp(Icons.Outlined.Star, "Spotify", "2hr 23mins")
+                    filteredListOfAppsForInterruption.value.forEach({ app ->
+                        TimeUsageForApp(app.second, app.first, app.third)
+                    })
                 }
             }
         }

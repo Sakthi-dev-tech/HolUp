@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.ui.Todo.TodoViewModel
 import com.adormantsakthi.holup.functions.Todo
+import com.adormantsakthi.holup.functions.statistics.NumOfTimesLimitedAppsAccessedStorage
 import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.CreateTaskDialog
 import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.EditTaskDialog
 import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
@@ -60,18 +61,8 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
     } else {
         isAppBarVisible.value = true
     }
-    val midnightMillis: Long
 
-
-    val calendar = Calendar.getInstance()
-    calendar.set(Calendar.HOUR_OF_DAY, 0) // Set hour to 12 AM
-    calendar.set(Calendar.MINUTE, 0)     // Set minutes to 0
-    calendar.set(Calendar.SECOND, 0)     // Set seconds to 0
-    calendar.set(Calendar.MILLISECOND, 0) // Set milliseconds to 0
-
-    midnightMillis = calendar.timeInMillis // Get the time in milliseconds
-
-    println("Time: $midnightMillis")
+    val numOfTimesLimitedAppsAccessed = NumOfTimesLimitedAppsAccessedStorage.getNumberOfTimes(LocalContext.current)
 
     Column(
         modifier = Modifier
@@ -173,7 +164,7 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
                 )
 
                 Text(
-                    "12",
+                    numOfTimesLimitedAppsAccessed.toString(),
                     style = MaterialTheme.typography.titleLarge,
                     fontFamily = Karma,
                     modifier = Modifier
