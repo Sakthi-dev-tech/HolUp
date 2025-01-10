@@ -29,8 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.adormantsakthi.holup.storage.HolUpPopupPrefs
 
 @Composable
 fun EditPopUpTextDialog(
@@ -39,6 +41,7 @@ fun EditPopUpTextDialog(
     text: MutableState<String>,
     selectedItemIndex: MutableState<Int>
 ) {
+    val context = LocalContext.current
     if (showDialog.value) {
         Box(
             modifier = Modifier
@@ -103,6 +106,7 @@ fun EditPopUpTextDialog(
                         onClick = {
                             showDialog.value = false
                             isAppBarVisible.value = true
+                            HolUpPopupPrefs(context).editInterruptionText(text.value)
                         },
                         colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.onSurface,

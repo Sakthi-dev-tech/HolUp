@@ -34,7 +34,7 @@ fun SettingsSection (
                 role = null,
                 onClick = onClick
             ) // Make the section clickable
-            .padding(if (content != null) 10.dp else 20.dp), // Add more spacing when there is no subtext
+            .padding(vertical = if (content != null) 10.dp else 20.dp, horizontal = 10.dp), // Add more spacing when there is no subtext
     ) {
         Text(
             text = title,
@@ -43,8 +43,9 @@ fun SettingsSection (
             fontSize = 16.sp,
             modifier = Modifier.padding(start = 10.dp)
         )
-        Spacer(modifier = Modifier.height(4.dp))
+
         if (content != null) {
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = content,
                 style = MaterialTheme.typography.labelSmall,

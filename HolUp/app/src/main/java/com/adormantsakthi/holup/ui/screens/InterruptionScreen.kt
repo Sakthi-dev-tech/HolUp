@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adormantsakthi.holup.R
+import com.adormantsakthi.holup.storage.HolUpPopupPrefs
 import com.adormantsakthi.holup.ui.Todo.TodoViewModel
 import com.adormantsakthi.holup.ui.components.forInterruption.TaskBoxInInterruption
 import com.adormantsakthi.holup.ui.theme.Fresca
@@ -70,6 +72,10 @@ fun InterruptionScreen(
     // State to manage the fading of content and buttons
     var contentAlpha by remember { mutableStateOf(0f) }
     var buttonsAlpha by remember { mutableStateOf(0f) }
+
+    // Duration of animation
+    val animationDuration = listOf(1000, 3000, 5000)
+    val animationDurationIdx = HolUpPopupPrefs(context = LocalContext.current).getInterruptionDurationIndex()
 
     // This is where there will be the task list and the buttons to continue or not
     Box(
@@ -100,7 +106,7 @@ fun InterruptionScreen(
         // Main Content Column (Tasks list)
         val columnAlpha by animateFloatAsState(
             targetValue = contentAlpha,
-            animationSpec = tween(durationMillis = 500) // Duration for fading in the content
+            animationSpec = tween(durationMillis = animationDuration[animationDurationIdx]) // Duration for fading in the content
         )
 
         Column(
@@ -166,7 +172,7 @@ fun InterruptionScreen(
             // Fade-in effect for buttons after delay
             val buttonsAlphaAnim by animateFloatAsState(
                 targetValue = buttonsAlpha,
-                animationSpec = tween(durationMillis = 500) // Duration for fading in buttons
+                animationSpec = tween(durationMillis = animationDuration[animationDurationIdx] + 1000) // Duration for fading in buttons
             )
 
             // Wait for animation to finish and fade in buttons

@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
+import com.adormantsakthi.holup.storage.HolUpPopupPrefs
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.AntiDoomscrollDialogScreen
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.EditPopUpTextDialog
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.SetupAppsToLimitDialog
@@ -59,14 +60,18 @@ fun Settings(onNavigate: () -> Unit,
 
     // For Pop Up Duration
     val PopUpDuration = listOf("Short", "Medium", "Long")
-    val PopUpDurationIndex = remember { mutableIntStateOf(1) }
+    val PopUpDurationIndex = remember { mutableIntStateOf(HolUpPopupPrefs(context).getInterruptionDurationIndex()) }
 
     // For Delay Between App Switch
     val DelayBetweenAppSwitch = listOf("1 minute", "2 minutes", "5 minutes", "10 minutes")
-    val DelayBetweenAppSwitchIndex = remember { mutableIntStateOf(0) }
+    val DelayBetweenAppSwitchIndex = remember { mutableIntStateOf(HolUpPopupPrefs(context).getDelayBtwAppSwitchIndex()) }
+
+    // For re-interruption
+    val ReInterruptionTime = listOf("1 minute", "2 minutes", "5 minutes", "10 minutes")
+    val ReInterruptionTimeIndex = remember { mutableIntStateOf(HolUpPopupPrefs(context).getDelayBtwReinterruptionIndex()) }
 
     // variables that can change
-    var popUpText = remember { mutableStateOf("HolUp! You have these remaining tasks!") }
+    var popUpText = remember { mutableStateOf(HolUpPopupPrefs(context).getInterruptionText()) }
 
     // show Dialog Screens
     val showUpgradeToProDialog = remember { mutableStateOf(false) }
@@ -165,9 +170,11 @@ fun Settings(onNavigate: () -> Unit,
             })
             SettingsSection("Interruption Duration", PopUpDuration[PopUpDurationIndex.intValue], {
                 PopUpDurationIndex.intValue = (PopUpDurationIndex.intValue + 1) % 3
+                HolUpPopupPrefs(context).editInterruptionDuration(PopUpDurationIndex.intValue)
             })
             SettingsSection("Delay Between App Switch", DelayBetweenAppSwitch[DelayBetweenAppSwitchIndex.intValue], {
                 DelayBetweenAppSwitchIndex.intValue = (DelayBetweenAppSwitchIndex.intValue + 1) % 4
+                HolUpPopupPrefs(context).editDelayBtwAppSwitchIndex(DelayBetweenAppSwitchIndex.intValue)
             })
         }
 
@@ -208,9 +215,14 @@ fun Settings(onNavigate: () -> Unit,
                 disabledContainerColor = Color.Red
             )
         ) {
-            SettingsSection("Re-Popup", null, {
+            SettingsSection("Re-Interrupt", null, {
                 showAntiDoomscrollDialog.value = true
                 isAppBarVisible.value = false
+            })
+
+            SettingsSection("Re-Interrupt Timeout", ReInterruptionTime[ReInterruptionTimeIndex.intValue], {
+                ReInterruptionTimeIndex.intValue = (ReInterruptionTimeIndex.intValue + 1) % 4
+                HolUpPopupPrefs(context).editDelayBtwReinterruptionIndex(ReInterruptionTimeIndex.intValue)
             })
         }
 
