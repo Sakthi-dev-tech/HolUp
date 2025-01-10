@@ -2,7 +2,6 @@ package com.adormantsakthi.holup.ui.screens
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,22 +12,18 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,10 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.adormantsakthi.holup.ui.components.forStatistics.Graph
 import com.adormantsakthi.holup.ui.components.forStatistics.TimeUsageForApp
 
@@ -49,8 +42,8 @@ import com.adormantsakthi.holup.ui.components.forStatistics.TimeUsageForApp
 fun Statistics(onNavigate: () -> Unit) {
 
     var expanded = remember { mutableStateOf(false) }
-    var items = remember { mutableListOf("This week", "Last Week", "This Month") }
-    var selectedOption = remember { mutableStateOf(items.firstOrNull() ?: "None") }
+    var items = remember { mutableListOf("This Week", "Last Week", "This Month") }
+    var selectedOption = remember { mutableStateOf(items.firstOrNull() ?: "This Week") }
 
     // Example time spent (e.g., 8 hours 45 minutes out of 24 hours)
     val dailyAverageTimeSpentMinutes = 525 // minutes (8 hours 45 minutes)
@@ -61,6 +54,7 @@ fun Statistics(onNavigate: () -> Unit) {
 
     // Dummy value for Task Completion Rate
     val taskCompletionRate = 0.85f // Represents 85% completion
+
 
     Column(
         modifier = Modifier
@@ -83,7 +77,7 @@ fun Statistics(onNavigate: () -> Unit) {
         ){
             // Column that contains the graph and the row inside it will contain the button and dropdown menu
             Column {
-                Graph()
+                Graph(selectedOption.value)
 
                 Row(
                     modifier = Modifier

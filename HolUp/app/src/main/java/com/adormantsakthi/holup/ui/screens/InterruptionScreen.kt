@@ -77,6 +77,8 @@ fun InterruptionScreen(
     val animationDuration = listOf(1000, 3000, 5000)
     val animationDurationIdx = HolUpPopupPrefs(context = LocalContext.current).getInterruptionDurationIndex()
 
+    val holUpPopupPrefs = HolUpPopupPrefs(context = LocalContext.current)
+
     // This is where there will be the task list and the buttons to continue or not
     Box(
         modifier = Modifier
@@ -118,7 +120,7 @@ fun InterruptionScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                "HolUp! You have these remaining tasks!",
+                holUpPopupPrefs.getInterruptionText(),
                 style = TextStyle(
                     fontFamily = Fresca,
                     fontSize = 33.sp,
@@ -153,7 +155,7 @@ fun InterruptionScreen(
                     )
 
                     // Convert LiveData into State for Compose
-                    val todoList by TodoViewModel().todoList.observeAsState(emptyList())
+                    val todoList by TodoViewModel().remainingTodoList.observeAsState(emptyList())
                     Column(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
@@ -205,13 +207,15 @@ fun InterruptionScreen(
                     .alpha(buttonsAlphaAnim), // Apply alpha for fade-in
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
+
                 Button(
                     onClick = onDismiss,
                     modifier = Modifier
                         .width(150.dp)
                         .height(60.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(79, 79, 79, 255)
+                        containerColor = Color(79, 79, 79, 255),
+                        disabledContainerColor = Color(79, 79, 79, 180)
                     ),
                     enabled = animationsComplete.value
                 ) {
@@ -225,13 +229,15 @@ fun InterruptionScreen(
                     )
                 }
 
+
                 Button(
                     onClick = onClose,
                     modifier = Modifier
                         .width(150.dp)
                         .height(60.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red
+                        containerColor = Color.Red,
+                        disabledContainerColor = Color.Red.copy(alpha = 0.8f)
                     ),
                     enabled = animationsComplete.value
                 ) {
@@ -244,6 +250,7 @@ fun InterruptionScreen(
                         )
                     )
                 }
+
             }
         }
     }

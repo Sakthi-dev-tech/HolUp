@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -221,8 +222,8 @@ fun Settings(onNavigate: () -> Unit,
             })
 
             SettingsSection("Re-Interrupt Timeout", ReInterruptionTime[ReInterruptionTimeIndex.intValue], {
+                HolUpPopupPrefs(context).editDelayBtwReinterruptionIndex((ReInterruptionTimeIndex.intValue + 1) % 4)
                 ReInterruptionTimeIndex.intValue = (ReInterruptionTimeIndex.intValue + 1) % 4
-                HolUpPopupPrefs(context).editDelayBtwReinterruptionIndex(ReInterruptionTimeIndex.intValue)
             })
         }
 

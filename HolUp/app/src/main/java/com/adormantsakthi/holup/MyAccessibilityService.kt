@@ -95,7 +95,7 @@ class OverlayStateManager (context: Context) {
     private var timerRunnable: Runnable? = null
 
     private val antiDoomscrollTimeList = longListOf(60000, 120000, 300000, 600000)
-    private val antiDoomscrollTimeIndex = mutableIntStateOf(HolUpPopupPrefs(context).getDelayBtwReinterruptionIndex())
+    private val antiDoomscrollTimeIndex = HolUpPopupPrefs(context).getDelayBtwReinterruptionIndex()
 
     /**
      * Starts or resets the timer.
@@ -111,7 +111,7 @@ class OverlayStateManager (context: Context) {
         }
 
         // Post the runnable with the specified delay
-        handler.postDelayed(timerRunnable!!, antiDoomscrollTimeList[antiDoomscrollTimeIndex.intValue])
+        handler.postDelayed(timerRunnable!!, antiDoomscrollTimeList[antiDoomscrollTimeIndex])
     }
 
     /**
@@ -187,6 +187,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
 
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val packageName = event.packageName?.toString() ?: return
+            if (packageName == openedPackageName || packageName == "com.android.systemui") return
             CoroutineScope(Dispatchers.Default).launch {
                 overlayStateManager.onAppOpened(packageName)
             }

@@ -22,4 +22,7 @@ interface ToDoDao {
 
     @Query("SELECT * FROM TODO WHERE id = :id")
     fun getTodo(id: Int): LiveData<Todo>
+
+    @Query("SELECT * FROM TODO WHERE isCompleted = 0")
+    fun getRemainingTodo(): LiveData<List<Todo>>
 }
