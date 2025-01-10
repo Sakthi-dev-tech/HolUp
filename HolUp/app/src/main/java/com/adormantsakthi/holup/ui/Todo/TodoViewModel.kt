@@ -4,17 +4,30 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adormantsakthi.holup.functions.Todo
-import com.adormantsakthi.holup.functions.database.TodoDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Instant
+import java.util.Calendar
 import java.util.Date
 
 class TodoViewModel: ViewModel() {
 
-    val todoDao = MainApplication.todoDatabase.getTodoDao()
+    private val todoDao = MainApplication.todoDatabase.getTodoDao()
 
-    val todoList : LiveData<List<Todo>> = todoDao.getAllTodo()
+    private val midnightMillis: Long
+
+    init {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, 0) // Set hour to 12 AM
+        calendar.set(Calendar.MINUTE, 0)     // Set minutes to 0
+        calendar.set(Calendar.SECOND, 0)     // Set seconds to 0
+        calendar.set(Calendar.MILLISECOND, 0) // Set milliseconds to 0
+
+        midnightMillis = calendar.timeInMillis // Get the time in milliseconds
+    }
+
+
+    val todoList : LiveData<List<Todo>> = todoDao.getAllTodo(midnightMillis)
     val remainingTodoList: LiveData<List<Todo>> = todoDao.getRemainingTodo()
 
     val totalNumOfTodos: LiveData<Float> = todoDao.getTotalNumOfTodo()

@@ -8,8 +8,8 @@ import com.adormantsakthi.holup.functions.Todo
 
 @Dao
 interface ToDoDao {
-    @Query("SELECT * FROM TODO")
-    fun getAllTodo(): LiveData<List<Todo>>
+    @Query("SELECT * FROM TODO WHERE createdAt >= :midnightMillis")
+    fun getAllTodo(midnightMillis: Long): LiveData<List<Todo>>
 
     @Insert
     fun addTodo(todo: Todo)

@@ -43,6 +43,7 @@ import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.CreateTaskDialog
 import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.EditTaskDialog
 import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
 import com.adormantsakthi.holup.ui.theme.Karma
+import java.util.Calendar
 
 @Composable
 fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>) {
@@ -59,6 +60,18 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
     } else {
         isAppBarVisible.value = true
     }
+    val midnightMillis: Long
+
+
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.HOUR_OF_DAY, 0) // Set hour to 12 AM
+    calendar.set(Calendar.MINUTE, 0)     // Set minutes to 0
+    calendar.set(Calendar.SECOND, 0)     // Set seconds to 0
+    calendar.set(Calendar.MILLISECOND, 0) // Set milliseconds to 0
+
+    midnightMillis = calendar.timeInMillis // Get the time in milliseconds
+
+    println("Time: $midnightMillis")
 
     Column(
         modifier = Modifier
