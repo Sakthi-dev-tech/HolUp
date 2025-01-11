@@ -65,6 +65,20 @@ class LimitedAppsStorage(context: Context) {
     }
 
     /**
+     * Clears the stored set of package names, keeping only the last two elements.
+     */
+    fun clearPackagesKeepTwo() {
+        val currentSet = preferences.getStringSet(KEY_PACKAGES, emptySet()) ?: emptySet()
+
+        // Keep only the last two elements of the set
+        val updatedSet = currentSet.take(2).toSet()
+
+        val editor = preferences.edit()
+        editor.putStringSet(KEY_PACKAGES, updatedSet)
+        editor.apply()
+    }
+
+    /**
      * Checks if a specific package is in the target list.
      */
     fun containsPackage(packageName: String): Boolean {

@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 fun SettingsSection (
     title: String,
     content: String?,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val customRipple = ripple(color = MaterialTheme.colorScheme.primary)
     Column(

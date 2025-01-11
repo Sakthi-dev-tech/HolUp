@@ -55,15 +55,8 @@ fun Statistics(onNavigate: () -> Unit) {
     val context = LocalContext.current
 
     var expanded = remember { mutableStateOf(false) }
-    var items = remember { mutableListOf("This Week", "Last Week", "This Month") }
+    var items = listOf("This Week", "Last Week", "This Month")
     var selectedOption = remember { mutableStateOf(items.firstOrNull() ?: "This Week") }
-
-    // Example time spent (e.g., 8 hours 45 minutes out of 24 hours)
-    val dailyAverageTimeSpentMinutes = 525 // minutes (8 hours 45 minutes)
-    val totalMinutesInDay = 1440 // Total minutes in a day (24 hours)
-
-    // Convert time spent into a percentage for progress
-    val dailyAverageTimeSpentPercentage = dailyAverageTimeSpentMinutes / totalMinutesInDay.toFloat()
 
     // Dummy value for Task Completion Rate
     val totalNumOfTodos = TodoViewModel().totalNumOfTodos.observeAsState(0).value
@@ -74,6 +67,7 @@ fun Statistics(onNavigate: () -> Unit) {
     } else {
         0f // Avoid division by zero, return 0% completion rate
     }
+    val validTaskCompletionRate = taskCompletionRate.coerceIn(0f, 1f)
 
     // Get the applications with interruption set for it
     val listOfAppsWithInterruption = LimitedAppsStorage(context).getTargetPackages()
@@ -179,7 +173,7 @@ fun Statistics(onNavigate: () -> Unit) {
             // Task Completion Rate KPI
             KPIStat(
                 label = "Avg Task\nCompletion Rate",
-                progress = taskCompletionRate,
+                progress = validTaskCompletionRate.takeIf { !it.isNaN() } ?: 0f,
                 color = Color.Green
             )
         }

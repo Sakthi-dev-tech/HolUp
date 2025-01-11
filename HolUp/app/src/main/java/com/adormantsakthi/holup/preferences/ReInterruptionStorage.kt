@@ -3,6 +3,7 @@ package com.adormantsakthi.holup.storage
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.adormantsakthi.holup.storage.LimitedAppsStorage.Companion
 
 /**
  * Manages the persistent storage of target package names for the application.
@@ -47,6 +48,10 @@ class ReInterruptionStorage(context: Context) {
         preferences.edit {
             putStringSet(KEY_PACKAGES, packages)
         }
+    }
+
+    fun clearData() {
+        setTargetPackages(emptySet())
     }
 
     /**

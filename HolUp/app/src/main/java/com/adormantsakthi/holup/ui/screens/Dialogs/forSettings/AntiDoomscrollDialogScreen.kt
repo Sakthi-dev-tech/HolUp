@@ -68,6 +68,8 @@ fun AntiDoomscrollDialogScreen (
         val filteredListOfAppsForInterruption = remember { mutableStateOf<List<Triple<String, Drawable, ApplicationInfo>>>(
             emptyList()
         ) }
+
+        val isProcessingComplete = remember { mutableStateOf(false) }
         LaunchedEffect (Unit) {
             CoroutineScope(Dispatchers.IO).launch {
                 // Get the list of installed applications
@@ -78,10 +80,13 @@ fun AntiDoomscrollDialogScreen (
                     val packageName = triple.third.packageName // Extract package name from ApplicationInfo
                     packageName in listOfAppsWithInterruption
                 }
+
+                // Mark the processing as complete
+                isProcessingComplete.value = true
             }
         }
 
-        if (filteredListOfAppsForInterruption.value.isNotEmpty()) {
+        if (isProcessingComplete.value) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
