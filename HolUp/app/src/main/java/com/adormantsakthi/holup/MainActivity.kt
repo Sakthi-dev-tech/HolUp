@@ -1,9 +1,14 @@
 package com.adormantsakthi.holup
 
+import android.Manifest
 import android.accessibilityservice.AccessibilityService
 import android.app.AppOpsManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -27,11 +32,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.adormantsakthi.holup.ui.theme.HolUpTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.adormantsakthi.holup.functions.NotificationWorker
 import com.adormantsakthi.holup.ui.components.BottomNavBar
 import com.adormantsakthi.holup.ui.screens.Homescreen
 import com.adormantsakthi.holup.ui.screens.Settings
@@ -46,6 +54,7 @@ class MainActivity : ComponentActivity() {
     private val hasUsageStatsPerm =  mutableStateOf(false)
     private val accessibililityServiceOn = mutableStateOf(false)
     private val drawOverlayPermission = mutableStateOf(false)
+    private val canSendNotifications = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +104,7 @@ class MainActivity : ComponentActivity() {
                                     hasUsageStatsPerm.value,
                                     LocalContext.current,
                                     drawOverlayPermission.value,
+                                    canSendNotifications.value
                                 )
                             }
                         }
@@ -112,6 +122,7 @@ class MainActivity : ComponentActivity() {
         hasUsageStatsPerm.value = hasUsageStatsPermission()
         accessibililityServiceOn.value = isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)
         drawOverlayPermission.value = Settings.canDrawOverlays(this)
+        canSendNotifications.value = checkNotificationPermission(this)
     }
 
     // Helper functions to check if permissions are granted
@@ -136,5 +147,45 @@ class MainActivity : ComponentActivity() {
             Settings.Secure.getInt(context.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0)
 
         return accessibilityEnabled == 1 && enabledServices?.contains(componentName.flattenToString()) == true
+    }
+
+    // Notifications Permission
+    fun checkNotificationPermission(context: Context): Boolean {
+        // For Android 13 and above (API level 33+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+
+        // For Android 12 and below, no runtime permission needed
+        return true
+    }
+
+    fun sendTestNotification(context: Context) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Create notification channel (required for Android 8.0 and above)
+        val channel = NotificationChannel(
+            "test_channel",
+            "Test Channel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Channel for testing notifications"
+        }
+        notificationManager.createNotificationChannel(channel)
+
+        // Build the notification
+        val notification = NotificationCompat.Builder(context, "test_channel")
+            .setSmallIcon(android.R.drawable.ic_dialog_info) // Use your app icon here
+            .setContentTitle("Test Notification")
+            .setContentText("This is a test notification!")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .build()
+
+        // Show the notification
+        notificationManager.notify(1, notification)
     }
 }

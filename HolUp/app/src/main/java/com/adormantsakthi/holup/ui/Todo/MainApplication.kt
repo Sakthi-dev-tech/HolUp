@@ -3,6 +3,7 @@ package com.adormantsakthi.holup.ui.Todo
 import android.app.Application
 import android.util.Log
 import androidx.room.Room
+import com.adormantsakthi.holup.functions.NotificationWorker
 import com.adormantsakthi.holup.functions.database.TodoDatabase
 import com.adormantsakthi.holup.preferences.BillingManager
 
@@ -14,6 +15,8 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+
+        NotificationWorker.scheduleDaily(instance)
 
         // Initialize your database
         todoDatabase = Room.databaseBuilder(

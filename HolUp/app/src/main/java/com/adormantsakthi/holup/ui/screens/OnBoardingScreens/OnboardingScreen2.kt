@@ -1,6 +1,8 @@
 package com.adormantsakthi.holup.ui.screens.OnBoardingScreens
 
+import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -37,6 +40,7 @@ fun OnboardingScreen2(showSkipButton: MutableState<Boolean>) {
     var secondTextVisible by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val activity = context as Activity
 
     LaunchedEffect(Unit) {
         // Delay the appearance of the second text
@@ -50,6 +54,17 @@ fun OnboardingScreen2(showSkipButton: MutableState<Boolean>) {
         showSkipButton.value = true
 
         delay(2000)
+
+        val NOTIFICATION_PERMISSION_REQUEST_CODE = 100
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                NOTIFICATION_PERMISSION_REQUEST_CODE
+            )
+        }
+
+        delay(1000)
 
         val accessibilitySettings = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
         context.startActivity(accessibilitySettings)

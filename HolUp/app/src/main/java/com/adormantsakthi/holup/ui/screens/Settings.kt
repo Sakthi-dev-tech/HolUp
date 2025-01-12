@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -62,6 +63,15 @@ import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.SetupAppsToLimitD
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.UpgradeToProDialog
 import com.adormantsakthi.holup.ui.components.forSettings.SettingsSection
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.PurchaseHistoryDialog
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.compose.runtime.LaunchedEffect
+import androidx.core.app.ActivityCompat
+import androidx.core.os.registerForAllProfilingResults
 
 @Composable
 fun Settings(onNavigate: () -> Unit,
@@ -71,6 +81,7 @@ fun Settings(onNavigate: () -> Unit,
              hasUsageStatsPermission: Boolean,
              context: Context,
              canDrawOverlays: Boolean,
+             canSendNotifications: Boolean
 ) {
     // Billing stuff
     val billingManager = MainApplication.getInstance().billingManager
@@ -347,6 +358,21 @@ fun Settings(onNavigate: () -> Unit,
                 val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
+            }
+
+            SettingsSection(
+                "Notifications",
+                if (canSendNotifications) "On" else "Off"
+            ) {
+                val NOTIFICATION_PERMISSION_REQUEST_CODE = 100
+                if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    ActivityCompat.requestPermissions(
+                        activity,
+                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                        NOTIFICATION_PERMISSION_REQUEST_CODE
+                    )
+                }
+
             }
 
         }
