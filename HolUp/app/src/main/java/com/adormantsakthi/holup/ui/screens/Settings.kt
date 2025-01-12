@@ -75,7 +75,7 @@ fun Settings(onNavigate: () -> Unit,
     // Billing stuff
     val billingManager = MainApplication.getInstance().billingManager
     val activity = LocalContext.current as Activity
-    val userHasPlus = billingManager.isSubscribed.collectAsState(initial = false).value
+    val userHasPlus = billingManager.isSubscribed.collectAsState().value
     val billingHistory = billingManager.getPurchaseHistory()
 
     Log.d("Settings", "User subbed: $userHasPlus")
@@ -292,7 +292,7 @@ fun Settings(onNavigate: () -> Unit,
                     } else {
                         ReInterruptionTimeIndex.intValue = (ReInterruptionTimeIndex.intValue + 1) % 4
                     }
-                    HolUpPopupPrefs(context).editDelayBtwReinterruptionIndex((ReInterruptionTimeIndex.intValue + 1) % 4)
+                    HolUpPopupPrefs(context).editDelayBtwReinterruptionIndex(ReInterruptionTimeIndex.intValue)
                 }
             })
         }
