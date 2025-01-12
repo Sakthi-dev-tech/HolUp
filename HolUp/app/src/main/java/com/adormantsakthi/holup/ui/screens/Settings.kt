@@ -178,15 +178,17 @@ fun Settings(onNavigate: () -> Unit,
                 .align(Alignment.Start),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Outlined.Star,
-                tint = Color.White,
-                contentDescription = "Premium Features",
-                modifier = Modifier
-                    .padding(end = 10.dp)
-                    .size(30.dp)
+            if (!userHasPlus) {
+                Icon(
+                    imageVector = Icons.Outlined.Star,
+                    tint = Color.White,
+                    contentDescription = "Premium Features",
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .size(30.dp)
 
-            )
+                )
+            }
 
             Text(
                 text = "Edit HolUp! Popup",
@@ -242,15 +244,16 @@ fun Settings(onNavigate: () -> Unit,
                 .align(Alignment.Start),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Outlined.Star,
-                tint = Color.White,
-                contentDescription = "Premium Features",
-                modifier = Modifier
-                    .padding(end = 10.dp)
-                    .size(30.dp)
-
-            )
+            if (!userHasPlus) {
+                Icon(
+                    imageVector = Icons.Outlined.Star,
+                    tint = Color.White,
+                    contentDescription = "Premium Features",
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .size(30.dp)
+                )
+            }
 
             Text(
                 text = "Anti-Doomscroll",
