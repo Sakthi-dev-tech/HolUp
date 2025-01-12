@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener
 import com.android.billingclient.api.BillingClient
@@ -13,8 +15,11 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchaseHistoryRecord
+import com.android.billingclient.api.PurchaseHistoryResponseListener
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchaseHistoryParams
 import com.android.billingclient.api.QueryPurchasesParams
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,31 +53,6 @@ class BillingManager(private val context: Context) {
     }
 
     /**
-     * Represents subscription pricing information in a structured way.
-     * This makes it easier to display pricing details in your UI.
-     */
-    data class SubscriptionPricing(
-        val formattedPrice: String,        // e.g., "$9.99"
-        val currencyCode: String,          // e.g., "USD"
-        val priceAmountMicros: Long,       // e.g., 9990000 (for $9.99)
-        val billingPeriod: String,         // e.g., "P1M" for 1 month
-        val freeTrialPeriod: String?,      // e.g., "P7D" for 7 days trial
-        val introductoryPrice: String?     // e.g., "$4.99 for first month"
-    )
-
-    /**
-     * Helper function to format the subscription period in a human-readable way
-     */
-    fun formatSubscriptionPeriod(billingPeriod: String): String {
-        return when (billingPeriod) {
-            "P1M" -> "per month"
-            "P6M" -> "per 6 months"
-            "P1Y" -> "per year"
-            else -> "subscription"
-        }
-    }
-
-    /**
      * Get Product Details according to the User's location
      */
 
@@ -82,7 +62,7 @@ class BillingManager(private val context: Context) {
                 listOf(
                     QueryProductDetailsParams.Product.newBuilder()
                         .setProductId(productId)
-                        .setProductType(BillingClient.ProductType.SUBS) // Or ProductType.INAPP for one-time purchases
+                        .setProductType(BillingClient.ProductType.SUBS)
                         .build()
                 )
             )
@@ -103,7 +83,7 @@ class BillingManager(private val context: Context) {
     Acknowledges purchases after purchase status changes
      */
 
-    fun acknowledgePurchase(purchase: Purchase) {
+    private fun acknowledgePurchase(purchase: Purchase) {
         val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
             .setPurchaseToken(purchase.purchaseToken)
             .build()
@@ -164,6 +144,8 @@ class BillingManager(private val context: Context) {
                     // Handle other error cases
                     _isSubscribed.value = false
                 }
+
+                setupBillingClient()
             }
         }
 
@@ -299,5 +281,44 @@ class BillingManager(private val context: Context) {
         activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
             "https://play.google.com/store/account/subscriptions"
         )))
+    }
+
+    /**
+     * Query Previous Purchases made by the user for the application
+     */
+
+    fun getPurchaseHistory(): MutableState<List<Pair<String, Long>>> {
+        val res = mutableStateOf<List<Pair<String, Long>>>(emptyList())
+
+        if (billingClient?.isReady == true) {
+            val params = QueryPurchaseHistoryParams.newBuilder()
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build()
+
+            billingClient!!.queryPurchaseHistoryAsync(
+                params,
+                object : PurchaseHistoryResponseListener {
+                    override fun onPurchaseHistoryResponse(
+                        billingResult: BillingResult,
+                        purchaseHistoryList: List<PurchaseHistoryRecord>?
+                    ) {
+                        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                            purchaseHistoryList?.forEach { purchaseHistoryRecord ->
+                                val productID = purchaseHistoryRecord.products.firstOrNull().toString()
+                                val purchaseTime = purchaseHistoryRecord.purchaseTime.toLong()
+
+                                res.value += Pair(productID, purchaseTime)
+                            }
+                        } else {
+                            Log.e("BillingManager", "Error fetching purchase history: ${billingResult.debugMessage}")
+                        }
+                    }
+                }
+            )
+        } else {
+            Log.e("PurchaseHistory", "BillingClient is not ready.")
+        }
+
+        return res
     }
 }

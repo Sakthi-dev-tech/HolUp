@@ -62,7 +62,7 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
         isAppBarVisible.value = true
     }
 
-    val numOfTimesLimitedAppsAccessed = NumOfTimesLimitedAppsAccessedStorage.getNumberOfTimes(LocalContext.current)
+    val numOfTimesLimitedAppsAccessed = NumOfTimesLimitedAppsAccessedStorage.refreshCounter(LocalContext.current)
 
     Column(
         modifier = Modifier
@@ -124,7 +124,6 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
                             }
                     )
                 }
-                HorizontalDivider(color = Color.Black, thickness = 2.dp)
 
                 // to space out between the line and the tasks
                 Spacer(Modifier.height(10.dp))

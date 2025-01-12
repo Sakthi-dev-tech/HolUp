@@ -3,8 +3,6 @@ package com.adormantsakthi.holup.ui.screens
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ApplicationInfo
-import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -12,7 +10,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,9 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -57,8 +52,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import com.adormantsakthi.holup.storage.HolUpPopupPrefs
 import com.adormantsakthi.holup.storage.LimitedAppsStorage
 import com.adormantsakthi.holup.storage.ReInterruptionStorage
@@ -68,6 +61,7 @@ import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.EditPopUpTextDial
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.SetupAppsToLimitDialog
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.UpgradeToProDialog
 import com.adormantsakthi.holup.ui.components.forSettings.SettingsSection
+import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.PurchaseHistoryDialog
 
 @Composable
 fun Settings(onNavigate: () -> Unit,
@@ -82,6 +76,7 @@ fun Settings(onNavigate: () -> Unit,
     val billingManager = MainApplication.getInstance().billingManager
     val activity = LocalContext.current as Activity
     val userHasPlus = billingManager.isSubscribed.collectAsState(initial = false).value
+    val billingHistory = billingManager.getPurchaseHistory()
 
     Log.d("Settings", "User subbed: $userHasPlus")
 
@@ -121,6 +116,7 @@ fun Settings(onNavigate: () -> Unit,
     val showEditPopUpTextDialog = remember { mutableStateOf(false) }
     val showAntiDoomscrollDialog = remember { mutableStateOf(false) }
     val showSetUpAppsToLimitDialog = remember { mutableStateOf(false) }
+    val showPurchaseHistoryDialog = remember { mutableStateOf(false) }
 
     val showToast = remember { mutableStateOf(false) }
 
@@ -376,7 +372,8 @@ fun Settings(onNavigate: () -> Unit,
             )
         ) {
             SettingsSection("Payment History", null, {
-
+                showPurchaseHistoryDialog.value = true
+                isAppBarVisible.value = false
             })
             SettingsSection("Cancel Subscription",
                 "Cancel Your Ongoing Subscription :("
@@ -392,6 +389,7 @@ fun Settings(onNavigate: () -> Unit,
     EditPopUpTextDialog(showEditPopUpTextDialog, isAppBarVisible, popUpText, selectedItemIndex)
     AntiDoomscrollDialogScreen(showAntiDoomscrollDialog, isAppBarVisible, selectedItemIndex)
     SetupAppsToLimitDialog(showSetUpAppsToLimitDialog, isAppBarVisible, selectedItemIndex)
+    PurchaseHistoryDialog(showPurchaseHistoryDialog, isAppBarVisible, billingHistory, selectedItemIndex)
 
     SubscriptionToast("This is a Plus Feature!", showToast.value,
         {
@@ -440,7 +438,7 @@ fun SubscriptionToast(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Warning, // Using error icon as an example
+                        imageVector = Icons.Default.Info, // Using error icon as an example
                         contentDescription = "Toast Icon",
                         tint = Color.Yellow, // Yellow icon
                         modifier = Modifier.size(32.dp)

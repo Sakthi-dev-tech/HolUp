@@ -2,6 +2,8 @@ package com.adormantsakthi.holup.ui.screens
 
 import GetDownloadedApps
 import android.content.pm.ApplicationInfo
+import android.graphics.RenderEffect
+import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -31,17 +33,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.storage.LimitedAppsStorage
+import com.adormantsakthi.holup.ui.Todo.MainApplication
 import com.adormantsakthi.holup.ui.Todo.TodoViewModel
 import com.adormantsakthi.holup.ui.components.forStatistics.Graph
 import com.adormantsakthi.holup.ui.components.forStatistics.TimeUsageForApp
@@ -53,6 +59,9 @@ import kotlinx.coroutines.launch
 fun Statistics(onNavigate: () -> Unit) {
 
     val context = LocalContext.current
+
+    val billingManager = MainApplication.getInstance().billingManager
+    val isSubbed = !billingManager.isSubscribed.collectAsState().value
 
     var expanded = remember { mutableStateOf(false) }
     var items = listOf("This Week", "Last Week", "This Month")
@@ -90,126 +99,152 @@ fun Statistics(onNavigate: () -> Unit) {
         }
     }
 
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(state = ScrollState(0)),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            "Your Statistics",
-            style = MaterialTheme.typography.titleLarge,
+        Column(
             modifier = Modifier
-                .padding(vertical = 20.dp, horizontal = 15.dp)
-                .fillMaxWidth()
-        )
+                .fillMaxSize()
+                .verticalScroll(state = ScrollState(0))
+                .blur( if (!isSubbed) 20.dp else 0.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Your Statistics",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .padding(vertical = 20.dp, horizontal = 15.dp)
+                    .fillMaxWidth()
+            )
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp)
-        ){
-            // Column that contains the graph and the row inside it will contain the button and dropdown menu
-            Column {
-                Graph(selectedOption.value)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp)
+            ){
+                // Column that contains the graph and the row inside it will contain the button and dropdown menu
+                Column {
+                    Graph(selectedOption.value)
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp, top = 10.dp),
-                    horizontalArrangement = Arrangement.End
-                ){
-                    Button(
-                        onClick = { expanded.value = true },
-                    ) {
-                        Text(
-                            selectedOption.value,
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
-
-                    // Box for positioning the DropdownMenu
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .fillMaxHeight()
-                            .width(10.dp),
-                        contentAlignment = Alignment.BottomEnd
-                    ) {
-                        DropdownMenu(
-                            expanded = expanded.value,
-                            onDismissRequest = { expanded.value = false },
-                            modifier = Modifier
-                                .background(Color.DarkGray)
+                            .fillMaxWidth()
+                            .padding(bottom = 10.dp, top = 10.dp),
+                        horizontalArrangement = Arrangement.End
+                    ){
+                        Button(
+                            onClick = { expanded.value = true },
                         ) {
-                            items.forEach { item ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            item,
-                                            style = MaterialTheme.typography.labelSmall
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedOption.value = item
-                                        expanded.value = false
-                                    }
-                                )
+                            Text(
+                                selectedOption.value,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+
+                        // Box for positioning the DropdownMenu
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(10.dp),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            DropdownMenu(
+                                expanded = expanded.value,
+                                onDismissRequest = { expanded.value = false },
+                                modifier = Modifier
+                                    .background(Color.DarkGray)
+                            ) {
+                                items.forEach { item ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                item,
+                                                style = MaterialTheme.typography.labelSmall
+                                            )
+                                        },
+                                        onClick = {
+                                            selectedOption.value = item
+                                            expanded.value = false
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 30.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 30.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            // Task Completion Rate KPI
-            KPIStat(
-                label = "Avg Task\nCompletion Rate",
-                progress = validTaskCompletionRate.takeIf { !it.isNaN() } ?: 0f,
-                color = Color.Green
-            )
-        }
-
-        // box for the time usage for the day
-        Box(
-            modifier = Modifier
-                .padding(top = 30.dp)
-                .fillMaxWidth(0.85f)
-                .aspectRatio(2/3f)
-                .clip(RoundedCornerShape(30.dp))
-                .background(MaterialTheme.colorScheme.primary)
-        ) {
-            Column {
-                Text(
-                    "Apps Usage For The Day",
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth()
+                // Task Completion Rate KPI
+                KPIStat(
+                    label = "Avg Task\nCompletion Rate",
+                    progress = validTaskCompletionRate.takeIf { !it.isNaN() } ?: 0f,
+                    color = Color.Green
                 )
+            }
 
-                HorizontalDivider(thickness = 2.dp, color = Color.Black)
+            // box for the time usage for the day
+            Box(
+                modifier = Modifier
+                    .padding(top = 30.dp)
+                    .fillMaxWidth(0.85f)
+                    .aspectRatio(2/3f)
+                    .clip(RoundedCornerShape(30.dp))
+                    .background(MaterialTheme.colorScheme.primary)
+            ) {
+                Column {
+                    Text(
+                        "Apps Usage For The Day",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .fillMaxWidth()
+                    )
 
-                Column (
-                    modifier = Modifier
-                        .verticalScroll(state = ScrollState(0))
-                ) {
-                    filteredListOfAppsForInterruption.value.forEach({ app ->
-                        TimeUsageForApp(app.second, app.first, app.third)
-                    })
+                    HorizontalDivider(thickness = 2.dp, color = Color.Black)
+
+                    Column (
+                        modifier = Modifier
+                            .verticalScroll(state = ScrollState(0))
+                    ) {
+                        filteredListOfAppsForInterruption.value.forEach({ app ->
+                            TimeUsageForApp(app.second, app.first, app.third)
+                        })
+                    }
                 }
             }
+
+            Spacer(Modifier.height(125.dp))
         }
 
-        Spacer(Modifier.height(125.dp))
+        if (!isSubbed) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.90f)
+                    .height(100.dp)
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.8f))
+                    .align(Alignment.Center),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    "Please Upgrade to Plus to Access Your Statistics :)",
+                    style = MaterialTheme.typography.labelMedium.copy(color = Color.White, textAlign = TextAlign.Center),
+                    modifier = Modifier
+                        .padding(20.dp),
+
+                )
+            }
+
+        }
     }
 }
 

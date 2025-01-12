@@ -80,7 +80,7 @@ fun YearlyPlan() {
                     .size(200.dp),
                 contentAlignment = Alignment.Center
             ) {
-                LottieAnimation()
+                MealAnimation()
             }
 
             Text(
@@ -116,9 +116,9 @@ fun YearlyPlan() {
                     )
 
                     Text(
-                        "7 days free trial for new users*",
+                        "1 month free trial for new users*",
                         style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 10.sp,
+                            fontSize = 9.sp,
                             textAlign = TextAlign.Center
                         )
                     )
@@ -129,7 +129,7 @@ fun YearlyPlan() {
 }
 
 @Composable
-fun LottieAnimation() {
+fun MealAnimation() {
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.Url("https://lottie.host/4dee2eb8-7ddd-43cf-aa3d-4295839c9c15/B5KpUBpwlN.json"))
 
     if (composition != null) {
