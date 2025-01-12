@@ -303,12 +303,14 @@ class BillingManager(private val context: Context) {
                         purchaseHistoryList: List<PurchaseHistoryRecord>?
                     ) {
                         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                            purchaseHistoryList?.forEach { purchaseHistoryRecord ->
+                            val purchaseList = purchaseHistoryList?.map { purchaseHistoryRecord ->
                                 val productID = purchaseHistoryRecord.products.firstOrNull().toString()
-                                val purchaseTime = purchaseHistoryRecord.purchaseTime.toLong()
+                                val purchaseTime = purchaseHistoryRecord.purchaseTime
+                                Pair(productID, purchaseTime)
+                            } ?: emptyList()
 
-                                res.value += Pair(productID, purchaseTime)
-                            }
+                            // Update the state with the fetched purchase history
+                            res.value = purchaseList
                         } else {
                             Log.e("BillingManager", "Error fetching purchase history: ${billingResult.debugMessage}")
                         }
