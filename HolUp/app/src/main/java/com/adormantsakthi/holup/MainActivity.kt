@@ -11,7 +11,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -22,24 +21,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.adormantsakthi.holup.ui.theme.HolUpTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.adormantsakthi.holup.functions.NotificationWorker
 import com.adormantsakthi.holup.ui.components.BottomNavBar
 import com.adormantsakthi.holup.ui.screens.Homescreen
 import com.adormantsakthi.holup.ui.screens.Settings
@@ -47,18 +40,28 @@ import com.adormantsakthi.holup.ui.screens.Statistics
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     private val hasUsageStatsPerm =  mutableStateOf(false)
-    private val accessibililityServiceOn = mutableStateOf(false)
+    private val accessibilityServiceOn = mutableStateOf(false)
     private val drawOverlayPermission = mutableStateOf(false)
     private val canSendNotifications = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition{true}
+
+        // Get rid of the splash screen after a second...maybe can run some async functions here
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(1000)
+            splashScreen.setKeepOnScreenCondition{false}
+        }
+
         setContent {
             HolUpTheme {
                 val context = this
@@ -100,7 +103,7 @@ class MainActivity : ComponentActivity() {
                                 Settings(onNavigate = {navController.navigate("settings")},
                                     isAppBarVisible,
                                     selectedItemIndex,
-                                    accessibililityServiceOn.value,
+                                    accessibilityServiceOn.value,
                                     hasUsageStatsPerm.value,
                                     LocalContext.current,
                                     drawOverlayPermission.value,
@@ -120,7 +123,7 @@ class MainActivity : ComponentActivity() {
 
         // Update permission states
         hasUsageStatsPerm.value = hasUsageStatsPermission()
-        accessibililityServiceOn.value = isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)
+        accessibilityServiceOn.value = isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)
         drawOverlayPermission.value = Settings.canDrawOverlays(this)
         canSendNotifications.value = checkNotificationPermission(this)
     }

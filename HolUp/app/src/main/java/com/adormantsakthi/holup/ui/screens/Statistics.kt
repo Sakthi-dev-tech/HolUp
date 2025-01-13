@@ -231,7 +231,7 @@ fun Statistics(onNavigate: () -> Unit) {
                     .fillMaxWidth(0.90f)
                     .height(100.dp)
                     .clip(RoundedCornerShape(40.dp))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.8f))
+                    .background(Color(255, 80,5))
                     .align(Alignment.Center),
                 contentAlignment = Alignment.Center,
             ) {

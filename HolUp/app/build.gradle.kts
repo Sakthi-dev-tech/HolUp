@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.billing)
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.core.splashscreen)
     annotationProcessor(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     implementation(libs.androidx.activity.ktx)
