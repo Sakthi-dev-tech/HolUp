@@ -139,7 +139,7 @@ fun Settings(onNavigate: () -> Unit,
     ) {
         Text(
             "Settings",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.secondary),
             modifier = Modifier
                 .padding(vertical = 20.dp, horizontal = 15.dp)
                 .fillMaxWidth()
@@ -174,7 +174,7 @@ fun Settings(onNavigate: () -> Unit,
 
                     Text(
                         "Upgrade to HolUp! Plus",
-                        style = MaterialTheme.typography.titleMedium.copy(Color.Black),
+                        style = MaterialTheme.typography.titleMedium.copy(color = Color.Black),
                         modifier = Modifier.padding(end = 10.dp),
                     )
                 }
@@ -192,7 +192,7 @@ fun Settings(onNavigate: () -> Unit,
             if (!userHasPlus) {
                 Icon(
                     imageVector = Icons.Outlined.Star,
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.secondary,
                     contentDescription = "Premium Features",
                     modifier = Modifier
                         .padding(end = 10.dp)
@@ -203,8 +203,7 @@ fun Settings(onNavigate: () -> Unit,
 
             Text(
                 text = "Edit HolUp! Popup",
-                style = MaterialTheme.typography.titleSmall,
-                color = Color.White,
+                style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
             )
         }
 
@@ -213,11 +212,8 @@ fun Settings(onNavigate: () -> Unit,
                 .fillMaxWidth(0.85f),
             shape = RoundedCornerShape(20.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
-            colors = CardColors(
+            colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = Color.Red,
-                disabledContentColor = Color.Red,
-                disabledContainerColor = Color.Red
             )
         ) {
             SettingsSection("Interruption Text", popUpText.value, {
@@ -258,7 +254,7 @@ fun Settings(onNavigate: () -> Unit,
             if (!userHasPlus) {
                 Icon(
                     imageVector = Icons.Outlined.Star,
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.secondary,
                     contentDescription = "Premium Features",
                     modifier = Modifier
                         .padding(end = 10.dp)
@@ -268,8 +264,7 @@ fun Settings(onNavigate: () -> Unit,
 
             Text(
                 text = "Anti-Doomscroll",
-                style = MaterialTheme.typography.titleSmall,
-                color = Color.White,
+                style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
             )
         }
 
@@ -312,8 +307,7 @@ fun Settings(onNavigate: () -> Unit,
 
         Text(
             text = "Setup",
-            style = MaterialTheme.typography.titleSmall,
-            color = Color.White,
+            style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
             modifier = Modifier
                 .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
                 .align(Alignment.Start)
@@ -381,8 +375,7 @@ fun Settings(onNavigate: () -> Unit,
 
         Text(
             text = "Payments",
-            style = MaterialTheme.typography.titleSmall,
-            color = Color.White,
+            style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
             modifier = Modifier
                 .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
                 .align(Alignment.Start)

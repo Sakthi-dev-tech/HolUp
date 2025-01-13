@@ -1,8 +1,10 @@
 package com.adormantsakthi.holup.ui.components.forSettings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,6 +27,8 @@ fun SettingsSection (
     val customRipple = ripple(color = MaterialTheme.colorScheme.primary)
     Column(
         modifier = Modifier
+            .background(MaterialTheme.colorScheme.secondary)
+            .padding(vertical = if (content != null) 10.dp else 20.dp, horizontal = 10.dp)
             .fillMaxWidth()
             .clickable(
                 interactionSource = null,
@@ -33,30 +37,28 @@ fun SettingsSection (
                 onClickLabel = null,
                 role = null,
                 onClick = onClick
-            ) // Make the section clickable
-            .padding(vertical = if (content != null) 10.dp else 20.dp, horizontal = 10.dp), // Add more spacing when there is no subtext
+            ),
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.DarkGray,
+            style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.primary),
             fontSize = 16.sp,
-            modifier = Modifier.padding(start = 10.dp)
+            modifier = Modifier.padding(start = 10.dp).background(MaterialTheme.colorScheme.secondary)
         )
 
         if (content != null) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = content,
-                style = MaterialTheme.typography.labelSmall,
-                color = Color.Black,
+                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.background),
                 fontSize = 14.sp,
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.secondary)
             )
         }
     }
 
-    HorizontalDivider(color = Color.DarkGray)
+    HorizontalDivider(color = MaterialTheme.colorScheme.background)
 }

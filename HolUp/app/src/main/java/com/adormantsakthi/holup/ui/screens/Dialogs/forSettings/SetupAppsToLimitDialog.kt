@@ -63,7 +63,7 @@ fun SetupAppsToLimitDialog (
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 Column (
                     modifier = Modifier
@@ -96,7 +96,7 @@ fun SetupAppsToLimitDialog (
                             .padding(top = 30.dp, bottom = 30.dp)
                             .clip(RoundedCornerShape(20.dp))
                             .fillMaxWidth(0.95f)
-                            .aspectRatio(1/1.2f)
+                            .aspectRatio(1/1.8f)
                             .background(Color.DarkGray)
                     ) {
                         Column (
@@ -142,7 +142,7 @@ fun SetupAppsToLimitDialog (
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black),
+                    .background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(

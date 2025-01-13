@@ -44,7 +44,7 @@ fun PurchaseHistoryComponent(
             .fillMaxWidth(0.95f)
             .height(150.dp)
             .clip(RoundedCornerShape(30.dp))
-            .background(MaterialTheme.colorScheme.secondary),
+            .background(MaterialTheme.colorScheme.primary),
         contentAlignment = Alignment.Center
     ) {
         Row (

@@ -149,6 +149,8 @@ fun Graph(selectedOption: String) {
                     bottomAxis = horizontalAxis,
                 ),
                 modelProducer,
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
             )
         }
     }

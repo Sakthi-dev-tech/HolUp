@@ -38,7 +38,7 @@ fun PurchaseHistoryDialog(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Column (
                 modifier = Modifier

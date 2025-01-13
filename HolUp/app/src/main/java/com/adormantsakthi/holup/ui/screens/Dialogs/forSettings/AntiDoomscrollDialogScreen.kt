@@ -90,7 +90,7 @@ fun AntiDoomscrollDialogScreen (
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 Column (
                     modifier = Modifier
@@ -195,7 +195,7 @@ fun AntiDoomscrollDialogScreen (
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black),
+                    .background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(

@@ -112,7 +112,7 @@ fun Statistics(onNavigate: () -> Unit) {
         ) {
             Text(
                 "Your Statistics",
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.secondary),
                 modifier = Modifier
                     .padding(vertical = 20.dp, horizontal = 15.dp)
                     .fillMaxWidth()
@@ -268,7 +268,7 @@ fun KPIStat(
                     .fillMaxSize(),
                 strokeWidth = 10.dp,
                 color = color,
-                trackColor = Color.LightGray
+                trackColor = MaterialTheme.colorScheme.secondary
             )
             // Text in the center of the progress indicator
             Text(

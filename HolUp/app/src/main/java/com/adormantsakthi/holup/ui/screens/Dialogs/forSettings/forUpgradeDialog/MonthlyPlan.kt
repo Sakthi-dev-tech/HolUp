@@ -50,7 +50,7 @@ fun MonthlyPlan() {
         val priceCurrencyCode: String = ""
     )
 
-    val _pricingDetails = MutableStateFlow(PricingDetails())
+    val _pricingDetails = MutableStateFlow(PricingDetails(price = "2.98", priceCurrencyCode = "SGD"))
     val pricingDetails = _pricingDetails.asStateFlow()
 
     billingManager.getProductDetails("monthly_subscription", {
@@ -60,7 +60,9 @@ fun MonthlyPlan() {
             val price = pricingPhase?.formattedPrice
             val priceCurrencyCode = pricingPhase?.priceCurrencyCode
 
-            _pricingDetails.value = PricingDetails(price!!, priceCurrencyCode!!)
+            if (price != null && priceCurrencyCode != null) {
+                _pricingDetails.value = PricingDetails(price, priceCurrencyCode)
+            }
         }
     })
 
@@ -97,7 +99,7 @@ fun MonthlyPlan() {
 
             ElevatedButton(
                 modifier = Modifier
-                    .width(150.dp)
+                    .width(175.dp)
                     .height(55.dp),
                 onClick = { billingManager.purchaseSubscription(context, isMonthly = true) }
                 ,

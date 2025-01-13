@@ -87,7 +87,7 @@ fun SelectAppsComponentForDialogs (
                     .padding(start = 10.dp),
                 colors = CheckboxDefaults.colors(
                     uncheckedColor = Color.Black,
-                    checkedColor = Color.Black,
+                    checkedColor = MaterialTheme.colorScheme.background,
                     checkmarkColor = MaterialTheme.colorScheme.secondary
                 )
             )

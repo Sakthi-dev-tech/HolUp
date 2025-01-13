@@ -72,7 +72,7 @@ fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime
     ) {
         Text(
             "Welcome Home,",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge.copy(MaterialTheme.colorScheme.secondary),
             modifier = Modifier
                 .padding(vertical = 20.dp, horizontal = 15.dp)
                 .fillMaxWidth()
