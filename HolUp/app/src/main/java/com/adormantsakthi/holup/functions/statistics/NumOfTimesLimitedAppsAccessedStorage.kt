@@ -3,6 +3,7 @@ package com.adormantsakthi.holup.functions.statistics
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import java.util.Calendar
 
 object NumOfTimesLimitedAppsAccessedStorage {
     private const val PREFS_NAME = "num_of_times_limited_apps_accessed"
@@ -20,17 +21,25 @@ object NumOfTimesLimitedAppsAccessedStorage {
     fun refreshCounter(context: Context): Int {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-        val lastDate = prefs.getLong(LAST_DATE, System.currentTimeMillis())
-        val currentDate = System.currentTimeMillis()
-        val millisecondsInADay = 24 * 60 * 60 * 1000L
+        val calendar = Calendar.getInstance()
 
-        Log.d("Last Date", lastDate.toString())
-        Log.d("Current Date", currentDate.toString())
+        // Set the time to today at 12 AM
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
 
-        if (lastDate + millisecondsInADay < currentDate) {
-            // New day
-            prefs.edit().putLong(LAST_DATE, lastDate + millisecondsInADay).apply()
-            prefs.edit().putInt(NUMBER_OF_TIMES, 0).apply()
+        val todayAtMidnightInMillis = calendar.timeInMillis
+
+        // Retrieve the last recorded date
+        val lastDate = prefs.getLong(LAST_DATE, 0)
+
+        if (lastDate < todayAtMidnightInMillis) {
+            // New day: reset the counter and update the last date
+            prefs.edit()
+                .putLong(LAST_DATE, todayAtMidnightInMillis)
+                .putInt(NUMBER_OF_TIMES, 0)
+                .apply()
         }
 
         return prefs.getInt(NUMBER_OF_TIMES, 0)

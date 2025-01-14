@@ -33,6 +33,7 @@ import com.adormantsakthi.holup.ui.theme.HolUpTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.adormantsakthi.holup.functions.statistics.NumOfTimesLimitedAppsAccessedStorage
 import com.adormantsakthi.holup.ui.components.BottomNavBar
 import com.adormantsakthi.holup.ui.screens.Homescreen
 import com.adormantsakthi.holup.ui.screens.Settings
@@ -61,6 +62,8 @@ class MainActivity : ComponentActivity() {
             delay(1000)
             splashScreen.setKeepOnScreenCondition{false}
         }
+
+        NumOfTimesLimitedAppsAccessedStorage.refreshCounter(this)
 
         setContent {
             HolUpTheme {

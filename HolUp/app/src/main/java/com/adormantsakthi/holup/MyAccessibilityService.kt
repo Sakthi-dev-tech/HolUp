@@ -112,8 +112,13 @@ class OverlayStateManager (context: Context) {
             overlayClosed.set(false)
         }
 
-        // Post the runnable with the specified delay
-        handler.postDelayed(timerRunnable!!, antiDoomscrollTimeList[antiDoomscrollTimeIndex])
+        try {
+            // Post the runnable with the specified delay
+            handler.postDelayed(timerRunnable!!, antiDoomscrollTimeList[antiDoomscrollTimeIndex])
+        } catch (e: Exception) {
+            Log.e("Timer For Anti-Doomscroll", e.toString())
+        }
+
     }
 
     /**
@@ -189,7 +194,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
 
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val packageName = event.packageName?.toString() ?: return
-            if (packageName == openedPackageName || packageName == "com.android.systemui") return
+            if (packageName == openedPackageName || packageName == "com.android.systemui" || packageName == "com.adormantsakthi.holup") return
             CoroutineScope(Dispatchers.Default).launch {
                 overlayStateManager.onAppOpened(packageName)
             }

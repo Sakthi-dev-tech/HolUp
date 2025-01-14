@@ -2,10 +2,14 @@ package com.adormantsakthi.holup.functions
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.work.*
+import com.adormantsakthi.holup.MainActivity
+import com.adormantsakthi.holup.R
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -18,6 +22,19 @@ class NotificationWorker(
         showNotification()
         return Result.success()
     }
+
+    // Create an Intent to open the app
+    val intent = Intent(context, MainActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    }
+
+    // Wrap the Intent in a PendingIntent
+    val pendingIntent = PendingIntent.getActivity(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
 
     private fun showNotification() {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -36,11 +53,12 @@ class NotificationWorker(
 
         // Build the notification
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info) /** This is for the notification icon (CHANGE LATER!!!) */
+            .setSmallIcon(R.drawable.palm_logo) /** This is for the notification icon (CHANGE LATER!!!) */
             .setContentTitle("Daily Reminder")
             .setContentText("Time to set your tasks for today!")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
             .build()
 
         // Show the notification
@@ -77,7 +95,7 @@ class NotificationWorker(
             WorkManager.getInstance(context)
                 .enqueueUniquePeriodicWork(
                     "daily_notification_work",
-                    ExistingPeriodicWorkPolicy.REPLACE, // Replace any existing work
+                    ExistingPeriodicWorkPolicy.UPDATE, // Replace any existing work
                     dailyWorkRequest
                 )
         }

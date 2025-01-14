@@ -70,6 +70,9 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.os.registerForAllProfilingResults
 
@@ -105,6 +108,15 @@ fun Settings(onNavigate: () -> Unit,
         HolUpPopupPrefs(context).editInterruptionText("HolUp! You have these remaining tasks!")
         ReInterruptionStorage(context).clearData()
         LimitedAppsStorage(context).clearPackagesKeepTwo()
+    }
+
+    fun getAppVersion(context: Context): String? {
+        return try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName // Returns versionName from build.gradle
+        } catch (e: Exception) {
+            "Unknown" // Handle exception if the version info isn't found
+        }
     }
 
     // For Pop Up Duration
@@ -402,6 +414,16 @@ fun Settings(onNavigate: () -> Unit,
             ) {
                 billingManager.cancelSubscription(activity)
             }
+        }
+
+        getAppVersion(context)?.let {
+            Text(
+                "App Version: $it",
+                color = Color.Gray,
+                fontSize = 14.sp,
+                fontFamily = FontFamily.SansSerif,
+                modifier = Modifier.padding(8.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(125.dp))
