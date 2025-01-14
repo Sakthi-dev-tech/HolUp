@@ -24,7 +24,7 @@ fun SettingsSection (
     content: String?,
     onClick: () -> Unit,
 ) {
-    val customRipple = ripple(color = MaterialTheme.colorScheme.primary)
+    val customRipple = ripple(color = MaterialTheme.colorScheme.primary, bounded = true)
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.secondary)
@@ -36,7 +36,7 @@ fun SettingsSection (
                 enabled = true,
                 onClickLabel = null,
                 role = null,
-                onClick = onClick
+                onClick = onClick,
             ),
     ) {
         Text(

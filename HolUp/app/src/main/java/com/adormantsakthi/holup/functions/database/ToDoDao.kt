@@ -23,8 +23,8 @@ interface ToDoDao {
     @Query("SELECT * FROM TODO WHERE id = :id")
     fun getTodo(id: Int): LiveData<Todo>
 
-    @Query("SELECT * FROM TODO WHERE isCompleted = 0")
-    fun getRemainingTodo(): LiveData<List<Todo>>
+    @Query("SELECT * FROM TODO WHERE isCompleted = 0 AND createdAt >= :midnightMillis")
+    fun getRemainingTodo(midnightMillis: Long): LiveData<List<Todo>>
 
     @Query("SELECT COUNT(*) AS total_count FROM TODO")
     fun getTotalNumOfTodo(): LiveData<Float>

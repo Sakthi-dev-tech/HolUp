@@ -113,6 +113,7 @@ class OverlayStateManager (context: Context) {
         }
 
         try {
+            Log.d("Timer For Anti-Doomscroll", antiDoomscrollTimeList[antiDoomscrollTimeIndex].toString())
             // Post the runnable with the specified delay
             handler.postDelayed(timerRunnable!!, antiDoomscrollTimeList[antiDoomscrollTimeIndex])
         } catch (e: Exception) {
@@ -190,17 +191,28 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
     private lateinit var overlayStateManager: OverlayStateManager
     private var openedPackageName: String = ""
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+    private var lastEventTime: Long = 0L // Tracks the last event timestamp
+    private val debounceTimeMS = 750L // Adjust debounce time as needed
 
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val packageName = event.packageName?.toString() ?: return
+
+            // Debounce logic: Ignore events that happen too quickly
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastEventTime < debounceTimeMS) {
+                return
+            }
+            lastEventTime = currentTime
+
             if (packageName == openedPackageName || packageName == "com.android.systemui" || packageName == "com.adormantsakthi.holup") return
+
             CoroutineScope(Dispatchers.Default).launch {
                 overlayStateManager.onAppOpened(packageName)
             }
-            if (packageName != "com.adormantsakthi.holup") {
-                openedPackageName = packageName
-            }
+
+            openedPackageName = packageName
+
             Log.d("App Currently Open", packageName)
         }
     }

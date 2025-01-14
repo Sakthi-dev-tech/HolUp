@@ -163,7 +163,7 @@ fun InterruptionScreen(
                             .clip(RoundedCornerShape(20.dp))
                             .verticalScroll(state = ScrollState(0))
                             .background(Color(52, 49, 49, 255)),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         todoList.forEach { todo ->
                             TaskBoxInInterruption(todo)

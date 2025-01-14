@@ -35,8 +35,7 @@ fun TaskBoxInInterruption(
             .padding(top = 20.dp)
             .clip(RoundedCornerShape(20.dp))
             .fillMaxWidth(0.90f)
-            .aspectRatio(3/0.8f)
-
+            .aspectRatio(3/0.7f)
     ) {
         // Main content
         Row(
@@ -58,6 +57,4 @@ fun TaskBoxInInterruption(
             )
         }
     }
-
-    Spacer(Modifier.height(20.dp))
 }

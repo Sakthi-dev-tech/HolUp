@@ -14,21 +14,21 @@ class TodoViewModel: ViewModel() {
 
     private val todoDao = MainApplication.todoDatabase.getTodoDao()
 
-    private val midnightMillis: Long
+        private val midnightMillis: Long
 
-    init {
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.HOUR_OF_DAY, 0) // Set hour to 12 AM
-        calendar.set(Calendar.MINUTE, 0)     // Set minutes to 0
-        calendar.set(Calendar.SECOND, 0)     // Set seconds to 0
-        calendar.set(Calendar.MILLISECOND, 0) // Set milliseconds to 0
+        init {
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.HOUR_OF_DAY, 0) // Set hour to 12 AM
+            calendar.set(Calendar.MINUTE, 0)     // Set minutes to 0
+            calendar.set(Calendar.SECOND, 0)     // Set seconds to 0
+            calendar.set(Calendar.MILLISECOND, 0) // Set milliseconds to 0
 
-        midnightMillis = calendar.timeInMillis // Get the time in milliseconds
-    }
+            midnightMillis = calendar.timeInMillis // Get the time in milliseconds
+        }
 
 
     val todoList : LiveData<List<Todo>> = todoDao.getAllTodo(midnightMillis)
-    val remainingTodoList: LiveData<List<Todo>> = todoDao.getRemainingTodo()
+    val remainingTodoList: LiveData<List<Todo>> = todoDao.getRemainingTodo(midnightMillis)
 
     val totalNumOfTodos: LiveData<Float> = todoDao.getTotalNumOfTodo()
     val totalNumOfCompletedTodos: LiveData<Float> = todoDao.getCompletedNumOfTodo()
