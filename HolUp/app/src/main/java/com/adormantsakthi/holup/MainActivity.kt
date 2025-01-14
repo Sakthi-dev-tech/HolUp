@@ -95,11 +95,11 @@ class MainActivity : ComponentActivity() {
                         NavHost(navController, modifier = Modifier.fillMaxSize(), startDestination = "home") {
                             composable("home") {
                                 Homescreen(
-                                    onNavigate = {navController.navigate("home")}, isAppBarVisible)
+                                    onNavigate = {navController.navigate("home")}, isAppBarVisible, selectedItemIndex)
                             }
 
                             composable("stats") {
-                                Statistics(onNavigate = {navController.navigate("stats")})
+                                Statistics(onNavigate = {navController.navigate("stats")}, selectedItemIndex)
                             }
 
                             composable("settings") {

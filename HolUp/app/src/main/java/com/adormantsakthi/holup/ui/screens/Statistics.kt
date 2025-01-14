@@ -2,8 +2,6 @@ package com.adormantsakthi.holup.ui.screens
 
 import GetDownloadedApps
 import android.content.pm.ApplicationInfo
-import android.graphics.RenderEffect
-import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -22,8 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -33,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -56,7 +52,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun Statistics(onNavigate: () -> Unit) {
+fun Statistics(onNavigate: () -> Unit, selectedItemIndex: MutableIntState) {
+
+    selectedItemIndex.intValue = 0
 
     val context = LocalContext.current
 
@@ -236,7 +234,7 @@ fun Statistics(onNavigate: () -> Unit) {
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    "Please Upgrade to Plus to Access Your Statistics :)",
+                    "Please Upgrade to Plus to View Your Statistics :)",
                     style = MaterialTheme.typography.labelMedium.copy(color = Color.White, textAlign = TextAlign.Center),
                     modifier = Modifier
                         .padding(20.dp),

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -63,18 +62,13 @@ import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.SetupAppsToLimitD
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.UpgradeToProDialog
 import com.adormantsakthi.holup.ui.components.forSettings.SettingsSection
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.PurchaseHistoryDialog
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Build
-import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AlertDialog
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
-import androidx.core.os.registerForAllProfilingResults
+import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.FeedbackDialog
 
 @Composable
 fun Settings(onNavigate: () -> Unit,
@@ -86,6 +80,7 @@ fun Settings(onNavigate: () -> Unit,
              canDrawOverlays: Boolean,
              canSendNotifications: Boolean
 ) {
+    selectedItemIndex.value = 2
     // Billing stuff
     val billingManager = MainApplication.getInstance().billingManager
     val activity = LocalContext.current as Activity
@@ -140,6 +135,7 @@ fun Settings(onNavigate: () -> Unit,
     val showAntiDoomscrollDialog = remember { mutableStateOf(false) }
     val showSetUpAppsToLimitDialog = remember { mutableStateOf(false) }
     val showPurchaseHistoryDialog = remember { mutableStateOf(false) }
+    val showFeedbackDialog = remember { mutableStateOf(false) }
 
     val showToast = remember { mutableStateOf(false) }
 
@@ -416,6 +412,81 @@ fun Settings(onNavigate: () -> Unit,
             }
         }
 
+        Spacer(Modifier.height(30.dp))
+
+        Text(
+            text = "Feedback",
+            style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
+            modifier = Modifier
+                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .align(Alignment.Start)
+        )
+
+        Card (
+            modifier = Modifier
+                .fillMaxWidth(0.85f),
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
+            colors = CardColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = Color.Red,
+                disabledContentColor = Color.Red,
+                disabledContainerColor = Color.Red
+            )
+        ) {
+            SettingsSection("Send Your Feedback \uD83D\uDE4F", null, {
+                showFeedbackDialog.value = true
+                isAppBarVisible.value = false
+            })
+        }
+
+        Spacer(Modifier.height(25.dp))
+
+        Card (
+            modifier = Modifier
+                .fillMaxWidth(0.85f)
+                .height(IntrinsicSize.Max)
+                .padding(top = 30.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(74, 94, 107, 255),
+                contentColor = Color.Red,
+                disabledContentColor = Color.Red,
+                disabledContainerColor = Color.Red
+            )
+        ) {
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Row (
+                    horizontalArrangement = Arrangement.spacedBy(15.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(5.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Face,
+                        contentDescription = "Face",
+                        tint = MaterialTheme.colorScheme.background,
+                        modifier = Modifier.size(50.dp)
+                    )
+
+                    Text(
+                        "Our Personal Message",
+                        style = MaterialTheme.typography.titleMedium.copy(MaterialTheme.colorScheme.background)
+                    )
+                }
+
+                Text(
+                    "Dear Valued Users,\n\nThis is our first proper application, and we hope you love it ❤\uFE0F. We really hope that this does benefit you in your daily lives, as that would really make our efforts meaningful! If you want to support us further, do consider buying the subscription, so that it motivates us to hopefully make more applications that will prove to serve users such as you. Once again, thank you so much to each and everyone of you to even consider downloading our application!",
+                    style = MaterialTheme.typography.labelSmall.copy(MaterialTheme.colorScheme.secondary),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(10.dp)
+                )
+            }
+        }
+
         getAppVersion(context)?.let {
             Text(
                 "App Version: $it",
@@ -434,6 +505,7 @@ fun Settings(onNavigate: () -> Unit,
     AntiDoomscrollDialogScreen(showAntiDoomscrollDialog, isAppBarVisible, selectedItemIndex)
     SetupAppsToLimitDialog(showSetUpAppsToLimitDialog, isAppBarVisible, selectedItemIndex)
     PurchaseHistoryDialog(showPurchaseHistoryDialog, isAppBarVisible, billingHistory, selectedItemIndex)
+    FeedbackDialog(showFeedbackDialog, isAppBarVisible, selectedItemIndex)
 
     SubscriptionToast("This is a Plus Feature!", showToast.value,
         {

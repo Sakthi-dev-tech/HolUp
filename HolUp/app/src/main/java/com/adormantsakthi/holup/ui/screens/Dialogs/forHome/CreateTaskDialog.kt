@@ -1,5 +1,6 @@
 package com.adormantsakthi.holup.ui.screens.Dialogs.forHome
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.ui.Todo.TodoViewModel
@@ -37,6 +39,8 @@ fun CreateTaskDialog (
     showDialog: MutableState<Boolean>,
     isAppBarVisible: MutableState<Boolean>,
 ) {
+    val context = LocalContext.current
+
     if (showDialog.value) {
         val taskName = remember { mutableStateOf("") }
 
@@ -100,9 +104,14 @@ fun CreateTaskDialog (
 
                     ElevatedButton(
                         onClick = {
-                            showDialog.value = false
-                            isAppBarVisible.value = true
-                            TodoViewModel().addTodo(taskName.value)
+                            if (taskName.value.length >= 6) {
+                                showDialog.value = false
+                                isAppBarVisible.value = true
+                                TodoViewModel().addTodo(taskName.value)
+                            } else {
+                                Toast.makeText(context, "Create a Task with a minimum of 6 characters", Toast.LENGTH_SHORT).show()
+                            }
+
                         },
                         colors = ButtonColors(
                             containerColor = MaterialTheme.colorScheme.onSurface,

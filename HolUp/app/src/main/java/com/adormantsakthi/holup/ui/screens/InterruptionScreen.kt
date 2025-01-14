@@ -115,7 +115,8 @@ fun InterruptionScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .alpha(columnAlpha)
-                .background(Color.Black), // Apply alpha for fade out effect
+                .background(Color.Black)
+                .verticalScroll(state = ScrollState(0)), // Apply alpha for fade out effect
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {

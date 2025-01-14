@@ -21,12 +21,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircle
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -44,11 +45,14 @@ import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.CreateTaskDialog
 import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.EditTaskDialog
 import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
 import com.adormantsakthi.holup.ui.theme.Karma
-import java.util.Calendar
 
 @Composable
-fun Homescreen(onNavigate: () -> Unit, isAppBarVisible: androidx.compose.runtime.MutableState<Boolean>) {
-
+fun Homescreen(
+    onNavigate: () -> Unit,
+    isAppBarVisible: MutableState<Boolean>,
+    selectedItemIndex: MutableIntState
+) {
+    selectedItemIndex.intValue = 1
     val showCreateTaskDialog = remember { mutableStateOf(false) }
     val showEditTaskDialog = remember { mutableStateOf(false) }
     val selectedTask = remember { mutableStateOf<Todo?>(null) }
