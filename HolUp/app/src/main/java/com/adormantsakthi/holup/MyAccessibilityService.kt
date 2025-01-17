@@ -192,7 +192,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
     private var openedPackageName: String = ""
 
     private var lastEventTime: Long = 0L // Tracks the last event timestamp
-    private val debounceTimeMS = 750L // Adjust debounce time as needed
+    private val debounceTimeMS = 500L // Adjust debounce time as needed
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {

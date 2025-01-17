@@ -68,120 +68,125 @@ fun Homescreen(
 
     val numOfTimesLimitedAppsAccessed = NumOfTimesLimitedAppsAccessedStorage.refreshCounter(LocalContext.current)
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(state = ScrollState(0)),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            "Welcome Home,",
-            style = MaterialTheme.typography.titleLarge.copy(MaterialTheme.colorScheme.secondary),
+        Column(
             modifier = Modifier
-                .padding(vertical = 20.dp, horizontal = 15.dp)
-                .fillMaxWidth()
-        )
-
-        // Pending Tasks for Today Box
-        Box(
-            modifier = Modifier
-                .padding(bottom = 40.dp)
-                .clip(RoundedCornerShape(40.dp))
-                .background(MaterialTheme.colorScheme.primary)
-                .fillMaxWidth(0.8f)
-                .aspectRatio(0.67f)
+                .fillMaxSize()
+                .verticalScroll(state = ScrollState(0)),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            Text(
+                "Welcome Home,",
+                style = MaterialTheme.typography.titleLarge.copy(MaterialTheme.colorScheme.secondary),
                 modifier = Modifier
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                // Row for Tasks header and add button
-                Row(
+                    .padding(vertical = 20.dp, horizontal = 15.dp)
+                    .fillMaxWidth()
+            )
+
+            // Pending Tasks for Today Box
+            Box(
+                modifier = Modifier
+                    .padding(bottom = 40.dp)
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(MaterialTheme.colorScheme.primary)
+                    .fillMaxWidth(0.8f)
+                    .aspectRatio(0.67f)
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "Tasks for today",
-                        style = MaterialTheme.typography.labelLarge,
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    // Row for Tasks header and add button
+                    Row(
                         modifier = Modifier
-                            .padding(15.dp)
-                    )
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Tasks for today",
+                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier
+                                .padding(15.dp)
+                        )
 
-                    Icon(
-                        imageVector = Icons.Outlined.AddCircle,
-                        contentDescription = "Add Task Icon",
-                        tint = Color.Black, // Icon color
+                        Icon(
+                            imageVector = Icons.Outlined.AddCircle,
+                            contentDescription = "Add Task Icon",
+                            tint = Color.Black, // Icon color
+                            modifier = Modifier
+                                .size(60.dp) // Icon size
+                                .padding(10.dp)
+                                .clickable (
+                                    indication = ripple(
+                                        bounded = false
+                                    ),
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    showCreateTaskDialog.value = true
+                                    isAppBarVisible.value = false
+                                }
+                        )
+                    }
+
+                    // to space out between the line and the tasks
+                    Spacer(Modifier.height(10.dp))
+
+                    Column (
                         modifier = Modifier
-                            .size(60.dp) // Icon size
-                            .padding(10.dp)
-                            .clickable (
-                                indication = ripple(
-                                    bounded = false
-                                ),
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) {
-                                showCreateTaskDialog.value = true
-                                isAppBarVisible.value = false
-                            }
-                    )
-                }
+                            .fillMaxWidth(0.9f)
+                            .fillMaxHeight()
+                            .padding()
+                            .verticalScroll(ScrollState(0))
+                    ) {
+                        // Convert LiveData into State for Compose
+                        val todoList by TodoViewModel().todoList.observeAsState(emptyList())
 
-                // to space out between the line and the tasks
-                Spacer(Modifier.height(10.dp))
-
-                Column (
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .fillMaxHeight()
-                        .padding()
-                        .verticalScroll(ScrollState(0))
-                ) {
-                    // Convert LiveData into State for Compose
-                    val todoList by TodoViewModel().todoList.observeAsState(emptyList())
-
-                    todoList.forEach { value ->
-                        TaskBox(value, showEditTaskDialog, selectedTask, isAppBarVisible)
+                        todoList.forEach { value ->
+                            TaskBox(value, showEditTaskDialog, selectedTask, isAppBarVisible)
+                        }
                     }
                 }
             }
-        }
 
-        // Number of times limited apps accessed Box
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(40.dp))
-                .background(MaterialTheme.colorScheme.primary)
-                .fillMaxWidth(0.8f)
-                .aspectRatio(1.48f)
-        ) {
-            Column {
-                Text(
-                    "Number of times you accessed limited apps",
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth()
-                )
+            // Number of times limited apps accessed Box
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(MaterialTheme.colorScheme.primary)
+                    .fillMaxWidth(0.8f)
+                    .aspectRatio(1.48f)
+            ) {
+                Column {
+                    Text(
+                        "Number of times you accessed limited apps",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .fillMaxWidth()
+                    )
 
-                Text(
-                    numOfTimesLimitedAppsAccessed.toString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontFamily = Karma,
-                    modifier = Modifier
-                        .align(alignment = Alignment.End)
-                        .padding(20.dp)
-                )
+                    Text(
+                        numOfTimesLimitedAppsAccessed.toString(),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontFamily = Karma,
+                        modifier = Modifier
+                            .align(alignment = Alignment.End)
+                            .padding(20.dp)
+                    )
+                }
             }
+
+            // Spacer for slight scroll
+            Spacer(Modifier.height(150.dp))
         }
 
-        // Spacer for slight scroll
-        Spacer(Modifier.height(150.dp))
+        CreateTaskDialog(showCreateTaskDialog, isAppBarVisible)
+        EditTaskDialog(selectedTask.value, showEditTaskDialog, isAppBarVisible)
+        OnboardingScreens(showOnboardingScreens, showOnboardingScreensAgain, isAppBarVisible, remember { mutableStateOf(false) })
     }
-
-    CreateTaskDialog(showCreateTaskDialog, isAppBarVisible)
-    EditTaskDialog(selectedTask.value, showEditTaskDialog, isAppBarVisible)
-    OnboardingScreens(showOnboardingScreens, showOnboardingScreensAgain, isAppBarVisible, remember { mutableStateOf(false) })
 }

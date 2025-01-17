@@ -71,7 +71,23 @@ class BillingManager(private val context: Context) {
         billingClient?.queryProductDetailsAsync(queryProductDetailsParams) { billingResult, productDetailsList ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 val productDetails = productDetailsList.firstOrNull()
-                onResult(productDetails)
+
+                val basePlanPricingPhase = productDetails
+                    ?.subscriptionOfferDetails
+                    ?.flatMap { it.pricingPhases.pricingPhaseList } // Flatten all pricing phases
+                    ?.firstOrNull { phase ->
+                        // Find the phase that is not a free trial and represents the base price
+                        phase.billingPeriod != "P0D" && phase.recurrenceMode == 1
+                    }
+
+                if (basePlanPricingPhase != null) {
+                    // Log or pass the base price and currency to the callback
+                    Log.d("BillingManager", "Base Price: ${basePlanPricingPhase.formattedPrice}")
+                    onResult(productDetails)
+                } else {
+                    Log.e("BillingManager", "Base plan not found")
+                    onResult(null)
+                }
             } else {
                 Log.e("BillingManager", "Failed to fetch product details: ${billingResult.debugMessage}")
                 onResult(null)

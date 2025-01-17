@@ -14,8 +14,8 @@ android {
         applicationId = "com.adormantsakthi.holup"
         minSdk = 27
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.0.0-alpha"
+        versionCode = 6
+        versionName = "1.0.1-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -85,6 +85,8 @@ dependencies {
     implementation(libs.billing)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.runtime.livedata.v1xx)
+    implementation(libs.material3)
     annotationProcessor(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     implementation(libs.androidx.activity.ktx)

@@ -3,6 +3,7 @@ package com.adormantsakthi.holup.ui.screens
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -63,11 +64,16 @@ import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.UpgradeToProDialo
 import com.adormantsakthi.holup.ui.components.forSettings.SettingsSection
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.PurchaseHistoryDialog
 import android.os.Build
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import com.adormantsakthi.holup.R
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.FeedbackDialog
 
 @Composable
@@ -442,11 +448,45 @@ fun Settings(onNavigate: () -> Unit,
 
         Spacer(Modifier.height(25.dp))
 
+        Text(
+            text = "Donation",
+            style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
+            modifier = Modifier
+                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .align(Alignment.Start)
+        )
+
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(30.dp))
+                .fillMaxWidth(0.85f)
+                .aspectRatio(1/0.5f)
+                .clickable {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.buymeacoffee.com/adormantsakthi"))
+                    context.startActivity(intent)
+                }
+        ) {
+            Image(
+                painter = painterResource(R.drawable.buymeacoffee),
+                contentDescription = "BuyMeACoffee Button",
+                contentScale = ContentScale.FillBounds
+            )
+        }
+
+        Spacer(Modifier.height(30.dp))
+
+        Text(
+            text = "A Message To You",
+            style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
+            modifier = Modifier
+                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .align(Alignment.Start)
+        )
+
         Card (
             modifier = Modifier
                 .fillMaxWidth(0.85f)
-                .height(IntrinsicSize.Max)
-                .padding(top = 30.dp),
+                .height(IntrinsicSize.Max),
             colors = CardDefaults.cardColors(
                 containerColor = Color(74, 94, 107, 255),
                 contentColor = Color.Red,
@@ -478,7 +518,7 @@ fun Settings(onNavigate: () -> Unit,
                 }
 
                 Text(
-                    "Dear Valued Users,\n\nThis is our first proper application, and we hope you love it ❤\uFE0F. We really hope that this does benefit you in your daily lives, as that would really make our efforts meaningful! If you want to support us further, do consider buying the subscription, so that it motivates us to hopefully make more applications that will prove to serve users such as you. Once again, thank you so much to each and everyone of you to even consider downloading our application!",
+                    "Dear Valued Users,\n\nThis is our first proper application, and we hope you love it ❤\uFE0F. We really hope that this does benefit you in your daily lives, as that would really make our efforts meaningful! If you want to support us further, do consider buying the subscription, so that it motivates us to hopefully make more applications that will prove to serve users such as you. Once again, thank you so much to each and everyone of you to even consider downloading our application! We will try to bring in new features and fix bugs, but please pardon us if it takes some time as we are indie developers trying our level best. Thank you all once again!",
                     style = MaterialTheme.typography.labelSmall.copy(MaterialTheme.colorScheme.secondary),
                     modifier = Modifier
                         .fillMaxSize()
