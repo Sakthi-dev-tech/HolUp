@@ -35,6 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.adormantsakthi.holup.functions.statistics.NumOfTimesLimitedAppsAccessedStorage
 import com.adormantsakthi.holup.ui.components.BottomNavBar
+import com.adormantsakthi.holup.ui.screens.AppSession
 import com.adormantsakthi.holup.ui.screens.Homescreen
 import com.adormantsakthi.holup.ui.screens.Settings
 import com.adormantsakthi.holup.ui.screens.Statistics
@@ -95,7 +96,11 @@ class MainActivity : ComponentActivity() {
                         NavHost(navController, modifier = Modifier.fillMaxSize(), startDestination = "home") {
                             composable("home") {
                                 Homescreen(
-                                    onNavigate = {navController.navigate("home")}, isAppBarVisible, selectedItemIndex)
+                                    onNavigate = {navController.navigate("home")},
+                                    isAppBarVisible,
+                                    selectedItemIndex,
+                                    accessibilityServiceOn.value && hasUsageStatsPerm.value && drawOverlayPermission.value,
+                                )
                             }
 
                             composable("stats") {
@@ -129,6 +134,12 @@ class MainActivity : ComponentActivity() {
         accessibilityServiceOn.value = isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)
         drawOverlayPermission.value = Settings.canDrawOverlays(this)
         canSendNotifications.value = checkNotificationPermission(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Reset the session when app goes to background
+        AppSession.reset()
     }
 
     // Helper functions to check if permissions are granted

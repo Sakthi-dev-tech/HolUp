@@ -41,20 +41,59 @@ import androidx.compose.ui.unit.dp
 import com.adormantsakthi.holup.ui.Todo.TodoViewModel
 import com.adormantsakthi.holup.functions.Todo
 import com.adormantsakthi.holup.functions.statistics.NumOfTimesLimitedAppsAccessedStorage
+import com.adormantsakthi.holup.storage.LimitedAppsStorage
 import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.CreateTaskDialog
 import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.EditTaskDialog
 import com.adormantsakthi.holup.ui.components.forHomepage.TaskBox
+import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.AddAppsDialog
+import com.adormantsakthi.holup.ui.screens.Dialogs.forHome.AllowPermissionsDialog
 import com.adormantsakthi.holup.ui.theme.Karma
+
+// Create an object to track app session
+object AppSession {
+    private var isFirstLaunch = true
+
+    fun isFirstLaunchOfSession(): Boolean {
+        return if (isFirstLaunch) {
+            isFirstLaunch = false
+            true
+        } else {
+            false
+        }
+    }
+
+    fun reset() {
+        isFirstLaunch = true
+    }
+}
 
 @Composable
 fun Homescreen(
     onNavigate: () -> Unit,
     isAppBarVisible: MutableState<Boolean>,
-    selectedItemIndex: MutableIntState
+    selectedItemIndex: MutableIntState,
+    allPermissionsActivated: Boolean,
 ) {
+    val context = LocalContext.current
+
     selectedItemIndex.intValue = 1
     val showCreateTaskDialog = remember { mutableStateOf(false) }
     val showEditTaskDialog = remember { mutableStateOf(false) }
+
+    // Initialize dialog states based on app session
+    val showNeedPermissionsDialog = remember {
+        mutableStateOf(false)
+    }
+    val showAddAppsDialog = remember {
+        mutableStateOf(false)
+    }
+
+    if (AppSession.isFirstLaunchOfSession()) {
+        showNeedPermissionsDialog.value = !allPermissionsActivated
+        showAddAppsDialog.value = LimitedAppsStorage(context).getTargetPackages().isEmpty()
+    }
+
+
     val selectedTask = remember { mutableStateOf<Todo?>(null) }
 
     val showOnboardingScreensAgain = !OnboardingPrefs.isOnboardingCompleted(context = LocalContext.current)
@@ -187,6 +226,8 @@ fun Homescreen(
 
         CreateTaskDialog(showCreateTaskDialog, isAppBarVisible)
         EditTaskDialog(selectedTask.value, showEditTaskDialog, isAppBarVisible)
+        AllowPermissionsDialog(showNeedPermissionsDialog, isAppBarVisible, showAddAppsDialog)
+        AddAppsDialog(showAddAppsDialog, isAppBarVisible, showNeedPermissionsDialog)
         OnboardingScreens(showOnboardingScreens, showOnboardingScreensAgain, isAppBarVisible, remember { mutableStateOf(false) })
     }
 }

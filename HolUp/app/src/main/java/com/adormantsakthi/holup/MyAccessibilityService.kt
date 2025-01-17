@@ -1,8 +1,9 @@
 package com.adormantsakthi.holup
 
 import android.accessibilityservice.AccessibilityService
-import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.PixelFormat
 import android.os.Handler
 import android.os.Looper
@@ -14,9 +15,7 @@ import androidx.collection.longListOf
 import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -41,6 +40,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
+
 
 var lastExecutionTime: MutableLongState = mutableLongStateOf(0) // Timestamp of the last function execution
 
@@ -190,6 +190,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
     private var overlayJob: Job? = null
     private lateinit var overlayStateManager: OverlayStateManager
     private var openedPackageName: String = ""
+    private var previouslyOpenedPackageName: String = ""
 
     private var lastEventTime: Long = 0L // Tracks the last event timestamp
     private val debounceTimeMS = 500L // Adjust debounce time as needed
@@ -205,15 +206,17 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
             }
             lastEventTime = currentTime
 
-            if (packageName == openedPackageName || packageName == "com.android.systemui" || packageName == "com.adormantsakthi.holup") return
+            if (packageName == openedPackageName || packageName == previouslyOpenedPackageName || packageName == "com.android.systemui" || packageName == "com.adormantsakthi.holup") return
 
             CoroutineScope(Dispatchers.Default).launch {
                 overlayStateManager.onAppOpened(packageName)
             }
 
+            previouslyOpenedPackageName = openedPackageName
             openedPackageName = packageName
 
             Log.d("App Currently Open", packageName)
+            Log.d("App Previously Open", previouslyOpenedPackageName)
         }
     }
 
@@ -264,7 +267,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                             val handler = android.os.Handler(Looper.getMainLooper())
                             handler.postDelayed({
                                 overlayClosed.set(true)
-                            }, 1000)
+                            }, 200)
                         }
                     )
                 }

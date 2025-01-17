@@ -14,8 +14,8 @@ android {
         applicationId = "com.adormantsakthi.holup"
         minSdk = 27
         targetSdk = 35
-        versionCode = 6
-        versionName = "1.0.1-alpha"
+        versionCode = 7
+        versionName = "1.0.2-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
