@@ -1,5 +1,6 @@
 package com.adormantsakthi.holup.ui.components.forStatistics
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -71,7 +72,6 @@ fun Graph(selectedOption: String) {
     val todayTimeUsed = AppUsageTracker(context).getTodayUsageStats(listOfAppPackageNames)
     val thisWeekRanges = timeRangeHelper.getThisWeekDailyRanges()
     val lastWeekRanges = timeRangeHelper.getLastWeekDailyRanges()
-    val thisMonthRanges = timeRangeHelper.getThisMonthDailyRanges()
 
     // Calculate stats for this week
     thisWeekRanges.forEach { (start, end) ->
@@ -87,14 +87,6 @@ fun Graph(selectedOption: String) {
         val totalForegroundTime = usageHelper.getDailyUsageStats(start, end, listOfAppPackageNames)
         dailyStatsLastWeek.add(totalForegroundTime)
     }
-
-    // Calculate stats for this month
-    thisMonthRanges.forEach { (start, end) ->
-        val totalForegroundTime = usageHelper.getDailyUsageStats(start, end, listOfAppPackageNames)
-        dailyStatsThisMonth.add(totalForegroundTime)
-    }
-
-    dailyStatsThisMonth.add(todayTimeUsed)
 
     // Effect to load data when selected option changes
     LaunchedEffect(selectedOption) {
@@ -114,13 +106,6 @@ fun Graph(selectedOption: String) {
                 dates.addAll(listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
                 modelProducer.runTransaction {
                     lineSeries { series(dailyStatsLastWeek) }
-                }
-            }
-            "This Month" -> {
-                dates.clear()
-                dates.addAll((1..31).map { it.toString() })
-                modelProducer.runTransaction {
-                    lineSeries { series(dailyStatsThisMonth) }
                 }
             }
         }

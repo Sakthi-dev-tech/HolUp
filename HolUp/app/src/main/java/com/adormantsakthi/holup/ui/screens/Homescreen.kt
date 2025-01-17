@@ -74,9 +74,10 @@ fun Homescreen(
     selectedItemIndex: MutableIntState,
     allPermissionsActivated: Boolean,
 ) {
+    selectedItemIndex.intValue = 1
+
     val context = LocalContext.current
 
-    selectedItemIndex.intValue = 1
     val showCreateTaskDialog = remember { mutableStateOf(false) }
     val showEditTaskDialog = remember { mutableStateOf(false) }
 

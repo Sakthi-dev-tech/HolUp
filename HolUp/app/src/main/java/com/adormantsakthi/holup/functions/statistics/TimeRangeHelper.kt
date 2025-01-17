@@ -1,5 +1,6 @@
 package com.adormantsakthi.holup.functions.statistics
 
+import android.util.Log
 import java.util.Calendar
 
 class TimeRangeHelper {
@@ -68,7 +69,7 @@ class TimeRangeHelper {
 
             daysInThisMonth.add(Pair(startOfDay, endOfDay))
         }
-
+        Log.d("DaysInThisMonth", daysInThisMonth.toString())
         return daysInThisMonth
     }
 }

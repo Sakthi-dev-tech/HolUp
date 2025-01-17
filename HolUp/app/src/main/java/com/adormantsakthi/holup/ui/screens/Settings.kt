@@ -66,6 +66,7 @@ import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.PurchaseHistoryDi
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.ui.layout.ContentScale
@@ -294,7 +295,7 @@ fun Settings(onNavigate: () -> Unit,
                 disabledContainerColor = Color.Red
             )
         ) {
-            SettingsSection("Re-Interrupt", null, {
+            SettingsSection("Re-Interrupt", "Select apps that you want to prevent doomscrolling in", {
                 if (!userHasPlus) {
                     showToast.value = true
                 } else {
@@ -339,13 +340,15 @@ fun Settings(onNavigate: () -> Unit,
                 disabledContainerColor = Color.Red
             )
         ) {
-            SettingsSection("Add Apps", "Select Apps that you want to limit", {
+            SettingsSection("Add Apps", "Select apps that you want to limit", {
+                showToast.value = false
                 showSetUpAppsToLimitDialog.value = true
                 isAppBarVisible.value = false
             })
             SettingsSection("Accessibility Service",
                 if (isAccessibilityServiceEnabled) "On" else "Off"
             ) {
+                showToast.value = false
                 val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
@@ -354,6 +357,7 @@ fun Settings(onNavigate: () -> Unit,
                 "App Usage Permission",
                 if (hasUsageStatsPermission) "On" else "Off"
             ) {
+                showToast.value = false
                 val intent = Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
@@ -363,6 +367,7 @@ fun Settings(onNavigate: () -> Unit,
                 "Overlay Over Other Apps",
                 if (canDrawOverlays) "On" else "Off"
             ) {
+                showToast.value = false
                 val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
@@ -372,6 +377,7 @@ fun Settings(onNavigate: () -> Unit,
                 "Notifications",
                 if (canSendNotifications) "On" else "Off"
             ) {
+                showToast.value = false
                 val NOTIFICATION_PERMISSION_REQUEST_CODE = 100
                 if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     ActivityCompat.requestPermissions(
@@ -408,12 +414,14 @@ fun Settings(onNavigate: () -> Unit,
             )
         ) {
             SettingsSection("Payment History", null, {
+                showToast.value = false
                 showPurchaseHistoryDialog.value = true
                 isAppBarVisible.value = false
             })
             SettingsSection("Cancel Subscription",
                 "Cancel Your Ongoing Subscription :("
             ) {
+                showToast.value = false
                 billingManager.cancelSubscription(activity)
             }
         }
@@ -441,6 +449,7 @@ fun Settings(onNavigate: () -> Unit,
             )
         ) {
             SettingsSection("Send Your Feedback \uD83D\uDE4F", null, {
+                showToast.value = false
                 showFeedbackDialog.value = true
                 isAppBarVisible.value = false
             })
@@ -581,23 +590,24 @@ fun SubscriptionToast(
         ) {
             Surface(
                 modifier = Modifier
-                    .padding(top = 48.dp) // Padding from top for a more centered look
+                    .padding(top = 70.dp, start = 15.dp, end = 15.dp) // Padding from top for a more centered look
                     .wrapContentWidth(),
                 shape = RoundedCornerShape(12.dp),
                 color = Color.Black.copy(alpha = 0.85f) // Black background with some transparency
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .padding(16.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Max),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Icon(
                         imageVector = Icons.Default.Info, // Using error icon as an example
                         contentDescription = "Toast Icon",
                         tint = Color.Yellow, // Yellow icon
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.padding(10.dp).size(32.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column(
@@ -606,23 +616,26 @@ fun SubscriptionToast(
                         Text(
                             text = message,
                             color = Color.White,
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier
+                                .padding(bottom = 10.dp)
                         )
                     }
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(30.dp)
                     ) {
                         Button(
                             onClick = onBuyClick,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.8f))
                         ) {
-                            Text("Buy", color = Color.Black)
+                            Text("Buy", style = MaterialTheme.typography.labelSmall)
                         }
+
                         Button(
                             onClick = onDismissClick,
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
                         ) {
-                            Text("Dismiss", color = Color.White)
+                            Text("Dismiss", style = MaterialTheme.typography.labelSmall)
                         }
                     }
                 }

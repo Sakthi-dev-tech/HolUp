@@ -59,10 +59,10 @@ fun Statistics(onNavigate: () -> Unit, selectedItemIndex: MutableIntState) {
     val context = LocalContext.current
 
     val billingManager = MainApplication.getInstance().billingManager
-    val isSubbed = billingManager.isSubscribed.collectAsState().value
+    val isSubbed = !billingManager.isSubscribed.collectAsState().value
 
     var expanded = remember { mutableStateOf(false) }
-    var items = listOf("This Week", "Last Week", "This Month")
+    var items = listOf("This Week", "Last Week")
     var selectedOption = remember { mutableStateOf(items.firstOrNull() ?: "This Week") }
 
     // Dummy value for Task Completion Rate
