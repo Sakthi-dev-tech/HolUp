@@ -47,12 +47,12 @@ fun YearlyPlan() {
         val priceCurrencyCode: String = ""
     )
 
-    val _pricingDetails = MutableStateFlow(PricingDetails(price = "16.98", priceCurrencyCode = "SGD"))
+    val _pricingDetails = MutableStateFlow(PricingDetails())
     val pricingDetails = _pricingDetails.asStateFlow()
 
     billingManager.getProductDetails("yearly_subscription", {
             productDetails ->
-        productDetails?.subscriptionOfferDetails?.firstOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull().let {
+        productDetails?.subscriptionOfferDetails?.lastOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull().let {
                 pricingPhase ->
             val price = pricingPhase?.formattedPrice
             val priceCurrencyCode = pricingPhase?.priceCurrencyCode

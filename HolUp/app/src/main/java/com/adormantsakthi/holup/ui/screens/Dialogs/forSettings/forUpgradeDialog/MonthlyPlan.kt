@@ -55,7 +55,7 @@ fun MonthlyPlan() {
 
     billingManager.getProductDetails("monthly_subscription", {
         productDetails ->
-        productDetails?.subscriptionOfferDetails?.firstOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull().let {
+        productDetails?.subscriptionOfferDetails?.lastOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull().let {
             pricingPhase ->
             val price = pricingPhase?.formattedPrice
             val priceCurrencyCode = pricingPhase?.priceCurrencyCode

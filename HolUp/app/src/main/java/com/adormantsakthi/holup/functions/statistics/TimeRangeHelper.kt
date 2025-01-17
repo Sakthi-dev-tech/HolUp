@@ -17,11 +17,24 @@ class TimeRangeHelper {
         val daysInThisWeek = mutableListOf<Pair<Long, Long>>()
 
         while (calendar.before(today) || calendar.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
+            // Set the start of the day to 12:00 AM
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
             val startOfDay = calendar.timeInMillis
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
+
+            // Set the end of the day to 11:59 PM
+            calendar.set(Calendar.HOUR_OF_DAY, 23)
+            calendar.set(Calendar.MINUTE, 59)
+            calendar.set(Calendar.SECOND, 59)
+            calendar.set(Calendar.MILLISECOND, 999)
             val endOfDay = calendar.timeInMillis
 
             daysInThisWeek.add(Pair(startOfDay, endOfDay))
+
+            // Move to the next day
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
         return daysInThisWeek
@@ -40,15 +53,29 @@ class TimeRangeHelper {
 
         val daysInLastWeek = mutableListOf<Pair<Long, Long>>()
         for (i in 0 until 7) {
+            // Set the start of the day to 12:00 AM
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
             val startOfDay = calendar.timeInMillis
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
+
+            // Set the end of the day to 11:59 PM
+            calendar.set(Calendar.HOUR_OF_DAY, 23)
+            calendar.set(Calendar.MINUTE, 59)
+            calendar.set(Calendar.SECOND, 59)
+            calendar.set(Calendar.MILLISECOND, 999)
             val endOfDay = calendar.timeInMillis
 
             daysInLastWeek.add(Pair(startOfDay, endOfDay))
+
+            // Move to the next day
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
         return daysInLastWeek
     }
+
 
     /**
      * Returns a list of start and end timestamps for each day in this month.
