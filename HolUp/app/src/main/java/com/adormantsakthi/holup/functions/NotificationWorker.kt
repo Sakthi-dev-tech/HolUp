@@ -40,16 +40,14 @@ class NotificationWorker(
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // Create notification channel for Android O and above
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Daily Reminder",
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = "Channel for daily app usage reminders"
-            }
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Daily Reminder",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Channel for daily app usage reminders"
         }
+        notificationManager.createNotificationChannel(channel)
 
         // Build the notification
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)

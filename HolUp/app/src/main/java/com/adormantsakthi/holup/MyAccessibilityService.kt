@@ -95,14 +95,14 @@ class OverlayStateManager (context: Context) {
 
     private val handler = Handler(Looper.getMainLooper())
     private var timerRunnable: Runnable? = null
-
-    private val antiDoomscrollTimeList = longListOf(60000, 120000, 300000, 600000)
-    private val antiDoomscrollTimeIndex = HolUpPopupPrefs(context).getDelayBtwReinterruptionIndex()
+    val holUpPopupPrefs = HolUpPopupPrefs(context)
 
     /**
      * Starts or resets the timer.
      */
     fun startOrResetTimer() {
+        val antiDoomscrollTimeList = longListOf(60000, 120000, 300000, 600000)
+        val antiDoomscrollTimeIndex = holUpPopupPrefs.getDelayBtwReinterruptionIndex()
         // Cancel any existing timer
         timerRunnable?.let { handler.removeCallbacks(it) }
 

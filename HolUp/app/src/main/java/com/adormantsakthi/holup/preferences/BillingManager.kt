@@ -1,12 +1,17 @@
 package com.adormantsakthi.holup.preferences
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.app.NotificationCompat
+import com.adormantsakthi.holup.R
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener
 import com.android.billingclient.api.BillingClient
@@ -46,6 +51,171 @@ class BillingManager(private val context: Context) {
     init {
         setupBillingClient()
     }
+
+    /**
+     * Pauses subscription by directing user to subscription management page
+     * Since Google Play doesn't support direct pause API, this takes users
+     * to the subscription management page where they can pause/cancel
+     */
+    fun pauseSubscription(activity: Activity) {
+        // Query current purchases to get subscription details
+        val params = QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build()
+
+        billingClient?.queryPurchasesAsync(params) { billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                val activePurchase = purchases.firstOrNull { purchase ->
+                    purchase.purchaseState == Purchase.PurchaseState.PURCHASED
+                }
+
+                if (activePurchase != null) {
+                    // Deep link to specific subscription management page if possible
+                    val subscriptionUrl = when {
+                        activePurchase.products.contains(SUBSCRIPTION_MONTHLY) ->
+                            "https://play.google.com/store/account/subscriptions?sku=$SUBSCRIPTION_MONTHLY&package=${context.packageName}"
+                        activePurchase.products.contains(SUBSCRIPTION_YEARLY) ->
+                            "https://play.google.com/store/account/subscriptions?sku=$SUBSCRIPTION_YEARLY&package=${context.packageName}"
+                        else -> "https://play.google.com/store/account/subscriptions"
+                    }
+
+                    // Launch subscription management page
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse(subscriptionUrl)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    activity.startActivity(intent)
+
+                    sendNotification(
+                        "Subscription Management",
+                        "You can pause or cancel your subscription from the Google Play subscriptions page."
+                    )
+                } else {
+                    Log.d("BillingManager", "No active subscription found to pause")
+                    sendNotification(
+                        "No Active Subscription",
+                        "There is no active subscription to pause."
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if subscription is paused by querying purchase history
+     * Returns via callback since the query is asynchronous
+     */
+    fun checkSubscriptionPauseState(callback: (Boolean) -> Unit) {
+        val params = QueryPurchaseHistoryParams.newBuilder()
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build()
+
+        billingClient?.queryPurchaseHistoryAsync(params) { billingResult, purchaseHistoryRecords ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                // Check if the most recent purchase history record indicates a pause
+                val isPaused = purchaseHistoryRecords?.firstOrNull()?.let { record ->
+                    // You'll need to implement logic to determine if the subscription
+                    // is paused based on your specific requirements
+                    val purchaseTime = record.purchaseTime
+                    val currentTime = System.currentTimeMillis()
+
+                    // Example: Consider paused if no active purchase in last 24 hours
+                    (currentTime - purchaseTime) > (24 * 60 * 60 * 1000)
+                } ?: false
+
+                callback(isPaused)
+
+                if (isPaused) {
+                    _isSubscribed.value = false
+                }
+            } else {
+                callback(false)
+                _isSubscribed.value = false
+            }
+        }
+    }
+
+    /**
+     * Resumes a paused subscription by initiating a new purchase
+     */
+    fun resumeSubscription(activity: Activity) {
+        // Check purchase history to determine which subscription type to resume
+        val params = QueryPurchaseHistoryParams.newBuilder()
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build()
+
+        billingClient?.queryPurchaseHistoryAsync(params) { billingResult, purchaseHistoryRecords ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                val lastSubscription = purchaseHistoryRecords?.firstOrNull()
+                val wasMonthly = lastSubscription?.products?.firstOrNull() == SUBSCRIPTION_MONTHLY
+
+                // Start new purchase flow for the previous subscription type
+                purchaseSubscription(activity, wasMonthly)
+            }
+        }
+    }
+
+    private fun handlePaymentState(purchase: Purchase) {
+        when (purchase.purchaseState) {
+            Purchase.PurchaseState.PENDING -> {
+                // Payment is pending/on hold
+                _isSubscribed.value = false
+                sendNotification(
+                    "Subscription Payment On Hold",
+                    "Your subscription is currently on hold. Please update your payment method."
+                )
+                // You might want to store this state locally
+                handlePendingPayment(purchase)
+            }
+            Purchase.PurchaseState.UNSPECIFIED_STATE -> {
+                // Payment likely declined or failed
+                _isSubscribed.value = false
+                sendNotification(
+                    "Payment Declined",
+                    "Your subscription payment was declined. Please update your payment method."
+                )
+                // Handle the failed payment
+                handleDeclinedPayment(purchase)
+            }
+            Purchase.PurchaseState.PURCHASED -> {
+                if (!purchase.isAcknowledged) {
+                    acknowledgePurchase(purchase)
+                }
+                _isSubscribed.value = true
+            }
+        }
+    }
+
+    private fun handlePendingPayment(purchase: Purchase) {
+        // Implement grace period logic if needed
+        val gracePeriodDays = 2 // Adjust as needed
+        val purchaseTime = purchase.purchaseTime
+        val currentTime = System.currentTimeMillis()
+        val daysSincePurchase = (currentTime - purchaseTime) / (1000 * 60 * 60 * 24)
+
+        if (daysSincePurchase > gracePeriodDays) {
+            // Grace period expired, disable subscription features
+            _isSubscribed.value = false
+            sendNotification(
+                "Subscription Paused",
+                "Your subscription has been paused due to payment issues. Please update your payment method within 2 days."
+            )
+        }
+    }
+
+    private fun handleDeclinedPayment(purchase: Purchase) {
+        // Implement retry logic if needed
+        // You might want to track failed attempts and handle accordingly
+        _isSubscribed.value = false
+
+        // Direct user to update payment method
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse("https://play.google.com/store/account/subscriptions")
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+    }
+
 
     fun endBillingClientConnection() {
         billingClient?.endConnection()
@@ -110,12 +280,37 @@ class BillingManager(private val context: Context) {
                 override fun onAcknowledgePurchaseResponse(billingResult: BillingResult) {
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         Log.d("BillingManager", "Purchase acknowledged successfully")
+                        sendNotification("Thank you for subscribing!", "We hope you enjoy the Plus features!")
                     } else {
                         Log.e("BillingManager", "Failed to acknowledge the purchase: ${billingResult.debugMessage}")
+                        sendNotification("Oops!", "Something went wrong with your purchase! Please do check with the developer.")
                     }
                 }
             }
         )
+    }
+
+    private fun sendNotification(title: String, message: String) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Create a notification channel for Android 8.0+
+        val channel = NotificationChannel(
+            "subscription_channel",
+            "Subscription Notifications",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        notificationManager.createNotificationChannel(channel)
+
+        val notification = NotificationCompat.Builder(context, "subscription_channel")
+            .setSmallIcon(R.drawable.palm_logo) // Replace with your notification icon
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        Log.d("Notification Built", notification.toString())
+
+        notificationManager.notify(2, notification)
     }
 
 
