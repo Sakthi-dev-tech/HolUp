@@ -100,7 +100,7 @@ fun Homescreen(
     val showOnboardingScreensAgain = !OnboardingPrefs.isOnboardingCompleted(context = LocalContext.current)
     val showOnboardingScreens = remember { mutableStateOf(true) } // this is so that we can immediately close the onboarding screens once skip pressed
 
-    if (showOnboardingScreens.value && showOnboardingScreensAgain) {
+    if ((showOnboardingScreens.value && showOnboardingScreensAgain) || (showNeedPermissionsDialog.value || showAddAppsDialog.value)) {
         isAppBarVisible.value = false
     } else {
         isAppBarVisible.value = true

@@ -60,7 +60,6 @@ fun OnboardingScreens(
             if (showSkipButton.value) {
                 Button(
                     onClick = {
-                        isAppBarVisible.value = true
                         OnboardingPrefs.setOnboardingCompleted(context = context)
                         showOnboardingScreens.value = false
                     },
