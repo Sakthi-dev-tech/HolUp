@@ -1,12 +1,16 @@
 package com.adormantsakthi.holup.preferences
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.app.NotificationCompat
+import com.adormantsakthi.holup.R
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener
 import com.android.billingclient.api.BillingClient
@@ -45,6 +49,67 @@ class BillingManager(private val context: Context) {
 
     init {
         setupBillingClient()
+    }
+
+    private fun handlePaymentState(purchase: Purchase) {
+        when {
+            purchase.purchaseState == Purchase.PurchaseState.PENDING -> {
+                // Payment is pending/on hold
+                _isSubscribed.value = false
+                sendNotification(
+                    "Subscription Payment On Hold",
+                    "Your subscription is currently on hold. Please update your payment method."
+                )
+                // You might want to store this state locally
+                handlePendingPayment(purchase)
+            }
+            purchase.purchaseState == Purchase.PurchaseState.UNSPECIFIED_STATE -> {
+                // Payment likely declined or failed
+                _isSubscribed.value = false
+                sendNotification(
+                    "Payment Declined",
+                    "Your subscription payment was declined. Please update your payment method."
+                )
+                // Handle the failed payment
+                handleDeclinedPayment(purchase)
+            }
+            purchase.purchaseState == Purchase.PurchaseState.PURCHASED -> {
+                if (!purchase.isAcknowledged) {
+                    acknowledgePurchase(purchase)
+                }
+                _isSubscribed.value = true
+            }
+        }
+    }
+
+    private fun handlePendingPayment(purchase: Purchase) {
+        // Implement grace period logic if needed
+        val gracePeriodDays = 3 // Adjust as needed
+        val purchaseTime = purchase.purchaseTime
+        val currentTime = System.currentTimeMillis()
+        val daysSincePurchase = (currentTime - purchaseTime) / (1000 * 60 * 60 * 24)
+
+        if (daysSincePurchase > gracePeriodDays) {
+            // Grace period expired, disable subscription features
+            _isSubscribed.value = false
+            sendNotification(
+                "Subscription Paused",
+                "Your subscription has been paused due to payment issues. Please update your payment method."
+            )
+        }
+    }
+
+    private fun handleDeclinedPayment(purchase: Purchase) {
+        // Implement retry logic if needed
+        // You might want to track failed attempts and handle accordingly
+        _isSubscribed.value = false
+
+        // Direct user to update payment method
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse("https://play.google.com/store/account/subscriptions")
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 
     fun endBillingClientConnection() {
@@ -110,12 +175,37 @@ class BillingManager(private val context: Context) {
                 override fun onAcknowledgePurchaseResponse(billingResult: BillingResult) {
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         Log.d("BillingManager", "Purchase acknowledged successfully")
+                        sendNotification("Thank you for subscribing!", "We hope you enjoy the Plus features!")
                     } else {
                         Log.e("BillingManager", "Failed to acknowledge the purchase: ${billingResult.debugMessage}")
+                        sendNotification("Oops! Something went wrong!", "Please check with the developer!")
                     }
                 }
             }
         )
+    }
+
+    private fun sendNotification(title: String, message: String) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Create a notification channel for Android 8.0+
+        val channel = NotificationChannel(
+            "subscription_channel",
+            "Subscription Notifications",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        notificationManager.createNotificationChannel(channel)
+
+        val notification = NotificationCompat.Builder(context, "subscription_channel")
+            .setSmallIcon(R.drawable.palm_logo) // Replace with your notification icon
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        Log.d("Notification Built", notification.toString())
+
+        notificationManager.notify(2, notification)
     }
 
 
@@ -146,19 +236,18 @@ class BillingManager(private val context: Context) {
                             return@forEach
                         } else {
                             Log.d("Billing Manager", "Billing Client is Ready!")
+                            handlePaymentState(purchase)
                         }
-                        acknowledgePurchase(purchase)
-                        _isSubscribed.value = true
                     }
-                }
 
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-                    // User canceled the purchase flow
-                    _isSubscribed.value = false
-                }
-                else {
-                    // Handle other error cases
-                    _isSubscribed.value = false
+                    else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+                        // User canceled the purchase flow
+                        _isSubscribed.value = false
+                    }
+                    else {
+                        // Handle other error cases
+                        _isSubscribed.value = false
+                    }
                 }
 
                 setupBillingClient()
