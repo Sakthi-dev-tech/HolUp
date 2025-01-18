@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +25,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchaseHistoryParams
 import com.android.billingclient.api.QueryPurchasesParams
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -52,112 +52,9 @@ class BillingManager(private val context: Context) {
         setupBillingClient()
     }
 
-    /**
-     * Pauses subscription by directing user to subscription management page
-     * Since Google Play doesn't support direct pause API, this takes users
-     * to the subscription management page where they can pause/cancel
-     */
-    fun pauseSubscription(activity: Activity) {
-        // Query current purchases to get subscription details
-        val params = QueryPurchasesParams.newBuilder()
-            .setProductType(BillingClient.ProductType.SUBS)
-            .build()
-
-        billingClient?.queryPurchasesAsync(params) { billingResult, purchases ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                val activePurchase = purchases.firstOrNull { purchase ->
-                    purchase.purchaseState == Purchase.PurchaseState.PURCHASED
-                }
-
-                if (activePurchase != null) {
-                    // Deep link to specific subscription management page if possible
-                    val subscriptionUrl = when {
-                        activePurchase.products.contains(SUBSCRIPTION_MONTHLY) ->
-                            "https://play.google.com/store/account/subscriptions?sku=$SUBSCRIPTION_MONTHLY&package=${context.packageName}"
-                        activePurchase.products.contains(SUBSCRIPTION_YEARLY) ->
-                            "https://play.google.com/store/account/subscriptions?sku=$SUBSCRIPTION_YEARLY&package=${context.packageName}"
-                        else -> "https://play.google.com/store/account/subscriptions"
-                    }
-
-                    // Launch subscription management page
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(subscriptionUrl)
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
-                    activity.startActivity(intent)
-
-                    sendNotification(
-                        "Subscription Management",
-                        "You can pause or cancel your subscription from the Google Play subscriptions page."
-                    )
-                } else {
-                    Log.d("BillingManager", "No active subscription found to pause")
-                    sendNotification(
-                        "No Active Subscription",
-                        "There is no active subscription to pause."
-                    )
-                }
-            }
-        }
-    }
-
-    /**
-     * Checks if subscription is paused by querying purchase history
-     * Returns via callback since the query is asynchronous
-     */
-    fun checkSubscriptionPauseState(callback: (Boolean) -> Unit) {
-        val params = QueryPurchaseHistoryParams.newBuilder()
-            .setProductType(BillingClient.ProductType.SUBS)
-            .build()
-
-        billingClient?.queryPurchaseHistoryAsync(params) { billingResult, purchaseHistoryRecords ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                // Check if the most recent purchase history record indicates a pause
-                val isPaused = purchaseHistoryRecords?.firstOrNull()?.let { record ->
-                    // You'll need to implement logic to determine if the subscription
-                    // is paused based on your specific requirements
-                    val purchaseTime = record.purchaseTime
-                    val currentTime = System.currentTimeMillis()
-
-                    // Example: Consider paused if no active purchase in last 24 hours
-                    (currentTime - purchaseTime) > (24 * 60 * 60 * 1000)
-                } ?: false
-
-                callback(isPaused)
-
-                if (isPaused) {
-                    _isSubscribed.value = false
-                }
-            } else {
-                callback(false)
-                _isSubscribed.value = false
-            }
-        }
-    }
-
-    /**
-     * Resumes a paused subscription by initiating a new purchase
-     */
-    fun resumeSubscription(activity: Activity) {
-        // Check purchase history to determine which subscription type to resume
-        val params = QueryPurchaseHistoryParams.newBuilder()
-            .setProductType(BillingClient.ProductType.SUBS)
-            .build()
-
-        billingClient?.queryPurchaseHistoryAsync(params) { billingResult, purchaseHistoryRecords ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                val lastSubscription = purchaseHistoryRecords?.firstOrNull()
-                val wasMonthly = lastSubscription?.products?.firstOrNull() == SUBSCRIPTION_MONTHLY
-
-                // Start new purchase flow for the previous subscription type
-                purchaseSubscription(activity, wasMonthly)
-            }
-        }
-    }
-
     private fun handlePaymentState(purchase: Purchase) {
-        when (purchase.purchaseState) {
-            Purchase.PurchaseState.PENDING -> {
+        when {
+            purchase.purchaseState == Purchase.PurchaseState.PENDING -> {
                 // Payment is pending/on hold
                 _isSubscribed.value = false
                 sendNotification(
@@ -167,7 +64,7 @@ class BillingManager(private val context: Context) {
                 // You might want to store this state locally
                 handlePendingPayment(purchase)
             }
-            Purchase.PurchaseState.UNSPECIFIED_STATE -> {
+            purchase.purchaseState == Purchase.PurchaseState.UNSPECIFIED_STATE -> {
                 // Payment likely declined or failed
                 _isSubscribed.value = false
                 sendNotification(
@@ -177,7 +74,7 @@ class BillingManager(private val context: Context) {
                 // Handle the failed payment
                 handleDeclinedPayment(purchase)
             }
-            Purchase.PurchaseState.PURCHASED -> {
+            purchase.purchaseState == Purchase.PurchaseState.PURCHASED -> {
                 if (!purchase.isAcknowledged) {
                     acknowledgePurchase(purchase)
                 }
@@ -188,7 +85,7 @@ class BillingManager(private val context: Context) {
 
     private fun handlePendingPayment(purchase: Purchase) {
         // Implement grace period logic if needed
-        val gracePeriodDays = 2 // Adjust as needed
+        val gracePeriodDays = 3 // Adjust as needed
         val purchaseTime = purchase.purchaseTime
         val currentTime = System.currentTimeMillis()
         val daysSincePurchase = (currentTime - purchaseTime) / (1000 * 60 * 60 * 24)
@@ -198,7 +95,7 @@ class BillingManager(private val context: Context) {
             _isSubscribed.value = false
             sendNotification(
                 "Subscription Paused",
-                "Your subscription has been paused due to payment issues. Please update your payment method within 2 days."
+                "Your subscription has been paused due to payment issues. Please update your payment method within 3 days."
             )
         }
     }
@@ -215,7 +112,6 @@ class BillingManager(private val context: Context) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
-
 
     fun endBillingClientConnection() {
         billingClient?.endConnection()
@@ -283,7 +179,7 @@ class BillingManager(private val context: Context) {
                         sendNotification("Thank you for subscribing!", "We hope you enjoy the Plus features!")
                     } else {
                         Log.e("BillingManager", "Failed to acknowledge the purchase: ${billingResult.debugMessage}")
-                        sendNotification("Oops!", "Something went wrong with your purchase! Please do check with the developer.")
+                        sendNotification("Oops! Something went wrong!", "Please check with the developer!")
                     }
                 }
             }
@@ -326,7 +222,7 @@ class BillingManager(private val context: Context) {
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 // Process successful purchases
                 purchases?.forEach {
-                    purchase ->
+                        purchase ->
                     // Handle each purchase
                     var retry = 3
                     if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged) {
@@ -334,6 +230,7 @@ class BillingManager(private val context: Context) {
                         while (retry > 0 && billingClient?.isReady != true){
                             connectToGooglePlay()
                             retry -= 1
+                            delay(1000L)
                         }
 
                         if (!billingClient?.isReady!!){
@@ -341,22 +238,19 @@ class BillingManager(private val context: Context) {
                             return@forEach
                         } else {
                             Log.d("Billing Manager", "Billing Client is Ready!")
+                            handlePaymentState(purchase)
                         }
-                        acknowledgePurchase(purchase)
-                        _isSubscribed.value = true
+                    }
+
+                    else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+                        // User canceled the purchase flow
+                        _isSubscribed.value = false
+                    }
+                    else {
+                        // Handle other error cases
+                        _isSubscribed.value = false
                     }
                 }
-
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-                    // User canceled the purchase flow
-                    _isSubscribed.value = false
-                }
-                else {
-                    // Handle other error cases
-                    _isSubscribed.value = false
-                }
-
-                setupBillingClient()
             }
         }
 
