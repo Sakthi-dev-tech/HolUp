@@ -44,14 +44,15 @@ fun SelectAppsComponentForDialogs (
     icon: Drawable,
     appInfo: ApplicationInfo
 ) {
-
     val context = LocalContext.current
     val packageName = appInfo.packageName
-    var checked = remember { mutableStateOf(OverlayStateManager(context).getPackageManager().containsPackage(packageName)) }
+    var checked = remember (packageName, name) { mutableStateOf(OverlayStateManager(context).getPackageManager().containsPackage(packageName)) }
     val userHasPlus = MainApplication.getInstance().billingManager.isSubscribed.collectAsState().value
+    val overlayStateManager = remember { OverlayStateManager(context) }
 
     Box(
         modifier = Modifier
+            .padding(vertical = 10.dp)
             .clip(RoundedCornerShape(20.dp))
             .fillMaxWidth(0.95f)
             .aspectRatio(1/0.35f)
@@ -68,16 +69,16 @@ fun SelectAppsComponentForDialogs (
                 onCheckedChange = {
                     if (checked.value) {
                         // if it was previously checked
-                        OverlayStateManager(context).getPackageManager().removePackage(packageName)
+                        overlayStateManager.getPackageManager().removePackage(packageName)
                         checked.value = it
                     } else {
                         // if it was previously not checked
-                        if (OverlayStateManager(context).getPackageManager().getTargetPackages().size == 2 && !userHasPlus) {
+                        if (overlayStateManager.getPackageManager().getTargetPackages().size == 2 && !userHasPlus) {
                             // if 2 apps are already selected if user has no Plus
                             Toast.makeText(context, "Only 2 apps can be limited for non-Plus users! Sorry :(", Toast.LENGTH_LONG).show()
                         } else {
                             // user can have more than 2 apps selected since user got Plus
-                            OverlayStateManager(context).getPackageManager().addPackage(packageName)
+                            overlayStateManager.getPackageManager().addPackage(packageName)
                             checked.value = it
                         }
                     }
@@ -95,7 +96,7 @@ fun SelectAppsComponentForDialogs (
             Column (
                 modifier = Modifier
                     .width(100.dp)
-                    .padding(end = 20.dp),
+                    .padding(end = 10.dp),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -103,6 +104,7 @@ fun SelectAppsComponentForDialogs (
                     painter = rememberDrawablePainter(drawable = icon),
                     contentDescription = "App Icon",
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(10.dp)
                         .size(35.dp)
                         .align(Alignment.CenterHorizontally)
@@ -111,12 +113,12 @@ fun SelectAppsComponentForDialogs (
                 Text(
                     name,
                     style = MaterialTheme.typography.labelSmall.copy(textAlign = TextAlign.Center),
+                    maxLines = 2,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .align(Alignment.CenterHorizontally)
                 )
             }
         }
     }
-
-    Spacer(Modifier.height(10.dp))
 }

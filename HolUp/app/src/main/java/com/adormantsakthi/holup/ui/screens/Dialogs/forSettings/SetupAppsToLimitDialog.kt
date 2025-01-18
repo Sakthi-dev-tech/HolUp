@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.TextField
@@ -65,21 +66,24 @@ fun SetupAppsToLimitDialog(
     val searchQuery = remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    // Load all apps once when the composable is launched
-    LaunchedEffect(Unit) {
-        val apps = GetDownloadedApps(context)
-        allApps.value = apps
-        filteredApps.value = apps
-    }
 
-    // Update filtered apps whenever searchQuery changes
-    LaunchedEffect(searchQuery.value) {
-        filteredApps.value = allApps.value.filter { app ->
-            app.first.contains(searchQuery.value, ignoreCase = true)
-        }
-    }
 
     if (showDialog.value) {
+
+        // Load all apps once when the composable is launched
+        LaunchedEffect(Unit) {
+            val apps = GetDownloadedApps(context)
+            allApps.value = apps
+            filteredApps.value = apps
+        }
+
+        // Update filtered apps whenever searchQuery changes
+        LaunchedEffect(searchQuery.value) {
+            filteredApps.value = emptyList()
+            filteredApps.value = allApps.value.filter { app ->
+                app.first.contains(searchQuery.value, ignoreCase = true)
+            }
+        }
 
         Box(
             modifier = Modifier
@@ -162,7 +166,7 @@ fun SetupAppsToLimitDialog(
                                     onValueChange = { text -> searchQuery.value = text },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(5.dp),
+                                        .padding(10.dp),
                                     colors = TextFieldDefaults.colors(
                                         focusedContainerColor = Color.Transparent,
                                         unfocusedContainerColor = Color.Transparent,
@@ -179,7 +183,10 @@ fun SetupAppsToLimitDialog(
                                     .padding(top = 10.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                items(filteredApps.value) { item ->
+                                itemsIndexed(items = filteredApps.value, key = { index, item ->
+                                    // Combine index and package name for a unique key
+                                    "index_${index}_${item.third.packageName}"
+                                }) { _, item ->
                                     SelectAppsComponentForDialogs(item.first, item.second, item.third)
                                 }
                             }
