@@ -14,7 +14,7 @@ android {
         applicationId = "com.adormantsakthi.holup"
         minSdk = 27
         targetSdk = 35
-        versionCode = 7
+        versionCode = 9
         versionName = "1.0.2-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
