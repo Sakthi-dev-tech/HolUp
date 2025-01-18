@@ -25,9 +25,12 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchaseHistoryParams
 import com.android.billingclient.api.QueryPurchasesParams
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /**
  * Manages all subscription-related functionality through Google Play Billing.
@@ -230,7 +233,9 @@ class BillingManager(private val context: Context) {
                         while (retry > 0 && billingClient?.isReady != true){
                             connectToGooglePlay()
                             retry -= 1
-                            delay(1000L)
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(1000L)
+                            }
                         }
 
                         if (!billingClient?.isReady!!){
