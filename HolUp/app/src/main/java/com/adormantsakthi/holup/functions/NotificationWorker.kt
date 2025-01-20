@@ -20,6 +20,8 @@ class NotificationWorker(
 
     override fun doWork(): Result {
         showNotification()
+        // Schedule next notification
+        scheduleNextNotification(context)
         return Result.success()
     }
 
@@ -39,7 +41,6 @@ class NotificationWorker(
     private fun showNotification() {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Create notification channel for Android O and above
         val channel = NotificationChannel(
             CHANNEL_ID,
             "Daily Reminder",
@@ -49,9 +50,8 @@ class NotificationWorker(
         }
         notificationManager.createNotificationChannel(channel)
 
-        // Build the notification
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.palm_logo) /** This is for the notification icon (CHANGE LATER!!!) */
+            .setSmallIcon(R.drawable.palm_logo)
             .setContentTitle("Daily Reminder")
             .setContentText("Time to set your tasks for today!")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -59,7 +59,6 @@ class NotificationWorker(
             .setContentIntent(pendingIntent)
             .build()
 
-        // Show the notification
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
@@ -67,35 +66,42 @@ class NotificationWorker(
         private const val CHANNEL_ID = "daily_notification_channel"
         private const val NOTIFICATION_ID = 1
 
-        fun scheduleDaily(context: Context) {
+        private fun scheduleNextNotification(context: Context) {
             val currentTime = Calendar.getInstance()
             val targetTime = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 8) // Target time: 8 AM
+                set(Calendar.HOUR_OF_DAY, 8)
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
 
                 if (before(currentTime)) {
-                    // If 8 AM today has already passed, schedule for tomorrow
                     add(Calendar.DAY_OF_YEAR, 1)
                 }
             }
 
             val initialDelay = targetTime.timeInMillis - currentTime.timeInMillis
 
-            // Schedule periodic work with an initial delay and repeat interval of 24 hours
-            val dailyWorkRequest = PeriodicWorkRequestBuilder<NotificationWorker>(
-                24, TimeUnit.HOURS
-            )
+            // Use OneTimeWorkRequest instead of PeriodicWorkRequest
+            val dailyWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
                 .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                        .build()
+                )
                 .build()
 
             WorkManager.getInstance(context)
-                .enqueueUniquePeriodicWork(
+                .enqueueUniqueWork(
                     "daily_notification_work",
-                    ExistingPeriodicWorkPolicy.UPDATE, // Replace any existing work
+                    ExistingWorkPolicy.REPLACE,
                     dailyWorkRequest
                 )
+        }
+
+        fun scheduleDaily(context: Context) {
+            // Initial schedule
+            scheduleNextNotification(context)
         }
 
         fun cancelDaily(context: Context) {
