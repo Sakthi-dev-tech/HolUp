@@ -160,7 +160,7 @@ fun InterruptionScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
-                            .fillMaxHeight(0.9f)
+                            .fillMaxHeight(0.97f)
                             .clip(RoundedCornerShape(20.dp))
                             .verticalScroll(state = ScrollState(0))
                             .background(Color(52, 49, 49, 255)),
