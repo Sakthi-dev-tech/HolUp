@@ -72,16 +72,20 @@ fun SetupAppsToLimitDialog(
 
         // Load all apps once when the composable is launched
         LaunchedEffect(Unit) {
-            val apps = GetDownloadedApps(context)
-            allApps.value = apps
-            filteredApps.value = apps
+            CoroutineScope(Dispatchers.IO).launch {
+                val apps = GetDownloadedApps(context)
+                allApps.value = apps
+                filteredApps.value = apps
+            }
         }
 
         // Update filtered apps whenever searchQuery changes
         LaunchedEffect(searchQuery.value) {
-            filteredApps.value = emptyList()
-            filteredApps.value = allApps.value.filter { app ->
-                app.first.contains(searchQuery.value, ignoreCase = true)
+            CoroutineScope(Dispatchers.IO).launch {
+                filteredApps.value = emptyList()
+                filteredApps.value = allApps.value.filter { app ->
+                    app.first.contains(searchQuery.value, ignoreCase = true)
+                }
             }
         }
 
@@ -213,9 +217,10 @@ fun SetupAppsToLimitDialog(
                                 contentAlignment = Alignment.Center
                             ) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.size(100.dp),
+                                    color = MaterialTheme.colorScheme.primary,
                                     strokeWidth = 6.dp,
-                                    color = MaterialTheme.colorScheme.primary
+                                    modifier = Modifier
+                                        .size(100.dp)
                                 )
                             }
                         }
