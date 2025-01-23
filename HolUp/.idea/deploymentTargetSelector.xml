@@ -15,17 +15,12 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CRB1S5R0X" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Sakthi\.android\avd\Pixel_5_API_34.avd" />
               </handle>
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
                 <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CW42QRQ5K" />
-              </handle>
-            </Target>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Sakthi\.android\avd\Pixel_5_API_34.avd" />
               </handle>
             </Target>
           </targets>

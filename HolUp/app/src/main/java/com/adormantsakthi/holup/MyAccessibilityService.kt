@@ -16,6 +16,7 @@ import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -108,6 +109,7 @@ class OverlayStateManager (context: Context) {
 
         // Create a new runnable to execute after the timeout
         timerRunnable = Runnable {
+            Log.d("Anti-Doomscroll", "Anti_Doomscroll activated")
             _isOverlayVisible.value = true
             overlayClosed.set(false)
         }
@@ -146,7 +148,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
     // Window management
     private var windowManager: WindowManager? = null
     private var overlayView: ComposeView? = null
-
+    private var launcherPackageName: String? = null
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -184,6 +186,15 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                 }
             }
         }
+
+        fun getLauncherPackageName(context: Context): String? {
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_HOME)
+            val resolveInfo = context.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            return resolveInfo?.activityInfo?.packageName
+        }
+
+        launcherPackageName = getLauncherPackageName(context = this)
     }
 
     // Add these properties to track state
@@ -206,7 +217,23 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
             }
             lastEventTime = currentTime
 
-            if (packageName == openedPackageName || packageName == previouslyOpenedPackageName || packageName == "com.android.systemui" || packageName == "com.adormantsakthi.holup") return
+            if (packageName == openedPackageName || packageName == "com.android.systemui" || packageName == "com.adormantsakthi.holup") {
+                return
+            } else if (packageName == launcherPackageName) {
+                // when in homescreen, clear the previously opened package name
+
+                previouslyOpenedPackageName = ""
+                openedPackageName = packageName
+                Log.d("App Currently Open", packageName)
+                Log.d("App Previously Open", previouslyOpenedPackageName)
+                return
+            } else if (packageName == previouslyOpenedPackageName) {
+                previouslyOpenedPackageName = openedPackageName
+                openedPackageName = packageName
+                Log.d("App Currently Open", packageName)
+                Log.d("App Previously Open", previouslyOpenedPackageName)
+                return
+            }
 
             CoroutineScope(Dispatchers.Default).launch {
                 overlayStateManager.onAppOpened(packageName)
@@ -250,7 +277,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                             NumOfTimesLimitedAppsAccessedStorage.appAccessed(context)
                             handler.postDelayed({
                                 overlayClosed.set(true)
-                            }, 1000)
+                            }, 100)
 
                             // starts AntiDoomscroll timer if app package name in Reinterruption Storage
                             CoroutineScope(Dispatchers.IO).launch {
@@ -267,7 +294,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, ViewModel
                             val handler = android.os.Handler(Looper.getMainLooper())
                             handler.postDelayed({
                                 overlayClosed.set(true)
-                            }, 200)
+                            }, 100)
                         }
                     )
                 }
