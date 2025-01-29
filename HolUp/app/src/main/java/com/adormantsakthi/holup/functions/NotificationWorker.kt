@@ -20,8 +20,6 @@ class NotificationWorker(
 
     override fun doWork(): Result {
         showNotification()
-        // Schedule next notification
-        scheduleNextNotification(context)
         return Result.success()
     }
 
@@ -66,42 +64,44 @@ class NotificationWorker(
         private const val CHANNEL_ID = "daily_notification_channel"
         private const val NOTIFICATION_ID = 1
 
-        private fun scheduleNextNotification(context: Context) {
-            val currentTime = Calendar.getInstance()
-            val targetTime = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 8)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-
-                if (before(currentTime)) {
-                    add(Calendar.DAY_OF_YEAR, 1)
-                }
-            }
-
-            val initialDelay = targetTime.timeInMillis - currentTime.timeInMillis
-
-            // Use OneTimeWorkRequest instead of PeriodicWorkRequest
-            val dailyWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
-                .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-                        .build()
-                )
-                .build()
-
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork(
-                    "daily_notification_work",
-                    ExistingWorkPolicy.REPLACE,
-                    dailyWorkRequest
-                )
-        }
-
         fun scheduleDaily(context: Context) {
-            // Initial schedule
-            scheduleNextNotification(context)
+            val workManager = WorkManager.getInstance(context)
+            val existingWorkInfo = workManager.getWorkInfosForUniqueWork("daily_notification_work")
+                .get() // Note: This is a blocking call, should be used carefully
+
+            if (existingWorkInfo.isEmpty() || existingWorkInfo.all { it.state.isFinished }){
+                val currentTime = Calendar.getInstance()
+                val targetTime = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, 8)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+
+                    if (before(currentTime)) {
+                        add(Calendar.DAY_OF_YEAR, 1)
+                    }
+                }
+
+                val initialDelay = targetTime.timeInMillis - currentTime.timeInMillis
+
+                val dailyWorkRequest = PeriodicWorkRequestBuilder<NotificationWorker>(
+                    24, TimeUnit.HOURS
+                )
+                    .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                            .build()
+                    )
+                    .build()
+
+                WorkManager.getInstance(context)
+                    .enqueueUniquePeriodicWork(
+                        "daily_notification_work",
+                        ExistingPeriodicWorkPolicy.REPLACE,
+                        dailyWorkRequest
+                    )
+            }
         }
 
         fun cancelDaily(context: Context) {
