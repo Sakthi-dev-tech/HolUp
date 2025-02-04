@@ -91,6 +91,7 @@ dependencies {
     testImplementation(libs.junit)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment)
+    implementation(libs.accompanist.permissions)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

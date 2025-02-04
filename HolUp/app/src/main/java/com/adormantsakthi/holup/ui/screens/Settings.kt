@@ -75,6 +75,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import com.adormantsakthi.holup.R
+import com.adormantsakthi.holup.functions.NotificationAlarmReceiver
 import com.adormantsakthi.holup.ui.screens.Dialogs.forSettings.FeedbackDialog
 
 @Composable
@@ -85,7 +86,8 @@ fun Settings(onNavigate: () -> Unit,
              hasUsageStatsPermission: Boolean,
              context: Context,
              canDrawOverlays: Boolean,
-             canSendNotifications: Boolean
+             canSendNotifications: Boolean,
+             canSendExactAlarms: Boolean
 ) {
     selectedItemIndex.value = 2
     // Billing stuff
@@ -165,7 +167,7 @@ fun Settings(onNavigate: () -> Unit,
                 modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
                     .fillMaxWidth(0.85f)
-                    .aspectRatio(3/1f)
+                    .aspectRatio(3 / 1f)
                     .background(MaterialTheme.colorScheme.tertiary)
                     .clickable {
                         showUpgradeToProDialog.value = true
@@ -200,7 +202,10 @@ fun Settings(onNavigate: () -> Unit,
 
         Row (
             modifier = Modifier
-                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .padding(
+                    bottom = 16.dp,
+                    start = (LocalConfiguration.current.screenWidthDp * 0.075).dp
+                )
                 .align(Alignment.Start),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -262,7 +267,10 @@ fun Settings(onNavigate: () -> Unit,
 
         Row (
             modifier = Modifier
-                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .padding(
+                    bottom = 16.dp,
+                    start = (LocalConfiguration.current.screenWidthDp * 0.075).dp
+                )
                 .align(Alignment.Start),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -324,7 +332,10 @@ fun Settings(onNavigate: () -> Unit,
             text = "Setup",
             style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
             modifier = Modifier
-                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .padding(
+                    bottom = 16.dp,
+                    start = (LocalConfiguration.current.screenWidthDp * 0.075).dp
+                )
                 .align(Alignment.Start)
         )
 
@@ -373,20 +384,32 @@ fun Settings(onNavigate: () -> Unit,
                 context.startActivity(intent)
             }
 
+            val notificationState = remember { mutableStateOf("") }
+            if (canSendNotifications && canSendExactAlarms) {
+                notificationState.value = "On"
+            } else if (canSendNotifications) {
+                notificationState.value = "On (Click again to enable more accurate notifications)"
+            } else {
+                notificationState.value = "Off"
+            }
+
             SettingsSection(
                 "Notifications",
-                if (canSendNotifications) "On" else "Off"
+                notificationState.value
             ) {
                 showToast.value = false
-                val NOTIFICATION_PERMISSION_REQUEST_CODE = 100
-                if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    ActivityCompat.requestPermissions(
-                        activity,
-                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                        NOTIFICATION_PERMISSION_REQUEST_CODE
-                    )
+                if (!canSendNotifications) {
+                    val NOTIFICATION_PERMISSION_REQUEST_CODE = 100
+                    if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        ActivityCompat.requestPermissions(
+                            activity,
+                            arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                            NOTIFICATION_PERMISSION_REQUEST_CODE
+                        )
+                    }
+                } else {
+                    NotificationAlarmReceiver.requestExactAlarmPermission(context)
                 }
-
             }
 
         }
@@ -397,7 +420,10 @@ fun Settings(onNavigate: () -> Unit,
             text = "Payments",
             style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
             modifier = Modifier
-                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .padding(
+                    bottom = 16.dp,
+                    start = (LocalConfiguration.current.screenWidthDp * 0.075).dp
+                )
                 .align(Alignment.Start)
         )
 
@@ -432,7 +458,10 @@ fun Settings(onNavigate: () -> Unit,
             text = "Feedback",
             style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
             modifier = Modifier
-                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .padding(
+                    bottom = 16.dp,
+                    start = (LocalConfiguration.current.screenWidthDp * 0.075).dp
+                )
                 .align(Alignment.Start)
         )
 
@@ -461,7 +490,10 @@ fun Settings(onNavigate: () -> Unit,
             text = "Donation",
             style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
             modifier = Modifier
-                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .padding(
+                    bottom = 16.dp,
+                    start = (LocalConfiguration.current.screenWidthDp * 0.075).dp
+                )
                 .align(Alignment.Start)
         )
 
@@ -469,9 +501,12 @@ fun Settings(onNavigate: () -> Unit,
             modifier = Modifier
                 .clip(RoundedCornerShape(30.dp))
                 .fillMaxWidth(0.85f)
-                .aspectRatio(1/0.5f)
+                .aspectRatio(1 / 0.5f)
                 .clickable {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.buymeacoffee.com/adormantsakthi"))
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://www.buymeacoffee.com/adormantsakthi")
+                    )
                     context.startActivity(intent)
                 }
         ) {
@@ -488,7 +523,10 @@ fun Settings(onNavigate: () -> Unit,
             text = "A Message To You",
             style = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.secondary),
             modifier = Modifier
-                .padding(bottom = 16.dp, start = (LocalConfiguration.current.screenWidthDp * 0.075).dp)
+                .padding(
+                    bottom = 16.dp,
+                    start = (LocalConfiguration.current.screenWidthDp * 0.075).dp
+                )
                 .align(Alignment.Start)
         )
 
@@ -607,7 +645,9 @@ fun SubscriptionToast(
                         imageVector = Icons.Default.Info, // Using error icon as an example
                         contentDescription = "Toast Icon",
                         tint = Color.Yellow, // Yellow icon
-                        modifier = Modifier.padding(10.dp).size(32.dp)
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .size(32.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column(

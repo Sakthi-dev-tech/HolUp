@@ -33,6 +33,7 @@ import com.adormantsakthi.holup.ui.theme.HolUpTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.adormantsakthi.holup.functions.NotificationAlarmReceiver
 import com.adormantsakthi.holup.functions.statistics.NumOfTimesLimitedAppsAccessedStorage
 import com.adormantsakthi.holup.ui.components.BottomNavBar
 import com.adormantsakthi.holup.ui.screens.AppSession
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
     private val accessibilityServiceOn = mutableStateOf(false)
     private val drawOverlayPermission = mutableStateOf(false)
     private val canSendNotifications = mutableStateOf(false)
+    private val canSendExactAlarms = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +117,8 @@ class MainActivity : ComponentActivity() {
                                     hasUsageStatsPerm.value,
                                     LocalContext.current,
                                     drawOverlayPermission.value,
-                                    canSendNotifications.value
+                                    canSendNotifications.value,
+                                    canSendExactAlarms.value
                                 )
                             }
                         }
@@ -134,6 +137,21 @@ class MainActivity : ComponentActivity() {
         accessibilityServiceOn.value = isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)
         drawOverlayPermission.value = Settings.canDrawOverlays(this)
         canSendNotifications.value = checkNotificationPermission(this)
+        canSendExactAlarms.value = checkExactAlarmPermission(this)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+        deviceId: Int
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
+
+        if (checkNotificationPermission(this)) {
+            canSendExactAlarms.value = true
+            NotificationAlarmReceiver.scheduleDaily(this)
+        }
     }
 
     override fun onDestroy() {
@@ -180,29 +198,7 @@ class MainActivity : ComponentActivity() {
         return true
     }
 
-    fun sendTestNotification(context: Context) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // Create notification channel (required for Android 8.0 and above)
-        val channel = NotificationChannel(
-            "test_channel",
-            "Test Channel",
-            NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            description = "Channel for testing notifications"
-        }
-        notificationManager.createNotificationChannel(channel)
-
-        // Build the notification
-        val notification = NotificationCompat.Builder(context, "test_channel")
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // Use your app icon here
-            .setContentTitle("Test Notification")
-            .setContentText("This is a test notification!")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setAutoCancel(true)
-            .build()
-
-        // Show the notification
-        notificationManager.notify(1, notification)
+    fun checkExactAlarmPermission(context: Context): Boolean {
+        return NotificationAlarmReceiver.canScheduleExactAlarms(context)
     }
 }

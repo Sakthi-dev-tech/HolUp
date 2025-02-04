@@ -5,7 +5,6 @@ import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -86,15 +84,18 @@ fun Statistics(onNavigate: () -> Unit, selectedItemIndex: MutableIntState) {
     val filteredListOfAppsForInterruption = remember { mutableStateOf<List<Triple<String, Drawable, ApplicationInfo>>>(
         emptyList()
     ) }
-    LaunchedEffect (Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
-            // Get the list of installed applications
-            listOfApps.value = GetDownloadedApps(context)
 
-            // Assuming `listOfAppsWithInterruption` is a Set<String> or List<String>
-            filteredListOfAppsForInterruption.value = listOfApps.value.filter { triple ->
-                val packageName = triple.third.packageName // Extract package name from ApplicationInfo
-                packageName in listOfAppsWithInterruption
+    if (isSubbed) {
+        LaunchedEffect (Unit) {
+            CoroutineScope(Dispatchers.IO).launch {
+                // Get the list of installed applications
+                listOfApps.value = GetDownloadedApps(context)
+
+                // Assuming `listOfAppsWithInterruption` is a Set<String> or List<String>
+                filteredListOfAppsForInterruption.value = listOfApps.value.filter { triple ->
+                    val packageName = triple.third.packageName // Extract package name from ApplicationInfo
+                    packageName in listOfAppsWithInterruption
+                }
             }
         }
     }
@@ -125,7 +126,7 @@ fun Statistics(onNavigate: () -> Unit, selectedItemIndex: MutableIntState) {
             ){
                 // Column that contains the graph and the row inside it will contain the button and dropdown menu
                 Column {
-                    Graph(selectedOption.value)
+                    Graph(selectedOption.value, isSubbed)
 
                     Row(
                         modifier = Modifier

@@ -1,9 +1,7 @@
 package com.adormantsakthi.holup.ui.components.forStatistics
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -33,7 +31,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 
 @Composable
-fun Graph(selectedOption: String) {
+fun Graph(selectedOption: String, isSubbed: Boolean) {
     val modelProducer = remember { CartesianChartModelProducer() }
     val dates = remember { mutableListOf<String>() }
     val isLoading = remember { mutableStateOf(true) }
@@ -88,29 +86,31 @@ fun Graph(selectedOption: String) {
         dailyStatsLastWeek.add(totalForegroundTime)
     }
 
-    // Effect to load data when selected option changes
-    LaunchedEffect(selectedOption) {
-        isLoading.value = true
+    if (isSubbed) {
+        // Effect to load data when selected option changes
+        LaunchedEffect(selectedOption) {
+            isLoading.value = true
 
-        // Update dates and data based on selected option
-        when (selectedOption) {
-            "This Week" -> {
-                dates.clear()
-                dates.addAll(listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
-                modelProducer.runTransaction {
-                    lineSeries { series(dailyStatsThisWeek) }
+            // Update dates and data based on selected option
+            when (selectedOption) {
+                "This Week" -> {
+                    dates.clear()
+                    dates.addAll(listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+                    modelProducer.runTransaction {
+                        lineSeries { series(dailyStatsThisWeek) }
+                    }
+                }
+                "Last Week" -> {
+                    dates.clear()
+                    dates.addAll(listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+                    modelProducer.runTransaction {
+                        lineSeries { series(dailyStatsLastWeek) }
+                    }
                 }
             }
-            "Last Week" -> {
-                dates.clear()
-                dates.addAll(listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
-                modelProducer.runTransaction {
-                    lineSeries { series(dailyStatsLastWeek) }
-                }
-            }
+
+            isLoading.value = false
         }
-
-        isLoading.value = false
     }
 
     Box(

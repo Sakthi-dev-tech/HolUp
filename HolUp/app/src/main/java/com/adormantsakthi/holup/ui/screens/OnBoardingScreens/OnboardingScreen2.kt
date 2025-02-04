@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import com.adormantsakthi.holup.functions.NotificationAlarmReceiver
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -55,17 +56,6 @@ fun OnboardingScreen2(showSkipButton: MutableState<Boolean>) {
 
         delay(2000)
 
-        val NOTIFICATION_PERMISSION_REQUEST_CODE = 100
-        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ActivityCompat.requestPermissions(
-                activity,
-                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                NOTIFICATION_PERMISSION_REQUEST_CODE
-            )
-        }
-
-        delay(1000)
-
         val accessibilitySettings = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
         context.startActivity(accessibilitySettings)
 
@@ -74,6 +64,19 @@ fun OnboardingScreen2(showSkipButton: MutableState<Boolean>) {
 
         val overlaySettings = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
         context.startActivity(overlaySettings)
+
+        NotificationAlarmReceiver.requestExactAlarmPermission(context)
+
+        delay(1000)
+
+        val NOTIFICATION_PERMISSION_REQUEST_CODE = 100
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                NOTIFICATION_PERMISSION_REQUEST_CODE
+            )
+        }
 
     }
 

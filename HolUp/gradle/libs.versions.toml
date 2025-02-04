@@ -1,6 +1,7 @@
 [versions]
 accompanistDrawablepainter = "0.37.0"
 accompanistPager = "0.31.4-beta"
+accompanistPermissions = "0.31.1-alpha"
 accompanistSystemuicontroller = "0.24.13-rc"
 agp = "8.8.0"
 billing = "7.1.1"
@@ -28,6 +29,7 @@ appcompat = "1.7.0"
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanistDrawablepainter" }
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPager" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

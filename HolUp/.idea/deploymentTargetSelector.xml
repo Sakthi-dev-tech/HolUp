@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2025-01-16T13:28:14.196519300Z">
+        <DropdownSelection timestamp="2025-01-30T02:42:07.476847500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Sakthi\.android\avd\Pixel_5_API_34.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CW42QRQ5K" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -15,12 +15,12 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Sakthi\.android\avd\Pixel_5_API_34.avd" />
+                <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CW42QRQ5K" />
               </handle>
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CW42QRQ5K" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Sakthi\.android\avd\Pixel_5_API_34.avd" />
               </handle>
             </Target>
           </targets>

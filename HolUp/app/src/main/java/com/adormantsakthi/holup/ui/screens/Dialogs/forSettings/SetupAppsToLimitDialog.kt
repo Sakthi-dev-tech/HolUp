@@ -148,7 +148,7 @@ fun SetupAppsToLimitDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(IntrinsicSize.Max)
-                                .padding(20.dp)
+                                .padding(15.dp)
                                 .clip(RoundedCornerShape(30.dp))
                                 .background(MaterialTheme.colorScheme.secondary)
                         ) {
@@ -169,8 +169,8 @@ fun SetupAppsToLimitDialog(
                                     value = searchQuery.value,
                                     onValueChange = { text -> searchQuery.value = text },
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp),
+                                        .fillMaxWidth(0.85f)
+                                        .padding(0.dp),
                                     colors = TextFieldDefaults.colors(
                                         focusedContainerColor = Color.Transparent,
                                         unfocusedContainerColor = Color.Transparent,
